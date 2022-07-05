@@ -1,0 +1,14 @@
+---
+nodeexporter_enabled: true
+frr_enabled: true
+rsyncd_enabled: true
+openvpn_enabled: true
+zerotier_enabled: true
+force_external_dns: true
+# install_kernel_tools: true
+# udm_kernel_tool_version: 1.1.5
+udmp_external_dns_server_ipv4: "192.168.1.12" # e.g. pihole
+udmp_external_dns_server_ipv6: "fe80::ba27:ebff:fe76:ac94" # e.g. pihole
+udmp_external_dns_devices:
+  - br10 # vlan 10
+  - br20 # vlan 20

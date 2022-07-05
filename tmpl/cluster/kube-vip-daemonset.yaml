@@ -25,6 +25,8 @@ spec:
           args:
             - manager
           env:
+            - name: vip_interface
+              value: "eth0"
             - name: vip_arp
               value: "true"
             - name: port

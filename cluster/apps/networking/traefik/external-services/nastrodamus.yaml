@@ -1,0 +1,62 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nastrodamus
+  namespace: home
+spec:
+  # type: ExternalName
+  ports:
+    - name: https
+      protocol: TCP
+      port: 7401
+      targetPort: https
+  # externalName: "${NASTRODAMUS_IP_ADDR}"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nasrodamus
+  namespace: home
+  annotations:
+    coredns.io/hostname: "nastrodamus.${SECRET_DOMAIN}"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    # kubernetes.io/ingress.class: traefik
+    traefik.frontend.passHostHeader: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+    hajimari.io/enable: "true"
+    hajimari.io/icon: "nasrodamus"
+    # external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+    # external-dns/is-public: "true"
+spec:
+  ingressClassName: "traefik"
+  tls:
+    - hosts:
+        - "nasrodamus.${SECRET_DOMAIN}"
+      secretName: "nastrodamus-tls"
+  rules:
+    - host: nastrodamus.${SECRET_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nastrodamus
+                port:
+                  number: 7401
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: nastrodamus
+  namespace: home
+subsets:
+  - addresses:
+      - ip: "${NASTRODAMUS_IP_ADDR}"
+    ports:
+      - name: https
+        port: 7401
+        protocol: TCP

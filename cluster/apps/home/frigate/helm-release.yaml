@@ -1,0 +1,165 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: frigate
+  namespace: home
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: frigate
+      version: 8.1.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+      interval: 5m
+  dependsOn:
+    - name: emqx
+      namespace: home
+    # - name: intel-gpu-plugin
+    #   namespace: kube-system
+    # - name: node-feature-discovery
+    #   namespace: kube-system
+  values:
+    image:
+      repository: docker.io/blakeblackshear/frigate
+      # tag: 0.10.1-amd64
+      tag: 0.11.0-beta4
+    env:
+      TZ: America/New_York
+      # PLUS_API_KEY: "96451ccf-ee47-4e72-8325-4e8e9535c10e:9314db2b91bed3e0cf20e1decfce2a6b3ffe8454"
+      # LIBVA_DRIVER_NAME: "i965"
+      # FRIGATE_MQTT_PASSWORD: "Afaqn2oBGbQJwIJzz8CvuYYsx2NtZ5"
+    envFrom:
+      - secretRef:
+          name: frigate-secrets
+    service:
+      main:
+        ports:
+          http:
+            port: &port 5000
+          rtmp:
+            enabled: true
+            port: 1935
+            protocol: TCP
+            targetPort: 1935
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /api/version
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /api/version
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      startup:
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /api/version
+            port: *port
+          failureThreshold: 30
+          periodSeconds: 10
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "cctv"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+        hosts:
+          - host: "frigate.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "frigate.${SECRET_DOMAIN}"
+            secretName: "frigate"
+    securityContext:
+      privileged: true
+    configmap:
+      config:
+        enabled: false
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: frigate
+    nodeSelector:
+      kubernetes.io/hostname: "inky"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - inky
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: frigate
+        subPath: config.yaml
+        mountPath: /config/config.yml
+        readOnly: true
+      data:
+        enabled: true
+        existingClaim: frigate-data-pvc
+      media:
+        enabled: true
+        # type: nfs
+        # server: "${TRUENAS_SERVER}"
+        # path: /mnt/tank/data/frigate
+        # mountPath: /media
+        existingClaim: frigate-media-pvc
+      cache:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        mountPath: /dev/shm
+    # extraVolumes:
+    #   - name: frigate
+    #     persistentVolumeClaim:
+    #       claimName: frigate-config-v1
+    # extraVolumeMounts:
+    #   - mountPath: /media/frigate
+    #     name: frigate
+
+  valuesFrom:
+    - kind: Secret
+      name: frigate-secrets
+      valuesKey: mqtt_password
+      targetPath: env.FRIGATE_MQTT_PASSWORD
+      optional: false
+    - kind: Secret
+      name: frigate-secrets
+      valuesKey: mqtt_user
+      targetPath: env.FRIGATE_MQTT_USER
+      optional: false
+    - kind: Secret
+      name: frigate-secrets
+      valuesKey: plus_api_key
+      targetPath: env.PLUS_API_KEY
+      optional: false

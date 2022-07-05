@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - bitnami.yaml
   - emberstack.yaml
+  - emqx.yaml
   - external-dns.yaml
   - hajimari.yaml
   - jetstack.yaml

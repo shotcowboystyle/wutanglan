@@ -1,0 +1,22 @@
+---
+version: "3"
+
+env:
+  ANSIBLE_ROUTER_CONFIG: "{{.PROJECT_DIR}}/provision/ansible/router/ansible.cfg"
+
+vars:
+  ANSIBLE_ROUTER_PLAYBOOK_DIR: "{{.ANSIBLE_DIR}}/router/playbooks"
+  ANSIBLE_ROUTER_INVENTORY_DIR: "{{.ANSIBLE_DIR}}/router/inventory"
+
+tasks:
+  setup:
+    desc: Setup UDM for Kubernetes
+    dir: provision/ansible/router
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yml {{.ANSIBLE_PLAYBOOK_DIR}}/os.yml
+
+  install_apps:
+    desc: Add HA Proxy to UDM
+    dir: provision/ansible/router
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yml {{.ANSIBLE_PLAYBOOK_DIR}}/custom-pods.yml

@@ -15,12 +15,12 @@ env:
 
 includes:
   ansible: .taskfiles/AnsibleTasks.yml
+  router: .taskfiles/RouterTasks.yml
   cluster: .taskfiles/ClusterTasks.yml
   precommit: .taskfiles/PrecommitTasks.yml
   terraform: .taskfiles/TerraformTasks.yml
 
 tasks:
-
   init:
     desc: Initialize workstation dependencies with Brew
     cmds:

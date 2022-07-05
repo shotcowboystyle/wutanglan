@@ -1,0 +1,12 @@
+---
+- name: Setup UDMP
+  hosts: unifi
+  become: false
+  gather_facts: false
+  any_errors_fatal: true
+  pre_tasks:
+    - name: Pausing for 5 seconds...
+      pause:
+        seconds: 5
+  roles:
+    - role: setup.router
