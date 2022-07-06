@@ -19,10 +19,10 @@ spec:
   dependsOn:
     - name: emqx
       namespace: home
-    # - name: intel-gpu-plugin
-    #   namespace: kube-system
-    # - name: node-feature-discovery
-    #   namespace: kube-system
+  # - name: intel-gpu-plugin
+  #   namespace: kube-system
+  # - name: node-feature-discovery
+  #   namespace: kube-system
   values:
     image:
       repository: docker.io/blakeblackshear/frigate
@@ -30,12 +30,13 @@ spec:
       tag: 0.11.0-beta4
     env:
       TZ: America/New_York
-      # PLUS_API_KEY: "96451ccf-ee47-4e72-8325-4e8e9535c10e:9314db2b91bed3e0cf20e1decfce2a6b3ffe8454"
+      FRIGATE_MQTT_PASSWORD: ${SECRET_MQTT_PASSWORD}
+      PLUS_API_KEY: "${SECRET_FRIGATE_PLUS_API_KEY}"
       # LIBVA_DRIVER_NAME: "i965"
       # FRIGATE_MQTT_PASSWORD: "Afaqn2oBGbQJwIJzz8CvuYYsx2NtZ5"
-    envFrom:
-      - secretRef:
-          name: frigate-secrets
+    # envFrom:
+    #   - secretRef:
+    #       name: frigate-secrets
     service:
       main:
         ports:
@@ -83,7 +84,7 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -147,19 +148,19 @@ spec:
     #   - mountPath: /media/frigate
     #     name: frigate
 
-  valuesFrom:
-    - kind: Secret
-      name: frigate-secrets
-      valuesKey: mqtt_password
-      targetPath: env.FRIGATE_MQTT_PASSWORD
-      optional: false
-    - kind: Secret
-      name: frigate-secrets
-      valuesKey: mqtt_user
-      targetPath: env.FRIGATE_MQTT_USER
-      optional: false
-    - kind: Secret
-      name: frigate-secrets
-      valuesKey: plus_api_key
-      targetPath: env.PLUS_API_KEY
-      optional: false
+  # valuesFrom:
+  #   - kind: Secret
+  #     name: frigate-secrets
+  #     valuesKey: mqtt_password
+  #     targetPath: env.FRIGATE_MQTT_PASSWORD
+  #     optional: false
+  #   - kind: Secret
+  #     name: frigate-secrets
+  #     valuesKey: mqtt_user
+  #     targetPath: env.FRIGATE_MQTT_USER
+  #     optional: false
+  #   - kind: Secret
+  #     name: frigate-secrets
+  #     valuesKey: plus_api_key
+  #     targetPath: env.PLUS_API_KEY
+  #     optional: false

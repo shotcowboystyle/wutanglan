@@ -6,7 +6,6 @@ resources:
   - data-pv.yaml
   - media-pv.yaml
   - helm-release.yaml
-  - secret.sops.yaml
 configMapGenerator:
   - name: frigate
     files:
