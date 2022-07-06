@@ -89,13 +89,13 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - host: "frigate.${SECRET_DOMAIN}"
+          - host: "frigate.peanutbutterporkchop.com"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - "frigate.${SECRET_DOMAIN}"
+              - "frigate.peanutbutterporkchop.com"
             secretName: "frigate"
     securityContext:
       privileged: true
