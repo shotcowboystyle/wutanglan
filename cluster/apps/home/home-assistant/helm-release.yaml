@@ -20,23 +20,23 @@ spec:
       repository: homeassistant/home-assistant
       tag: 2022.6.6
     env:
-      TZ: America/NewYork
+      TZ: America/New_York
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: "home.jw2.org"
+          - host: "hassio.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
-          - secretName: home-tls
+          - secretName: hassio-tls
             hosts:
-              - "home.jw2.org"
+              - "hassio.${SECRET_DOMAIN}"
 
     persistence:
       config:

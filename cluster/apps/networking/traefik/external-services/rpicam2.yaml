@@ -20,7 +20,7 @@ metadata:
   namespace: home
   annotations:
     coredns.io/hostname: "rpicam1.${SECRET_DOMAIN}"
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     traefik.frontend.passHostHeader: "true"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -31,17 +31,17 @@ spec:
   ingressClassName: "traefik"
   tls:
     - hosts:
-        - "rpicam1.${SECRET_DOMAIN}"
-      secretName: "rpicam1-tls"
+        - "rpicam2.${SECRET_DOMAIN}"
+      secretName: "rpicam2-tls"
   rules:
-    - host: "rpicam1.${SECRET_DOMAIN}"
+    - host: "rpicam2.${SECRET_DOMAIN}"
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: rpicam1
+                name: rpicam2
                 port:
                   number: 80
 

@@ -2,13 +2,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: frigate
+  name: &app frigate
   namespace: home
 spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: frigate
       version: 8.1.2
       sourceRef:
@@ -16,6 +15,13 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
   dependsOn:
     - name: emqx
       namespace: home
@@ -24,9 +30,10 @@ spec:
   # - name: node-feature-discovery
   #   namespace: kube-system
   values:
+    global:
+      nameOverride: *app
     image:
       repository: docker.io/blakeblackshear/frigate
-      # tag: 0.10.1-amd64
       tag: 0.11.0-beta4
     env:
       TZ: America/New_York
@@ -34,9 +41,6 @@ spec:
       PLUS_API_KEY: "${SECRET_FRIGATE_PLUS_API_KEY}"
       # LIBVA_DRIVER_NAME: "i965"
       # FRIGATE_MQTT_PASSWORD: "Afaqn2oBGbQJwIJzz8CvuYYsx2NtZ5"
-    # envFrom:
-    #   - secretRef:
-    #       name: frigate-secrets
     service:
       main:
         ports:
@@ -84,20 +88,20 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - host: "frigate.peanutbutterporkchop.com"
+          - host: "frigate.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - "frigate.peanutbutterporkchop.com"
-            secretName: "frigate"
+              - "frigate.${SECRET_DOMAIN}"
+            secretName: "frigate-tls"
     securityContext:
       privileged: true
     configmap:
@@ -140,27 +144,3 @@ spec:
         medium: Memory
         sizeLimit: 2Gi
         mountPath: /dev/shm
-    # extraVolumes:
-    #   - name: frigate
-    #     persistentVolumeClaim:
-    #       claimName: frigate-config-v1
-    # extraVolumeMounts:
-    #   - mountPath: /media/frigate
-    #     name: frigate
-
-  # valuesFrom:
-  #   - kind: Secret
-  #     name: frigate-secrets
-  #     valuesKey: mqtt_password
-  #     targetPath: env.FRIGATE_MQTT_PASSWORD
-  #     optional: false
-  #   - kind: Secret
-  #     name: frigate-secrets
-  #     valuesKey: mqtt_user
-  #     targetPath: env.FRIGATE_MQTT_USER
-  #     optional: false
-  #   - kind: Secret
-  #     name: frigate-secrets
-  #     valuesKey: plus_api_key
-  #     targetPath: env.PLUS_API_KEY
-  #     optional: false
