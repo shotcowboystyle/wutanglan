@@ -4,8 +4,10 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - cert-manager
+  - intel-gpu-plugin
   - kube-vip
   # - kured
   - metrics-server
+  - node-feature-discovery
   - reflector
   - reloader
