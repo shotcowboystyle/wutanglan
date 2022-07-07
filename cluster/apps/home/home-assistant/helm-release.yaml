@@ -42,11 +42,6 @@ spec:
         enabled: false
       startup:
         enabled: false
-    service:
-      main:
-        ports:
-          http:
-            port: 8123
     ingress:
       main:
         enabled: true
@@ -62,6 +57,11 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+                backend:
+                  service:
+                    name: *app
+                    port:
+                      number: 8123
         tls:
           - secretName: hassio-tls
             hosts:
