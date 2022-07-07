@@ -16,6 +16,7 @@ spec:
         namespace: flux-system
       interval: 15m
   install:
+    disableWait: true
     createNamespace: true
     remediation:
       retries: 5
@@ -30,25 +31,26 @@ spec:
       tag: v4.4.3.1
     env:
       TZ: "${TIMEZONE}"
-      QBITTORRENT__PORT: &port 80
-      QBITTORRENT__BT_PORT: &port-bt 50413
+      # UMASK: "022"
+      # USE_PROFILE: "true"
+      # QBITTORRENT__PORT: &port 8080
+      # QBITTORRENT__BT_PORT: &port-bt 50413
     service:
       main:
         ports:
           http:
-            port: *port
+            port: 8080
       bittorrent:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: "${METALLB_QBITTORRENT_ADDR}"
-        #  externalIPs:
-        #   - "${METALLB_QBITTORRENT_ADDR}"
+        externalIPs:
+          - "${METALLB_QBITTORRENT_ADDR}"
         ports:
           bittorrent:
             enabled: true
-            port: *port-bt
+            port: 6881
             protocol: TCP
-            targetPort: *port-bt
+            targetPort: 6881
         externalTrafficPolicy: Local
     ingress:
       main:
@@ -72,6 +74,10 @@ spec:
     # podSecurityContext:
     #   supplementalGroups:
     #     - 100
+    podAnnotations:
+      setGateway: "true"
+    settings:
+      automaticPortSetup: false
     persistence:
       config:
         enabled: true
@@ -79,15 +85,28 @@ spec:
       media:
         enabled: true
         existingClaim: qbittorrent-media-pvc
+        # mountPath: /media
+      # cache:
+      #   enabled: true
+      #   type: emptyDir
+      #   mountPath: /config/qBittorrent/cache
+    podSecurityContext:
+      # runAsUser: 568
+      # runAsGroup: 568
+      # fsGroup: 568
+      # fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups:
+        - 100
+
       # media:
       #   enabled: true
       #   type: nfs
       #   server: "expanse.${SECRET_PRIVATE_DOMAIN}"
       #   path: /tycho/Media
       #   mountPath: /media
-    resources:
-      requests:
-        cpu: 10m
-        memory: 250Mi
-      limits:
-        memory: 6000Mi
+    # resources:
+    #   requests:
+    #     cpu: 35m
+    #     memory: 765M
+    #   limits:
+    #     memory: 1426M

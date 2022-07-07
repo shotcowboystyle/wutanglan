@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: qbittorrent-downloads-pv
+  name: qbittorrent-media-pv
   namespace: media
 spec:
   capacity:
-    storage: 5Gi
+    storage: 50Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
@@ -19,8 +19,8 @@ spec:
     - hard
     - noatime
     - nodiratime
-    # - rsize=1048576
-    # - wsize=1048576
+    - rsize=16384
+    - wsize=16384
   nfs:
     path: /volume2/Downloads/qbittorrent
     server: ${NAS_ADDR}
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: qbittorrent-downloads-pvc
+  name: qbittorrent-media-pvc
   namespace: media
 spec:
   storageClassName: nfs
@@ -36,4 +36,4 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 50Gi

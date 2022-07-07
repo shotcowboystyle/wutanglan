@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: qbittorrent-config-pv
+  name: transmission-config-pv
   namespace: media
 spec:
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
@@ -22,13 +22,13 @@ spec:
     # - rsize=1048576
     # - wsize=1048576
   nfs:
-    path: /volume2/DockerVol/qbittorrent_data
+    path: /volume2/DockerVol/transmission_data
     server: ${NAS_ADDR}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: qbittorrent-config-pvc
+  name: transmission-config-pvc
   namespace: media
 spec:
   storageClassName: nfs
@@ -36,4 +36,4 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi

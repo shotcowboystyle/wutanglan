@@ -21,11 +21,11 @@ spec:
   upgrade:
     remediation:
       retries: 5
-  dependsOn:
-    - name: intel-gpu-plugin
-      namespace: kube-system
-    - name: node-feature-discovery
-      namespace: kube-system
+  # dependsOn:
+  #   - name: intel-gpu-plugin
+  #     namespace: kube-system
+  #   - name: node-feature-discovery
+  #     namespace: kube-system
   values:
     global:
       nameOverride: *app
@@ -59,8 +59,13 @@ spec:
           - secretName: jellyfin-tls
             hosts:
               - "jellyfin.${SECRET_DOMAIN}"
-    securityContext:
-      privileged: true
+    # securityContext:
+    #   privileged: true
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      fsGroupChangePolicy: "OnRootMismatch"
     persistence:
       config:
         enabled: true
@@ -74,15 +79,15 @@ spec:
         enabled: true
         type: emptyDir
         medium: Memory
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: feature.node.kubernetes.io/custom-intel-gpu
-                  operator: In
-                  values:
-                    - "true"
+    # affinity:
+    #   nodeAffinity:
+    #     requiredDuringSchedulingIgnoredDuringExecution:
+    #       nodeSelectorTerms:
+    #         - matchExpressions:
+    #             - key: feature.node.kubernetes.io/custom-intel-gpu
+    #               operator: In
+    #               values:
+    #                 - "true"
     resources:
       requests:
         gpu.intel.com/i915: 1
