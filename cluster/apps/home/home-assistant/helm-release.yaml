@@ -42,6 +42,11 @@ spec:
         enabled: false
       startup:
         enabled: false
+    service:
+      main:
+        ports:
+          http:
+            port: 8123
     ingress:
       main:
         enabled: true

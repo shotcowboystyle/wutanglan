@@ -36,5 +36,7 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: rpicam1
-              servicePort: https
+              service:
+                name: rpicam1
+                port:
+                  number: 80

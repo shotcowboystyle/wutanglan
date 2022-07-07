@@ -36,5 +36,7 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: nastrodamus
-              servicePort: https
+              service:
+                name: nastrodamus
+                port:
+                  number: 7401
