@@ -81,10 +81,10 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: qbittorrent-config-pvc
+        existingClaim: qbittorrent-config-pvc-v2
       media:
         enabled: true
-        existingClaim: qbittorrent-media-pvc
+        existingClaim: qbittorrent-media-pvc-v2
         # mountPath: /media
       # cache:
       #   enabled: true
