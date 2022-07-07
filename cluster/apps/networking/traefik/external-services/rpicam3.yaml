@@ -2,20 +2,20 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nastrodamus
+  name: rpicam3
   namespace: networking
 spec:
   type: ExternalName
   ports:
     - name: https
       port: 443
-      targetPort: 7401
-  externalName: "${NAS_ADDRESS}"
+      targetPort: 80
+  externalName: "${RPI_CAM_3_IP_ADDR}"
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: nastrodamus
+  name: rpicam3
   namespace: networking
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-staging"
@@ -24,17 +24,17 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
     hajimari.io/enable: "true"
-    hajimari.io/icon: "nas"
+    hajimari.io/icon: "cctv"
 spec:
   tls:
     - hosts:
-        - "nastrodamus.${SECRET_DOMAIN}"
-      secretName: "nastrodamus-tls"
+        - "rpicam3.${SECRET_DOMAIN}"
+      secretName: "rpicam1-tls"
   rules:
-    - host: nastrodamus.${SECRET_DOMAIN}
+    - host: rpicam3.${SECRET_DOMAIN}
       http:
         paths:
           - path: /
             backend:
-              serviceName: nastrodamus
+              serviceName: rpicam3
               servicePort: https

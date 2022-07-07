@@ -5,4 +5,4 @@ resources:
   - namespace.yaml
   - emqx
   - frigate
-  # - home-assistant
+  - home-assistant
