@@ -76,37 +76,42 @@ spec:
       #   mountPath: /mnt/media/nvr
       #   existingClaim: "nvr-media-pvc"
 
-    addons:
-      codeserver:
-        enabled: true
-        image:
-          repository: codercom/code-server
-          tag: 3.11.1
-        workingDir: "/config"
-        args:
-          - --user-data-dir
-          - "/config/.vscode"
-          - --auth
-          - "none"
-        ingress:
-          enabled: true
-          ingressClassName: "traefik"
-          annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-staging"
-            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
-          hosts:
-            - host: haconfig.${SECRET_DOMAIN}
-              paths:
-                - path: /
-                  pathType: Prefix
-          tls:
-            - hosts:
-                - "haconfig.${SECRET_DOMAIN}"
-              secretName: "haconfig-tls"
-        volumeMounts:
-          - name: config
-            mountPath: /config
+    # addons:
+    #   codeserver:
+    #     enabled: true
+    #     image:
+    #       repository: codercom/code-server
+    #       tag: 3.11.1
+    #     workingDir: "/config"
+    #     args:
+    #       - --user-data-dir
+    #       - "/config/.vscode"
+    #       - --auth
+    #       - "none"
+    #     ingress:
+    #       enabled: true
+    #       ingressClassName: "traefik"
+    #       annotations:
+    #         cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    #         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    #         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+    #       hosts:
+    #         - host: haconfig.${SECRET_DOMAIN}
+    #           paths:
+    #             - path: /
+    #               pathType: Prefix
+    #               backend:
+    #                 service:
+    #                   name: *app
+    #                   port:
+    #                     number: 8443
+    #       tls:
+    #         - hosts:
+    #             - "haconfig.${SECRET_DOMAIN}"
+    #           secretName: "haconfig-tls"
+    #     volumeMounts:
+    #       - name: config
+    #         mountPath: /config
     resources:
       requests:
         cpu: 100m
