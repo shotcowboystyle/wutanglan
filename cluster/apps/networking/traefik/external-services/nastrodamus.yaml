@@ -10,7 +10,7 @@ spec:
     - name: https
       port: 443
       targetPort: 7401
-  externalName: "${NAS_ADDRESS}"
+  externalName: "${NAS_ADDR}"
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

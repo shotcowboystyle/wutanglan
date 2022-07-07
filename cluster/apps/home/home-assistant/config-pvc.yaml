@@ -23,7 +23,7 @@ spec:
     - wsize=1048576
   nfs:
     path: /volume2/DockerVol/homeassistant_data
-    server: ${NAS_ADDRESS}
+    server: ${NAS_ADDR}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

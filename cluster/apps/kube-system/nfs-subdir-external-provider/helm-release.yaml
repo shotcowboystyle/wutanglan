@@ -21,7 +21,7 @@ spec:
   values:
     replicaCount: 1
     nfs:
-      server: "${NAS_ADDRESS}"
+      server: "${NAS_ADDR}"
     storageClass:
       defaultClass: true
       pathPattern: "${.PVC.namespace}-${.PVC.name}"
