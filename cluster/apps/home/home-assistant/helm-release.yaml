@@ -9,8 +9,8 @@ spec:
     spec:
       # registryUrl=https://k8s-at-home.com/charts/
       # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: kah-common-chart
-      version: 1.1.2
+      chart: home-assistant
+      version: 13.2.0
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home
@@ -26,8 +26,8 @@ spec:
     global:
       nameOverride: *app
     image:
-      repository: homeassistant/home-assistant
-      tag: 2022.7.0@sha256:001051ff3f4a1c4836ccec5793a9c08daeaec90ef7b4bd0abb164e1bc299150d
+      repository: ghcr.io/home-assistant/home-assistant
+      tag: 2022.6.6
     env:
       TZ: "${TIMEZONE}"
     envFrom:
@@ -42,6 +42,11 @@ spec:
         enabled: false
       startup:
         enabled: false
+    service:
+      main:
+        ports:
+          http:
+            port: 8123
     ingress:
       main:
         enabled: true
@@ -57,11 +62,6 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
-                backend:
-                  service:
-                    name: *app
-                    port:
-                      number: 8123
         tls:
           - secretName: hassio-tls
             hosts:
