@@ -5,7 +5,7 @@ metadata:
   name: node-feature-discovery
   namespace: kube-system
 spec:
-  interval: 15m
+  interval: 5m
   chart:
     spec:
       chart: node-feature-discovery
@@ -16,11 +16,9 @@ spec:
         namespace: flux-system
   install:
     createNamespace: true
-    remediation:
-      retries: 5
+    crds: CreateReplace
   upgrade:
-    remediation:
-      retries: 5
+    crds: CreateReplace
   values:
     nodeFeatureRule:
       createCRD: true
@@ -60,7 +58,15 @@ spec:
                 - pciId:
                     class: ["0300"]
                     vendor: ["8086"]
-            - name: coral-tpu
-              matchOn:
-                - usbId:
-                    vendor: ["1a6e", "18d1"]
+            # - name: coral-tpu
+            #   matchOn:
+            #     - usbId:
+            #         class: ["0880"]
+            #         vendor: ["1a6e", "18d1"]
+            #         device: ["089a"]
+            # - name: ups-apc
+            #   matchOn:
+            #     - usbId:
+            #         class: ["03"]
+            #         vendor: ["051d"]
+            #         device: ["0002"]
