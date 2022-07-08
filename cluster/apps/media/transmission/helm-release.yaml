@@ -58,9 +58,7 @@ spec:
         existingClaim: transmission-downloads-pvc
         mountPath: /data
     podSecurityContext:
-      # fsGroup: 65537
-      supplementalGroups:
-        - 100
+      fsGroup: 568
     env:
       OPENVPN_PROVIDER: SURFSHARK
       # OPENVPN_USERNAME: "${vpn_surfshark_username}"
