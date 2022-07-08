@@ -5,101 +5,22 @@ metadata:
   name: &app transmission
   namespace: media
 spec:
-  interval: 10m0s
+  interval: 5m
+  upgrade:
+    force: true
   chart:
     spec:
-      chart: transmission
-      version: 8.3.2
+      chart: kah-common-chart
+      version: 1.1.2
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
-  timeout: 10m0s
-  valuesFrom:
-    # - kind: Secret
-    #   name: *app
-    #   valuesKey: CONFIG_FILE
-    #   targetPath: addons.vpn.configFile
-    - kind: Secret
-      name: *app
-      valuesKey: TRANSMISSION_RPC_USERNAME
-      targetPath: env.TRANSMISSION_RPC_USERNAME
-    - kind: Secret
-      name: *app
-      valuesKey: TRANSMISSION_RPC_PASSWORD
-      targetPath: env.TRANSMISSION_RPC_PASSWORD
-    - kind: Secret
-      name: *app
-      valuesKey: TRANSMISSION_PEER_PORT
-      targetPath: env.TRANSMISSION_PEER_PORT
   values:
-    # initContainers:
-    #   custom-webui:
-    #     name: custom-webui
-    #     image: docker.io/curlimages/curl:7.84.0
-    #     command:
-    #       - "/bin/sh"
-    #       - "-c"
-    #       - "curl -o- -sL https://github.com/johman10/flood-for-transmission/releases/download/latest/flood-for-transmission.tar.gz | tar xzf - -C /config"
-    #     volumeMounts:
-    #       - name: config
-    #         mountPath: /config
-    #     securityContext:
-    #       runAsUser: 568
-    #       runAsGroup: 568
     image:
-      repository: ghcr.io/k8s-at-home/transmission
-      tag: v3.00
-      pullPolicy: IfNotPresent
-    hostname: transmission
-    service:
-      main:
-        type: LoadBalancer
-        externalIPs:
-          - "${METALLB_TRANSMISSION_ADDR}"
-        externalTrafficPolicy: Local
-        annotations:
-          traefik.ingress.kubernetes.io/service.serversscheme: http
-        ports:
-          http:
-            port: 9091
-      bittorrent-tcp:
-        enabled: true
-        type: ClusterIP
-        ports:
-          bittorrenttcp:
-            enabled: true
-            port: 27071
-            protocol: TCP
-            targetPort: 27071
-      bittorrent-udp:
-        enabled: true
-        type: ClusterIP
-        ports:
-          bittorrentudp:
-            enabled: true
-            port: 27071
-            protocol: UDP
-            targetPort: 27071
-      utptcp:
-        enabled: false
-        type: ClusterIP
-        ports:
-          utptcp:
-            enabled: true
-            port: 51413
-            protocol: TCP
-            targetPort: 51413
-      utpudp:
-        enabled: false
-        type: ClusterIP
-        ports:
-          utpudp:
-            enabled: true
-            port: 51413
-            protocol: UDP
-            targetPort: 51413
+      repository: haugene/transmission-openvpn
+      tag: "4.0"
     ingress:
       main:
         enabled: true
@@ -119,98 +40,41 @@ spec:
           - hosts:
               - *host
             secretName: "transmission-tls"
-    podAnnotations:
-      setGateway: "true"
-    # podSecurityContext:
-    #   runAsUser: 1000
-    #   runAsGroup: 1000
-    #   fsGroup: 1000
-    #   fsGroupChangePolicy: "OnRootMismatch"
+    service:
+      main:
+        # annotations:
+        #   traefik.ingress.kubernetes.io/service.serversscheme: http
+        ports:
+          http:
+            port: 9091
     persistence:
       config:
         enabled: true
         existingClaim: transmission-config-pvc
-        mountPath: /config
+        mountPath: /config/transmission-home
       downloads:
         enabled: true
         existingClaim: transmission-downloads-pvc
-        mountPath: /downloads
-      watch:
-        enabled: false
-        mountPath: /watch
-      shared:
-        enabled: true
-        type: emptyDir
-        mountPath: /shared
-    probes:
-      liveness:
-        spec:
-          timeoutSeconds: 30
-      readiness:
-        spec:
-          timeoutSeconds: 30
+        mountPath: /data
+    podSecurityContext:
+      fsGroup: 568
     env:
+      OPENVPN_PROVIDER: SURFSHARK
+      # OPENVPN_USERNAME: "${vpn_surfshark_username}"
+      # OPENVPN_PASSWORD: "${vpn_surfshark_password}"
+      OPENVPN_CONFIG: nl-ams_udp
+      LOCAL_NETWORK: "10.0.0.0/8;192.168.0.0/16;172.16.0.0/12"
+      CREATE_TUN_DEVICE: "true"
       TZ: "${TIMEZONE}"
-      WAIT_FOR_VPN: "true"
-      TRANSMISSION_WEB_HOME: /config/flood-for-transmission
-      # TRANSMISSION_RPC_USERNAME: "${TRANSMISSION_RPC_USERNAME}"
-      # TRANSMISSION_RPC_PASSWORD: "${TRANSMISSION_RPC_PASSWORD}"
-      # TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: false
-      TRANSMISSION_SPEED_LIMIT_DOWN: 62500
-      TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED: true
-      TRANSMISSION_SPEED_LIMIT_UP: 200
-      TRANSMISSION_SPEED_LIMIT_UP_ENABLED: true
-      # TRANSMISSION_LPD_ENABLED: true
-      # TRANSMISSION_IDLE_SEEDING_LIMIT: 60
-      # TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED: false
-      # TRANSMISSION_RATIO_LIMIT: 10
-      # TRANSMISSION_RATIO_LIMIT_ENABLED: true
-      # TRANSMISSION_DOWNLOAD_QUEUE_SIZE: 10
-      # TRANSMISSION_DOWNLOAD_QUEUE_ENABLED: true
-      # TRANSMISSION_QUEUE_STALLED_MINUTES: 60
-      # TRANSMISSION_QUEUE_STALLED_ENABLED: false
-      # TRANSMISSION_PORT_FORWARDING_ENABLED: true
-      # TRANSMISSION_PEER_PORT: 27071
-    # envFrom:
-    #   - secretRef:
-    #       name: *app
-    addons:
-      vpn:
-        enabled: true
-        # This Should be set to `wireguard`. This will set the add-on to use the default settings for Wireguard based connections.
-        type: wireguard
-
-        # If the podSecurityContext is set to run as a different user, make sure to run the Wireguard container as UID/GID 568.
-        # This is required for it to be able to read certain configuration files.
-        securityContext:
-          runAsUser: 568
-          runAsGroup: 568
-          capabilities:
-            add:
-              - NET_ADMIN
-              - SYS_ADMIN
-              - sysctl net.ipv4.conf.all.src_valid_mark=1
-
-        env:
-          # Enable a killswitch that kills all trafic when the VPN is not connected
-          KILLSWITCH: "true"
-          KILLSWITCH_EXCLUDEDNETWORKS_IPV4: "10.0.0.0/8;192.168.0.0/16;172.16.0.0/12"
-
-        # The wireguard configuration file provided by your VPN provider goes here.
-        #
-        # Set AllowedIPs to 0.0.0.0/0 to route all traffic through the VPN.
-        #
-        # Pay close attention to the PostUp and PreDown lines. They must be added if you wish to run a script when the connection
-        # is opened / closed.
-
-        # The scripts that get run when the VPN connection opens/closes are defined here.
-        # The default scripts will write a string to represent the current connection state to a file.
-        # Our qBittorrent image has a feature that can wait for this file to contain the word 'connected' before actually starting the application.
-        scripts:
-          up: |-
-            #!/bin/bash
-            echo "connected" > /shared/vpnstatus
-
-          down: |-
-            #!/bin/bash
-            echo "disconnected" > /shared/vpnstatus
+      TRANSMISSION_HOME: "/config/transmission-home/"
+      TRANSMISSION_WEB_UI: "flood-for-transmission"
+      TRANSMISSION_RPC_HOST_WHITELIST: "127.0.0.1,192.168.*.*"
+      PUID: 568
+      PGID: 568
+    envFrom:
+      - secretRef:
+          name: *app
+    securityContext:
+      capabilities:
+        add:
+          - NET_ADMIN
