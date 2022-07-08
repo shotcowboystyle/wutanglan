@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: grafana
+  name: &app grafana
   namespace: monitoring
 spec:
   interval: 15m
@@ -12,7 +12,7 @@ spec:
       version: 6.32.2
       sourceRef:
         kind: HelmRepository
-        name: grafana-charts
+        name: grafana
         namespace: flux-system
       interval: 15m
   install:
@@ -32,10 +32,10 @@ spec:
       GF_SECURITY_ALLOW_EMBEDDING: true
       GF_SECURITY_COOKIE_SAMESITE: grafana
     admin:
-      existingSecret: grafana-admin-creds
+      existingSecret: *app
     grafana.ini:
       server:
-        root_url: "https://grafana.${SECRET_PUBLIC_DOMAIN}"
+        root_url: "https://grafana.${SECRET_DOMAIN}"
       paths:
         data: /var/lib/grafana/data
         logs: /var/log/grafana
@@ -131,19 +131,28 @@ spec:
     serviceMonitor:
       enabled: true
     ingress:
-      enabled: true
-      ingressClassName: "nginx"
-      annotations:
-        nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-        nginx.ingress.kubernetes.io/affinity: "cookie"
-        nginx.ingress.kubernetes.io/session-cookie-name: "grafana"
-        nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
-        nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-      hosts:
-        - &host "grafana.${SECRET_PUBLIC_DOMAIN}"
-      tls:
-        - hosts:
-            - *host
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          # hajimari.io/enable: "true"
+          # hajimari.io/icon: cloud-download
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          # nginx.ingress.kubernetes.io/affinity: "cookie"
+          # nginx.ingress.kubernetes.io/session-cookie-name: "grafana"
+          # nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+          # nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+        hosts:
+          - host: &host grafana.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "grafana-tls"
     persistence:
       enabled: false
       # type: statefulset

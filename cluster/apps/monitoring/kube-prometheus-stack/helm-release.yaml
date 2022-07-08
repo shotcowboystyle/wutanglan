@@ -12,7 +12,7 @@ spec:
       version: 36.2.1
       sourceRef:
         kind: HelmRepository
-        name: prometheus-community-charts
+        name: prometheus-community
         namespace: flux-system
       interval: 15m
   install:
@@ -63,10 +63,10 @@ spec:
                       {{- end }}
                     {{- end }}
                   {{- end }}
-          - name: "nodered"
-            webhook_configs:
-              - url: "http://node-red.home:1880/power-outage"
-                send_resolved: true
+          # - name: "nodered"
+          #   webhook_configs:
+          #     - url: "http://node-red.home:1880/power-outage"
+          #       send_resolved: true
         route:
           group_by: ["alertname", "job"]
           group_wait: 30s
@@ -81,10 +81,10 @@ spec:
               matchers:
                 - severity = "critical"
               continue: true
-            - receiver: "nodered"
-              matchers:
-                - alertname = "UPSOnBattery"
-              continue: true
+              # - receiver: "nodered"
+              #   matchers:
+              #     - alertname = "UPSOnBattery"
+              #   continue: true
         inhibit_rules:
           - source_matchers:
               - severity = "critical"
@@ -92,16 +92,24 @@ spec:
               - severity = "warning"
             equal: ["alertname", "namespace"]
       ingress:
-        enabled: true
-        pathType: Prefix
-        ingressClassName: "nginx"
-        annotations:
-          nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-        hosts:
-          - &host "alert-manager.${SECRET_PUBLIC_DOMAIN}"
-        tls:
-          - hosts:
-              - *host
+        main:
+          enabled: true
+          ingressClassName: "traefik"
+          annotations:
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            # hajimari.io/enable: "true"
+            # hajimari.io/icon: cloud-download
+            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          hosts:
+            - host: &host alert-manager.${SECRET_DOMAIN}
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts:
+                - *host
+              secretName: "alert-manager-tls"
       alertmanagerSpec:
         replicas: 3
         podAntiAffinity: hard
@@ -174,32 +182,49 @@ spec:
         targetPort: 2381
     prometheus:
       ingress:
-        enabled: true
-        pathType: Prefix
-        ingressClassName: "nginx"
-        annotations:
-          nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-        hosts:
-          - &host "prometheus.${SECRET_PUBLIC_DOMAIN}"
-        tls:
-          - hosts:
-              - *host
+        main:
+          enabled: true
+          ingressClassName: "traefik"
+          annotations:
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            # hajimari.io/enable: "true"
+            # hajimari.io/icon: cloud-download
+            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          hosts:
+            - host: &host prometheus.${SECRET_DOMAIN}
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts:
+                - *host
+              secretName: "prometheus-tls"
       thanosService:
         enabled: true
       thanosServiceMonitor:
         enabled: true
       thanosIngress:
-        enabled: true
-        pathType: Prefix
-        ingressClassName: "nginx"
-        annotations:
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
-        hosts:
-          - &host "thanos-sidecar.${SECRET_PUBLIC_DOMAIN}"
-        tls:
-          - hosts:
-              - *host
+        main:
+          enabled: true
+          ingressClassName: "traefik"
+          annotations:
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            # hajimari.io/enable: "true"
+            # hajimari.io/icon: cloud-download
+            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+            # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+            # nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+          hosts:
+            - host: &host thanos-sidecar.${SECRET_DOMAIN}
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts:
+                - *host
+              secretName: "thanos-sidecar-tls"
       prometheusSpec:
         replicas: 3
         replicaExternalLabelName: __replica__
@@ -238,29 +263,29 @@ spec:
             memory: 2000Mi
           limits:
             memory: 8000Mi
-        additionalScrapeConfigs:
-          - job_name: coredns
-            scrape_interval: 1m
-            scrape_timeout: 10s
-            honor_timestamps: true
-            static_configs:
-              - targets:
-                  - "opnsense.${SECRET_PRIVATE_DOMAIN}:9153"
-          - job_name: node-exporter
-            scrape_interval: 1m
-            scrape_timeout: 10s
-            honor_timestamps: true
-            static_configs:
-              - targets:
-                  - "opnsense.${SECRET_PRIVATE_DOMAIN}:9100"
-                  - "expanse.${SECRET_PRIVATE_DOMAIN}:9100"
-          - job_name: pikvm
-            scrape_interval: 1m
-            scrape_timeout: 10s
-            metrics_path: /api/export/prometheus/metrics
-            basic_auth:
-              username: "${SECRET_PIKVM_USERNAME}"
-              password: "${SECRET_PIKVM_PASSWORD}"
-            static_configs:
-              - targets:
-                  - "pikvm.${SECRET_PRIVATE_DOMAIN}"
+            # additionalScrapeConfigs:
+            #   - job_name: coredns
+            #     scrape_interval: 1m
+            #     scrape_timeout: 10s
+            #     honor_timestamps: true
+            #     static_configs:
+            #       - targets:
+            #           - "opnsense.${SECRET_PRIVATE_DOMAIN}:9153"
+            #   - job_name: node-exporter
+            #     scrape_interval: 1m
+            #     scrape_timeout: 10s
+            #     honor_timestamps: true
+            #     static_configs:
+            #       - targets:
+            #           - "opnsense.${SECRET_PRIVATE_DOMAIN}:9100"
+            #           - "expanse.${SECRET_PRIVATE_DOMAIN}:9100"
+            #   - job_name: pikvm
+            #     scrape_interval: 1m
+            #     scrape_timeout: 10s
+            #     metrics_path: /api/export/prometheus/metrics
+            #     basic_auth:
+            #       username: "${SECRET_PIKVM_USERNAME}"
+            #       password: "${SECRET_PIKVM_PASSWORD}"
+            #     static_configs:
+            #       - targets:
+            #           - "pikvm.${SECRET_PRIVATE_DOMAIN}"

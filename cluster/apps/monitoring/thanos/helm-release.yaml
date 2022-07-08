@@ -12,7 +12,7 @@ spec:
       version: 10.5.5
       sourceRef:
         kind: HelmRepository
-        name: bitnami-charts
+        name: bitnami
         namespace: flux-system
       interval: 15m
   install:
@@ -40,15 +40,24 @@ spec:
         sidecarsService: kube-prometheus-stack-thanos-discovery
         sidecarsNamespace: monitoring
       ingress:
-        enabled: true
-        hostname: &host "thanos-query.${SECRET_PUBLIC_DOMAIN}"
-        ingressClassName: "nginx"
-        annotations:
-          nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-        tls: true
-        extraTls:
-          - hosts:
-              - *host
+        main:
+          enabled: true
+          ingressClassName: "traefik"
+          annotations:
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            # hajimari.io/enable: "true"
+            # hajimari.io/icon: cloud-download
+            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          hosts:
+            - host: &host thanos-query.${SECRET_DOMAIN}
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts:
+                - *host
+              secretName: "thanos-query-tls"
     queryFrontend:
       enabled: false
     bucketweb:
@@ -56,15 +65,35 @@ spec:
       replicaCount: 3
       podAntiAffinityPreset: hard
       ingress:
-        enabled: true
-        hostname: &host "thanos-bucketweb.${SECRET_PUBLIC_DOMAIN}"
-        ingressClassName: "nginx"
-        annotations:
-          nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-        tls: true
-        extraTls:
-          - hosts:
-              - *host
+        main:
+          enabled: true
+          ingressClassName: "traefik"
+          annotations:
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            hajimari.io/enable: "true"
+            hajimari.io/icon: cloud-download
+            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          hosts:
+            - host: &host qbittorrent.${SECRET_DOMAIN}
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls:
+            - hosts:
+                - *host
+              secretName: "qbittorrent-tls"
+
+          # enabled: true
+          # hostname: &host "thanos-bucketweb.${SECRET_PUBLIC_DOMAIN}"
+          # ingressClassName: "nginx"
+          # annotations:
+          #   nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+          # tls: true
+          # extraTls:
+          #   - hosts:
+          #       - *host
+
     compactor:
       enabled: true
       extraFlags:
