@@ -16,11 +16,7 @@ spec:
         namespace: flux-system
   install:
     createNamespace: true
-    remediation:
-      retries: 5
   upgrade:
-    remediation:
-      retries: 5
   # dependsOn:
   #   - name: intel-gpu-plugin
   #     namespace: kube-system
@@ -51,14 +47,14 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - host: "jellyfin.${SECRET_DOMAIN}"
+          - host: &host "jellyfin.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - secretName: jellyfin-tls
             hosts:
-              - "jellyfin.${SECRET_DOMAIN}"
+              - *host
     # securityContext:
     #   privileged: true
     podSecurityContext:
