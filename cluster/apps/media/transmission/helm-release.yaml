@@ -17,6 +17,7 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+  timeout: 10m0s
   values:
     image:
       repository: haugene/transmission-openvpn
@@ -63,7 +64,7 @@ spec:
       # OPENVPN_USERNAME: "${vpn_surfshark_username}"
       # OPENVPN_PASSWORD: "${vpn_surfshark_password}"
       OPENVPN_CONFIG: nl-ams_udp
-      LOCAL_NETWORK: "10.0.0.0/8;192.168.0.0/16;172.16.0.0/12"
+      LOCAL_NETWORK: "10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
       CREATE_TUN_DEVICE: "true"
       TZ: "${TIMEZONE}"
       TRANSMISSION_HOME: "/config/transmission-home/"
