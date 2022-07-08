@@ -74,14 +74,16 @@ spec:
       replicas: 1
       strategy:
         type: Recreate
-      extraVolumes:
-        - name: users-volume
-          secret:
-            secretName: authelia-users
       extraVolumeMounts:
-        - name: users-volume
-          mountPath: /config/users_database.yml
-          subPath: users_database.yml
+        - name: config-custom
+          mountPath: /config
+      extraVolumes:
+        - name: config-custom
+          configMap:
+            name: authelia-config-custom
+            items:
+              - key: users_database.yml
+                path: users_database.yml
 
     configMap:
       theme: dark
@@ -132,12 +134,12 @@ spec:
               "*.${SECRET_DOMAIN}"
               # - longhorn.${SECRET_DOMAIN}
               # - homer-config.${SECRET_DOMAIN}
-            # Applications without auth but low security requirements
-            # - policy: one_factor
-            #   domain:
-            #     - homer.${SECRET_DOMAIN}
-            #     - prometheus.${SECRET_DOMAIN}
-            #     - alert-manager.${SECRET_DOMAIN}
+      # Applications without auth but low security requirements
+      # - policy: one_factor
+      #   domain:
+      #     - homer.${SECRET_DOMAIN}
+      #     - prometheus.${SECRET_DOMAIN}
+      #     - alert-manager.${SECRET_DOMAIN}
 
       session:
         name: authelia_session

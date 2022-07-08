@@ -1,0 +1,15 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: authelia-config-custom
+  namespace: security
+data:
+  users_database.yml: |
+    users:
+      Shotcowboystyle:
+        displayname: "shotcowboystyle"
+        password: "${SECRET_AUTHELIA_ADMIN_PASSWORD}"
+        email: ${SECRET_AUTHELIA_ADMIN_EMAIL}
+        groups:
+          - admins
