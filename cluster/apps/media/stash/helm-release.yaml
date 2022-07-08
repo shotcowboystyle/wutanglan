@@ -18,11 +18,16 @@ spec:
   timeout: 5m
   values:
     image:
-      tag: v0.16.0 # {"$imagepolicy": "flux-system:stash:tag"}
+      repository: stashapp/stash
+      tag: latest@sha256:24dbd76071745be0c4e75f730aa7ac2b37cb2b2918eabf8559643196b3b7a64a
     controller:
       replicas: 1 # active longhorn-webapp nas
     env:
-      TZ: America/New_York
+      TZ: "${TIMEZONE}"
+      STASH_STASH: /media/data
+      STASH_GENERATED: /media/generated
+      STASH_METADATA: /media/metadata
+      STASH_CACHE: /cache
     persistence:
       config:
         enabled: true
@@ -30,6 +35,12 @@ spec:
       media:
         enabled: true
         existingClaim: stash-media-pvc
+      cache:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        mountPath: /cache
     ingress:
       main:
         enabled: true
