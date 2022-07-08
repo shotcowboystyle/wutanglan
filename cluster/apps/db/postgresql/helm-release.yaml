@@ -25,7 +25,7 @@ spec:
       database: homelab
     primary:
       podSecurityContext:
-        # runAsUser: 1031
+        runAsUser: 1031
         fsGroup: 65537
         supplementalGroups:
           - 100
