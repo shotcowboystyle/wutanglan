@@ -5,6 +5,7 @@ metadata:
   name: &app transmission
   namespace: media
 spec:
+  interval: 10m0s
   chart:
     spec:
       chart: transmission
@@ -14,23 +15,22 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
-  interval: 10m0s
   timeout: 10m0s
   valuesFrom:
     - kind: Secret
-      name: transmission-secret
+      name: *app
       valuesKey: CONFIG_FILE
       targetPath: addons.vpn.configFile
     - kind: Secret
-      name: transmission-secret
+      name: *app
       valuesKey: TRANSMISSION_RPC_USERNAME
       targetPath: env.TRANSMISSION_RPC_USERNAME
     - kind: Secret
-      name: transmission-secret
+      name: *app
       valuesKey: TRANSMISSION_RPC_PASSWORD
       targetPath: env.TRANSMISSION_RPC_PASSWORD
     - kind: Secret
-      name: transmission-secret
+      name: *app
       valuesKey: TRANSMISSION_PEER_PORT
       targetPath: env.TRANSMISSION_PEER_PORT
   values:
@@ -138,6 +138,10 @@ spec:
       watch:
         enabled: false
         mountPath: /watch
+      shared:
+        enabled: true
+        type: emptyDir
+        mountPath: /shared
     probes:
       liveness:
         spec:
@@ -166,10 +170,10 @@ spec:
       # TRANSMISSION_QUEUE_STALLED_MINUTES: 60
       # TRANSMISSION_QUEUE_STALLED_ENABLED: false
       # TRANSMISSION_PORT_FORWARDING_ENABLED: true
-      TRANSMISSION_PEER_PORT: 27071
-    envFrom:
-      - secretRef:
-          name: *app
+      # TRANSMISSION_PEER_PORT: 27071
+    # envFrom:
+    #   - secretRef:
+    #       name: *app
     addons:
       vpn:
         enabled: true
