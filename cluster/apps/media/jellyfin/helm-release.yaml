@@ -17,6 +17,7 @@ spec:
   install:
     createNamespace: true
   upgrade:
+    createNamespace: true
   # dependsOn:
   #   - name: intel-gpu-plugin
   #     namespace: kube-system
