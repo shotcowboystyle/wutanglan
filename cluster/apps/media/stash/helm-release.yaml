@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: stashapp/stash
-      tag: latest@sha256:24dbd76071745be0c4e75f730aa7ac2b37cb2b2918eabf8559643196b3b7a64a
+      tag: latest
     controller:
       replicas: 1 # active longhorn-webapp nas
     env:
