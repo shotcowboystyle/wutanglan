@@ -26,7 +26,7 @@ spec:
     primary:
       persistence:
         enabled: true
-        existingClaim: postgresql-data-pvc-v1
+        existingClaim: postgresql-data-pvc
     metrics:
       enabled: true
       serviceMonitor:
