@@ -2,13 +2,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: postgresql-kube
-  namespace: db
+  name: authelia-postgresql
+  namespace: security
 spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://charts.bitnami.com/bitnami
       chart: postgresql
       version: 11.6.15
       sourceRef:
@@ -18,16 +17,17 @@ spec:
       interval: 5m
   values:
     image:
-      registry: docker.io
       repository: bitnami/postgresql
       tag: 14.4.0
-      pullPolicy: IfNotPresent
-    global:
-      postgresql:
-        auth:
-          enablePostgresUser: true
-          postgresPassword: ${SECRET_POSTGRESQL_PASSWORD}
+    auth:
+      username: homelab
+      password: "${SECRET_POSTGRESQL_PASSWORD}"
+      database: homelab
     primary:
       persistence:
         enabled: true
-        existingClaim: postgresql-config-pvc-v1
+        existingClaim: postgresql-data-pvc-v1
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true

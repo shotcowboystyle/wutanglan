@@ -5,7 +5,7 @@ metadata:
   name: redis-data-pv
   namespace: db
   labels:
-    app.kubernetes.io/name: "transmission"
+    app.kubernetes.io/name: "redis"
 spec:
   capacity:
     storage: 2Gi
@@ -16,13 +16,7 @@ spec:
   storageClassName: nfs
   mountOptions:
     - nfsvers=4.1
-    - tcp
-    - intr
     - hard
-    - noatime
-    - nodiratime
-    # - rsize=1048576
-    # - wsize=1048576
   nfs:
     path: /volume2/DockerVol/redis_data
     server: ${NAS_ADDR}
