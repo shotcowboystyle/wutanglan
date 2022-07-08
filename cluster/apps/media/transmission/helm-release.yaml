@@ -72,8 +72,8 @@ spec:
       TRANSMISSION_HOME: "/config/transmission-home/"
       TRANSMISSION_WEB_UI: "flood-for-transmission"
       TRANSMISSION_RPC_HOST_WHITELIST: "127.0.0.1,192.168.*.*"
-      PUID: 568
-      PGID: 568
+      PUID: 1031
+      PGID: 65537
     envFrom:
       - secretRef:
           name: *app
