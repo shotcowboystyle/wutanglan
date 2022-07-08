@@ -22,29 +22,8 @@ spec:
       tag: v0.16.0 # {"$imagepolicy": "flux-system:stash:tag"}
     controller:
       replicas: 1 # active longhorn-webapp nas
-    nodeSelector:
-      kubernetes.io/hostname: "clyde"
-    #   graphics: dri
-    # securityContext:
-    #   privileged: true
     env:
       TZ: America/New_York
-    # podSecurityContext:
-    #   fsGroup: 568
-    # initContainers:
-    #   fixperms:
-    #     name: fixperms
-    #     image: busybox
-    #     command:
-    #     - sh
-    #     - -c
-    #     - chown 568:568 /config -R
-    #     env:
-    #     - name: TZ
-    #       value: America/New_York
-    #     volumeMounts:
-    #     - name: config
-    #       mountPath: /config
     persistence:
       config:
         enabled: true
@@ -70,3 +49,14 @@ spec:
           - hosts:
               - *host
             secretName: *host
+    nodeSelector:
+      kubernetes.io/hostname: "clyde"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - clyde
