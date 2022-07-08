@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: authelia-redis-data-pv
+  namespace: security
+  labels:
+    app.kubernetes.io/name: "authelia-redis"
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  mountOptions:
+    - nfsvers=4.1
+    - hard
+  nfs:
+    path: /volume2/DockerVol/authelia_data/redis_data
+    server: ${NAS_ADDR}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: authelia-redis-data
+  namespace: security
+spec:
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
