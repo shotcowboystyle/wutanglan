@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: authelia-postgresql
-  namespace: security
+  name: postgresql
+  namespace: db
 spec:
   interval: 5m
   chart:

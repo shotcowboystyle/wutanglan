@@ -4,8 +4,6 @@ kind: PersistentVolume
 metadata:
   name: postgresql-data-pv-v1
   namespace: db
-  labels:
-    app.kubernetes.io/name: "postgresql-kube"
 spec:
   capacity:
     storage: 50Gi
