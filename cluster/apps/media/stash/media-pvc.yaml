@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: stash-media-pv
+  namespace: media
+spec:
+  capacity:
+    storage: 1Ti
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: "/mnt/ssd1/docker_data/stash/data"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - clyde
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stash-media-pvc
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1Ti
