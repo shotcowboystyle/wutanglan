@@ -4,6 +4,8 @@ kind: PersistentVolume
 metadata:
   name: transmission-config-pv
   namespace: media
+  labels:
+    app.kubernetes.io/name: "transmission"
 spec:
   capacity:
     storage: 1Gi

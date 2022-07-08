@@ -2,16 +2,18 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: transmission
+  name: &app transmission
   namespace: media
 spec:
   chart:
     spec:
       chart: transmission
+      version: 8.3.2
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
+      interval: 5m
   interval: 10m0s
   timeout: 10m0s
   valuesFrom:
@@ -32,71 +34,142 @@ spec:
       valuesKey: TRANSMISSION_PEER_PORT
       targetPath: env.TRANSMISSION_PEER_PORT
   values:
-    initContainers:
-      custom-webui:
-        name: custom-webui
-        image: docker.io/curlimages/curl:7.84.0
-        command:
-          - "/bin/sh"
-          - "-c"
-          - "curl -o- -sL https://github.com/johman10/flood-for-transmission/releases/download/latest/flood-for-transmission.tar.gz | tar xzf - -C /config"
-        volumeMounts:
-          - name: config
-            mountPath: /config
-        securityContext:
-          runAsUser: 568
-          runAsGroup: 568
+    # initContainers:
+    #   custom-webui:
+    #     name: custom-webui
+    #     image: docker.io/curlimages/curl:7.84.0
+    #     command:
+    #       - "/bin/sh"
+    #       - "-c"
+    #       - "curl -o- -sL https://github.com/johman10/flood-for-transmission/releases/download/latest/flood-for-transmission.tar.gz | tar xzf - -C /config"
+    #     volumeMounts:
+    #       - name: config
+    #         mountPath: /config
+    #     securityContext:
+    #       runAsUser: 568
+    #       runAsGroup: 568
     image:
       repository: ghcr.io/k8s-at-home/transmission
       tag: v3.00
+      pullPolicy: IfNotPresent
+    hostname: transmission
     service:
       main:
-        enabled: true
-        type: ClusterIP
+        type: LoadBalancer
+        externalIPs:
+          - "${METALLB_TRANSMISSION_ADDR}"
+        externalTrafficPolicy: Local
+        annotations:
+          traefik.ingress.kubernetes.io/service.serversscheme: http
         ports:
           http:
             port: 9091
-    # podAnnotations:
-    #   backup.velero.io/backup-volumes-excludes: downloads
-    podSecurityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
-      fsGroup: 1000
-      fsGroupChangePolicy: "OnRootMismatch"
+      bittorrent-tcp:
+        enabled: true
+        type: ClusterIP
+        ports:
+          bittorrent:
+            enabled: true
+            port: 27071
+            protocol: TCP
+            targetPort: 27071
+      bittorrent-udp:
+        enabled: true
+        type: ClusterIP
+        ports:
+          bittorrent:
+            enabled: true
+            port: 27071
+            protocol: UDP
+            targetPort: 27071
+      utptcp:
+        enabled: false
+        type: ClusterIP
+        ports:
+          utptcp:
+            enabled: true
+            port: 51413
+            protocol: TCP
+            targetPort: 51413
+      utpudp:
+        enabled: false
+        type: ClusterIP
+        ports:
+          utpudp:
+            enabled: true
+            port: 51413
+            protocol: UDP
+            targetPort: 51413
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "transmission"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+        hosts:
+          - host: &host "transmission.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "transmission-tls"
+    podAnnotations:
+      setGateway: "true"
+    # podSecurityContext:
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    #   fsGroupChangePolicy: "OnRootMismatch"
     persistence:
       config:
         enabled: true
         existingClaim: transmission-config-pvc
+        mountPath: /config
       downloads:
         enabled: true
         existingClaim: transmission-downloads-pvc
-        # mountPath: /media
-      # cache:
-      #   enabled: true
-      #   type: emptyDir
-      #   mountPath: /config/qBittorrent/cache
-      shared:
-        enabled: true
-        type: emptyDir
-        mountPath: /shared
+        mountPath: /downloads
+      watch:
+        enabled: false
+        mountPath: /watch
+    probes:
+      liveness:
+        spec:
+          timeoutSeconds: 30
+      readiness:
+        spec:
+          timeoutSeconds: 30
     env:
+      TZ: "${TIMEZONE}"
       WAIT_FOR_VPN: "true"
       TRANSMISSION_WEB_HOME: /config/flood-for-transmission
-      TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: false
+      # TRANSMISSION_RPC_USERNAME: "${TRANSMISSION_RPC_USERNAME}"
+      # TRANSMISSION_RPC_PASSWORD: "${TRANSMISSION_RPC_PASSWORD}"
+      # TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: false
       TRANSMISSION_SPEED_LIMIT_DOWN: 62500
       TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED: true
-      TRANSMISSION_SPEED_LIMIT_UP: 62500
+      TRANSMISSION_SPEED_LIMIT_UP: 200
       TRANSMISSION_SPEED_LIMIT_UP_ENABLED: true
-      TRANSMISSION_LPD_ENABLED: true
-      TRANSMISSION_IDLE_SEEDING_LIMIT: 60
-      TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED: false
-      TRANSMISSION_RATIO_LIMIT: 10
-      TRANSMISSION_RATIO_LIMIT_ENABLED: true
-      TRANSMISSION_DOWNLOAD_QUEUE_SIZE: 10
-      TRANSMISSION_DOWNLOAD_QUEUE_ENABLED: true
-      TRANSMISSION_QUEUE_STALLED_MINUTES: 60
-      TRANSMISSION_QUEUE_STALLED_ENABLED: false
-      TRANSMISSION_PORT_FORWARDING_ENABLED: true
+      # TRANSMISSION_LPD_ENABLED: true
+      # TRANSMISSION_IDLE_SEEDING_LIMIT: 60
+      # TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED: false
+      # TRANSMISSION_RATIO_LIMIT: 10
+      # TRANSMISSION_RATIO_LIMIT_ENABLED: true
+      # TRANSMISSION_DOWNLOAD_QUEUE_SIZE: 10
+      # TRANSMISSION_DOWNLOAD_QUEUE_ENABLED: true
+      # TRANSMISSION_QUEUE_STALLED_MINUTES: 60
+      # TRANSMISSION_QUEUE_STALLED_ENABLED: false
+      # TRANSMISSION_PORT_FORWARDING_ENABLED: true
+      TRANSMISSION_PEER_PORT: 27071
+    envFrom:
+      - secretRef:
+          name: *app
     addons:
       vpn:
         enabled: true
@@ -116,7 +189,7 @@ spec:
 
         env:
           # Enable a killswitch that kills all trafic when the VPN is not connected
-          KILLSWITCH: "false"
+          KILLSWITCH: "true"
           KILLSWITCH_EXCLUDEDNETWORKS_IPV4: "10.0.0.0/8;192.168.0.0/16;172.16.0.0/12"
 
         # The wireguard configuration file provided by your VPN provider goes here.
