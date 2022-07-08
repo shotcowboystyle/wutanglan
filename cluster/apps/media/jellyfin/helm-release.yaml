@@ -14,10 +14,10 @@ spec:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
-  install:
-    createNamespace: true
-  upgrade:
-    createNamespace: true
+  # install:
+  #   createNamespace: true
+  # upgrade:
+  #   createNamespace: true
   # dependsOn:
   #   - name: intel-gpu-plugin
   #     namespace: kube-system
