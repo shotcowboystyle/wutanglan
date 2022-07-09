@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: authelia-postgresql-data-pv
-  namespace: security
+  namespace: auth
   labels:
     app.kubernetes.io/name: "authelia-postgresql"
 spec:
@@ -25,7 +25,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: authelia-postgresql-data
-  namespace: security
+  namespace: auth
 spec:
   storageClassName: nfs
   accessModes:
