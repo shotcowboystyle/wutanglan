@@ -59,6 +59,7 @@ spec:
     # securityContext:
     #   privileged: true
     podSecurityContext:
+      fsGroup: 100
       supplementalGroups:
         - 100
     persistence:

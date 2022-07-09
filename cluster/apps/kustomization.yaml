@@ -9,7 +9,7 @@ resources:
   - flux-system
   - home
   - kube-system
-  # - media
+  - media
   # - monitoring
   - networking
   # - security
