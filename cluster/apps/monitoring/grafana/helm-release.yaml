@@ -128,8 +128,8 @@ spec:
       - vonage-status-panel
       - grafana-worldmap-panel
       - grafana-clock-panel
-    serviceMonitor:
-      enabled: true
+    # serviceMonitor:
+    #   enabled: true
     ingress:
       main:
         enabled: true

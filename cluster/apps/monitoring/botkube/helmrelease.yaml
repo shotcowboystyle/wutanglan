@@ -16,8 +16,8 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    serviceMonitor:
-      enabled: true
+    # serviceMonitor:
+    #   enabled: true
     config:
       recommendations: false
       settings:
