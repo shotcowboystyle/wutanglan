@@ -59,10 +59,6 @@ spec:
     # securityContext:
     #   privileged: true
     podSecurityContext:
-      runAsUser: 1031
-      runAsGroup: 65537
-      # fsGroup: 1000
-      # fsGroupChangePolicy: "OnRootMismatch"
       supplementalGroups:
         - 100
     persistence:

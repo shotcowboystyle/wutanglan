@@ -40,8 +40,6 @@ spec:
       enabled: true
     master:
       podSecurityContext:
-        runAsUser: 1031
-        runAsGroup: 65537
         supplementalGroups:
           - 100
       nodeSelector:
