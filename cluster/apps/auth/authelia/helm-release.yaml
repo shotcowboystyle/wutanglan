@@ -124,7 +124,7 @@ spec:
           - policy: one_factor
             domain:
               - traefik.${SECRET_DOMAIN}
-              - grafana.${SECRET_DOMAIN}
+              # - grafana.${SECRET_DOMAIN}
               # - rancher.${SECRET_DOMAIN}
               # - bw.${SECRET_DOMAIN}
               # - cloud.${SECRET_DOMAIN}
