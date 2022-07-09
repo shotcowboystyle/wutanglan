@@ -25,6 +25,7 @@ spec:
       database: authelia
     primary:
       podSecurityContext:
+        fsGroup: 100
         supplementalGroups:
           - 100
       persistence:

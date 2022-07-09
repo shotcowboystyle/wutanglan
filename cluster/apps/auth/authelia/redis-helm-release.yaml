@@ -17,7 +17,19 @@ spec:
       interval: 5m
   values:
     architecture: standalone
+    securityContext:
+      sysctls:
+        - name: net.core.somaxconn
+          value: "10000"
+    global:
+      storageClass: "nfs-client"
     master:
+      podSecurityContext:
+        fsGroup: 100
+        supplementalGroups:
+          - 100
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
       persistence:
         enabled: true
         existingClaim: authelia-redis-data
