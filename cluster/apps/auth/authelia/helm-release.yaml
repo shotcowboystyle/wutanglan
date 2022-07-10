@@ -155,10 +155,10 @@ spec:
           disable_require_tls: false
           disable_html_emails: false
 
-          # tls:
-          #   server_name: ${SMTP_HOST}
-          #   skip_verify: false
-          #   minimum_version: TLS1.2
+          tls:
+            server_name: ${SMTP_HOST}
+            skip_verify: false
+            minimum_version: TLS1.2
     secret:
       existingSecret: authelia
   postRenderers:
