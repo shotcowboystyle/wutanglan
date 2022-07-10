@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: authelia-data-pv
+  name: authelia-notification-pv
   namespace: auth
   labels:
     app.kubernetes.io/name: "authelia-data"
@@ -18,13 +18,13 @@ spec:
     - nfsvers=4.1
     - hard
   nfs:
-    path: /volume2/DockerVol/authelia_data
+    path: /volume2/DockerVol/authelia_data/notifications
     server: ${NAS_ADDR}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: authelia-data-pvc
+  name: authelia-notification-pvc
   namespace: auth
 spec:
   storageClassName: nfs

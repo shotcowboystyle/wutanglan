@@ -4,23 +4,9 @@ kind: Kustomization
 resources:
   - authelia-postgresql-pvc.yaml
   - authelia-redis-pvc.yaml
-  - data-pvc.yaml
+  - notification-pvc.yaml
   - postgresql-helm-release.yaml
   - redis-helm-release.yaml
-  # - configmap.yaml
+  - users-configmap.yaml
   - helm-release.yaml
   - secrets.sops.yaml
-configMapGenerator:
-  - name: authelia-config
-    files:
-      - config.yaml
-  - name: authelia-users-database
-    files:
-      - users_database.yaml
-  - name: authelia-notifications
-    files:
-      - notifications.txt
-generatorOptions:
-  disableNameSuffixHash: true
-  annotations:
-    kustomize.toolkit.fluxcd.io/substitute: disabled
