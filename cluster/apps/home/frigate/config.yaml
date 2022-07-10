@@ -74,37 +74,37 @@ record:
 
 birdseye:
   # Optional: Enable birdseye view (default: shown below)
-  enabled: True
-  # Optional: Width of the output resolution (default: shown below)
-  width: 2560
-  # Optional: Height of the output resolution (default: shown below)
-  height: 1440
-  # Optional: Encoding quality of the mpeg1 feed (default: shown below)
-  # 1 is the highest quality, and 31 is the lowest. Lower quality feeds utilize less CPU resources.
-  quality: 8
-  # Optional: Mode of the view. Available options are: objects, motion, and continuous
-  #   objects - cameras are included if they have had a tracked object within the last 30 seconds
-  #   motion - cameras are included if motion was detected in the last 30 seconds
-  #   continuous - all cameras are included always
-  mode: continuous
+  enabled: False
+#   # Optional: Width of the output resolution (default: shown below)
+#   width: 2560
+#   # Optional: Height of the output resolution (default: shown below)
+#   height: 1440
+#   # Optional: Encoding quality of the mpeg1 feed (default: shown below)
+#   # 1 is the highest quality, and 31 is the lowest. Lower quality feeds utilize less CPU resources.
+#   quality: 8
+#   # Optional: Mode of the view. Available options are: objects, motion, and continuous
+#   #   objects - cameras are included if they have had a tracked object within the last 30 seconds
+#   #   motion - cameras are included if motion was detected in the last 30 seconds
+#   #   continuous - all cameras are included always
+#   mode: continuous
 
 live:
   # Optional: Set the height of the live stream. (default: 720)
   # This must be less than or equal to the height of the detect stream. Lower resolutions
   # reduce bandwidth required for viewing the live stream. Width is computed to match known aspect ratio.
   height: 1080
-  quality: 2
+  quality: 1
 
 snapshots:
-  enabled: true
-  timestamp: false
-  bounding_box: true
+  enabled: True
+  timestamp: False
+  bounding_box: True
   retain:
     default: 4
 
 rtmp:
   # Optional: Enable the RTMP stream (default: True)
-  enabled: True
+  enabled: False
 
 motion:
   #  threshold: 25
@@ -115,7 +115,7 @@ motion:
   improve_contrast: True
 
 ui:
-  use_experimental: true
+  use_experimental: True
 
 cameras:
   patio:
