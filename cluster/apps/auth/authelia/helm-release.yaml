@@ -151,7 +151,7 @@ spec:
           enabled: true
           enabledSecret: true
           username: ${SECRET_SMTP_USERNAME}
-          host: ${SMPT_HOST}
+          host: ${SMTP_HOST}
           port: 587
           sender: ${SECRET_SMTP_USERNAME}
           identifier: ${SECRET_DOMAIN}
