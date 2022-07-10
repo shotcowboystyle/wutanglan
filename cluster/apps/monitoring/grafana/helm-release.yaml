@@ -113,25 +113,25 @@ spec:
           #   revision: 10
           #   datasource: Prometheus
           # Ref: https://grafana.com/grafana/dashboards/11315
-          # unifi-client-insights:
-          #   gnetId: 11315
-          #   revision: 8
-          #   datasource: Prometheus
+          unifi-client-insights:
+            gnetId: 11315
+            revision: 8
+            datasource: Prometheus
           # # Ref: https://grafana.com/grafana/dashboards/11311
-          # unifi-network-sites:
-          #   gnetId: 11311
-          #   revision: 4
-          #   datasource: Prometheus
-          # # Ref: https://grafana.com/grafana/dashboards/11314
-          # unifi-uap-insights:
-          #   gnetId: 11314
-          #   revision: 9
-          #   datasource: Prometheus
-          # # Ref: https://grafana.com/grafana/dashboards/11312
-          # unifi-usw-insights:
-          #   gnetId: 11312
-          #   revision: 8
-          #   datasource: Prometheus
+          unifi-network-sites:
+            gnetId: 11311
+            revision: 4
+            datasource: Prometheus
+          # Ref: https://grafana.com/grafana/dashboards/11314
+          unifi-uap-insights:
+            gnetId: 11314
+            revision: 9
+            datasource: Prometheus
+          # Ref: https://grafana.com/grafana/dashboards/11312
+          unifi-usw-insights:
+            gnetId: 11312
+            revision: 8
+            datasource: Prometheus
     sidecar:
       dashboards:
         enabled: true
@@ -175,14 +175,14 @@ spec:
               - *host
             secretName: "grafana-tls"
     podSecurityContext:
-      fsGroup: 100
+      fsGroup: 65537
       supplementalGroups:
         - 100
     persistence:
       enabled: true
       existingClaim: grafana-data-pvc
-    # podAnnotations:
-    #   configmap.reloader.stakater.com/reload: "grafana"
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: "grafana"
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:

@@ -108,7 +108,7 @@ spec:
     kubeScheduler:
       enabled: true
       endpoints:
-        - 10.0.105.10
+        - 192.168.10.11
       service:
         enabled: true
         port: 10259
@@ -120,7 +120,7 @@ spec:
     kubeProxy:
       enabled: true
       endpoints:
-        - 10.0.105.10
+        - 192.168.10.11
     kubeEtcd:
       enabled: false
     prometheusOperator:
