@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - auth
   # - biz-ops
-  # - db
+  - dbms
   - default
   - flux-system
   - home
