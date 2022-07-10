@@ -5,7 +5,7 @@ metadata:
   name: grafana-data-pv
   namespace: monitoring
   labels:
-    app.kubernetes.io/name: "transmission"
+    app.kubernetes.io/name: "grafana"
 spec:
   capacity:
     storage: 10Gi
