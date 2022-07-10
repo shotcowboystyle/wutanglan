@@ -154,6 +154,7 @@ spec:
     persistence:
       enabled: true
       existingClaim: authelia-notification-pvc
+      mountPath: /config/notifications
     podSecurityContext:
       runAsUser: 1031
       runAsGroup: 65537
