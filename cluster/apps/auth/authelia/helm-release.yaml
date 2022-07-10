@@ -144,28 +144,19 @@ spec:
           enabledSecret: true
           host: "${SMTP_HOST}"
           port: 587
-          timeout: 10s
           username: "${SECRET_SMTP_USERNAME}"
-          # password: ${SECRET_SMTP_PASSWORD}
           sender: "Authelia <curt.blanton+authelia@gmail.com"
           # identifier: "${SECRET_DOMAIN}"
           subject: "[Authelia] {title}"
-          disable_require_tls: false
-          disable_html_emails: false
-
-          tls:
-            server_name: "${SMTP_HOST}"
-            skip_verify: false
-            minimum_version: TLS1.2
     secret:
       existingSecret: authelia
-  postRenderers:
-    - kustomize:
-        patchesJson6902:
-          - target:
-              kind: Ingress
-              name: authelia
-            patch:
-              - op: add
-                path: /spec/ingressClassName
-                value: traefik
+  # postRenderers:
+  #   - kustomize:
+  #       patchesJson6902:
+  #         - target:
+  #             kind: Ingress
+  #             name: authelia
+  #           patch:
+  #             - op: add
+  #               path: /spec/ingressClassName
+  #               value: traefik
