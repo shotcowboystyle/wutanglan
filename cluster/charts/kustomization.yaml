@@ -16,7 +16,6 @@ resources:
   - jetstack.yaml
   - k8s-at-home.yaml
   - k8s-gateway.yaml
-  - mailu.yaml
   - metallb.yaml
   - metrics-server.yaml
   - node-feature-discovery.yaml
