@@ -21,8 +21,8 @@ spec:
   values:
     metrics:
       enabled: true
-      serviceMonitor:
-        enabled: true
+      # serviceMonitor:
+      #   enabled: true
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
