@@ -50,7 +50,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "goldiblocks-tls"
+            secretName: "goldilocks-tls"
       resources:
         requests:
           cpu: 10m

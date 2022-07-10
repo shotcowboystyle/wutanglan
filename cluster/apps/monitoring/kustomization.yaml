@@ -4,16 +4,16 @@ kind: Kustomization
 namespace: monitoring
 resources:
   - namespace.yaml
-  - blackbox-exporter
+  # - blackbox-exporter
   # - generic-rules
-  # - goldilocks
-  - grafana
+  - goldilocks
+  # - grafana
   # - intel-gpu-exporter
-  - kube-prometheus-stack
-  - loki
+  # - kube-prometheus-stack
+  # - loki
   # - snmp-exporter
   # - thanos
-  - unifi-poller
+  # - unifi-poller
   # - uptimerobot-heartbeat
   # - vector
   # - vpa
