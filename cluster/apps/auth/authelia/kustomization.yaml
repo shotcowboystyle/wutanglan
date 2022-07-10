@@ -7,6 +7,20 @@ resources:
   - data-pvc.yaml
   - postgresql-helm-release.yaml
   - redis-helm-release.yaml
-  - configmap.yaml
+  # - configmap.yaml
   - helm-release.yaml
   - secrets.sops.yaml
+configMapGenerator:
+  - name: authelia-config
+    files:
+      - config.yaml
+  - name: authelia-users-database
+    files:
+      - users_database.yaml
+  - name: authelia-notifications
+    files:
+      - notifications.txt
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

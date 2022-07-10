@@ -1,0 +1,9 @@
+---
+users:
+  shotcowboystyle:
+    password: $argon2id$v=19$m=1048576,t=1,p=8$UnJoSHlrZ0ZDckthWVRTNw$2ormpEm+hjxzoMbbv0F1OHjj5oMeXV+RxrM4WrwCKms
+    displayname: Curtis Blanton
+    email: curt.blanton@gmail.com
+    groups:
+      - admins
+      - dev
