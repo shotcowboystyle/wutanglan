@@ -92,8 +92,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
         hosts:
           - host: "frigate.${SECRET_DOMAIN}"
             paths:
