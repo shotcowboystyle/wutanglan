@@ -22,6 +22,7 @@ spec:
   upgrade:
     remediation:
       retries: 5
+
   values:
     controller:
       resources:
@@ -30,8 +31,10 @@ spec:
           memory: 64M
         limits:
           memory: 250M
+
     dashboard:
       replicaCount: 1
+
       ingress:
         enabled: true
         ingressClassName: "traefik"

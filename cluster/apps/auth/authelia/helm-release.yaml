@@ -32,15 +32,6 @@ spec:
         hajimari.io/appName: "Authelia"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
-      # hosts:
-      #   - host: &host "auth.${SECRET_DOMAIN}"
-      #     paths:
-      #       - path: /
-      #         pathType: Prefix
-      # tls:
-      #   - hosts:
-      #       - *host
-      #     secretName: "authelia-tls"
       subdomain: auth
       tls:
         enabled: true
@@ -59,15 +50,6 @@ spec:
           chains:
             auth:
               nameOverride: authelia-chain
-
-    # enabled: true
-    # subdomain: auth
-    # className: nginx
-    # annotations:
-    #   external-dns.alpha.kubernetes.io/target: "${SECRET_VPN_GATEWAY_IP}"
-    #   external-dns/is-public: "true"
-    # tls:
-    #   enabled: true
 
     pod:
       kind: Deployment
@@ -134,12 +116,6 @@ spec:
               "*.${SECRET_DOMAIN}"
               # - longhorn.${SECRET_DOMAIN}
               # - homer-config.${SECRET_DOMAIN}
-      # Applications without auth but low security requirements
-      # - policy: one_factor
-      #   domain:
-      #     - homer.${SECRET_DOMAIN}
-      #     - prometheus.${SECRET_DOMAIN}
-      #     - alert-manager.${SECRET_DOMAIN}
 
       session:
         name: authelia_session
