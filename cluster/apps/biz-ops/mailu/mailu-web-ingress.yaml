@@ -7,15 +7,15 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-staging"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,security-authelia-auth@kubernetescrd"
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
 spec:
   ingressClassName: "traefik"
   tls:
     - hosts:
-        - "mailu.${SECRET_DOMAIN}"
-      secretName: "mailu-tls"
+        - &host "mailu.${SECRET_DOMAIN}"
+      secretName: mailu-tls
   rules:
-    - host: "mailu.${SECRET_DOMAIN}"
+    - host: *host
       http:
         paths:
           - path: /

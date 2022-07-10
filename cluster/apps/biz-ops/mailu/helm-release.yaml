@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: mailu
+  name: &app mailu
   namespace: biz-ops
 spec:
   interval: 5m
@@ -47,7 +47,10 @@ spec:
     ingress:
       className: traefik
       annotations:
-        traefik.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
+        # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+        # traefik.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
       hosts:
         - &host "mail.${SECRET_DOMAIN}"
       tls:
