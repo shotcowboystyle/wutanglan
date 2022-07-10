@@ -16,3 +16,6 @@ xanmanning.k3s*
 .terraform
 .terraform.tfstate*
 terraform.tfstate*
+
+# file backups
+*-gitignore.yaml

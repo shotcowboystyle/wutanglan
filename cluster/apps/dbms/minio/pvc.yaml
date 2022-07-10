@@ -2,34 +2,37 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: minio-data-pv
-  namespace: data
-  labels:
-    app.kubernetes.io/name: "minio"
+  name: minio-nfs-pv
+  namespace: dbms
 spec:
+  storageClassName: minio-nfs
   capacity:
     storage: 10Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
-  mountOptions:
-    - nfsvers=4.1
-    - hard
   nfs:
-    path: /volume2/Documents/minio
     server: ${NAS_ADDR}
+    path: "/volume2/Documents/S3"
+  mountOptions:
+    - nfsvers=4
+    - tcp
+    - intr
+    - hard
+    - noatime
+    - nodiratime
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: minio-data-pvc
-  namespace: data
+  name: dbms-minio-pvc
+  namespace: dbms
 spec:
-  volumeName: minio-data-pv
-  storageClassName: nfs
   accessModes:
     - ReadWriteOnce
+  storageClassName: minio-nfs
   resources:
     requests:
       storage: 10Gi

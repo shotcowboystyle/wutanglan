@@ -2,24 +2,27 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: grafana-data-pv
+  name: grafana-nfs-pv
   namespace: monitoring
-  labels:
-    app.kubernetes.io/name: "grafana"
 spec:
+  storageClassName: grafana-nfs
   capacity:
     storage: 10Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
-  mountOptions:
-    - nfsvers=4.1
-    - hard
   nfs:
-    path: /volume2/DockerVol/grafana_data
     server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/grafana_data"
+  mountOptions:
+    - nfsvers=4
+    - tcp
+    - intr
+    - hard
+    - noatime
+    - nodiratime
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -27,7 +30,7 @@ metadata:
   name: grafana-data-pvc
   namespace: monitoring
 spec:
-  storageClassName: nfs
+  storageClassName: grafana-nfs
   accessModes:
     - ReadWriteOnce
   resources:

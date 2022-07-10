@@ -146,7 +146,6 @@ spec:
         disable_startup_check: true
         filesystem:
           enabled: false
-          # filename: /config/notifications/notification.txt
         smtp:
           enabled: true
           enabledSecret: true

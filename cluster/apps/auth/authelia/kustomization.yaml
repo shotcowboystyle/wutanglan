@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - authelia-postgresql-pvc.yaml
   - authelia-redis-pvc.yaml
-  - notification-pvc.yaml
   - postgresql-helm-release.yaml
   - redis-helm-release.yaml
   - users-configmap.yaml

@@ -5,6 +5,9 @@ metadata:
   name: vector-agent
   namespace: monitoring
 spec:
+  dependsOn:
+    - name: loki
+      namespace: monitoring
   interval: 15m
   chart:
     spec:
@@ -12,72 +15,43 @@ spec:
       version: 0.13.2
       sourceRef:
         kind: HelmRepository
-        name: vector
+        name: vector-charts
         namespace: flux-system
       interval: 15m
-  install:
-    createNamespace: true
-    remediation:
-      retries: 5
-  upgrade:
-    remediation:
-      retries: 5
-  dependsOn:
-    - name: vector-aggregator
-      namespace: monitoring
   values:
-    image:
-      repository: timberio/vector
-      tag: 0.22.3-debian
-    role: Agent
+    role: "Agent"
+
+    podMonitor:
+      enabled: true
+
+    service:
+      enabled: false
+
+    tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
     customConfig:
       data_dir: /vector-data-dir
+
       api:
         enabled: false
+
       # Sources
       sources:
-        journal_logs:
-          type: journald
-          journal_directory: /var/log/journal
         kubernetes_logs:
           type: kubernetes_logs
           pod_annotation_fields:
-            container_image: "container_image"
-            container_name: "container_name"
+            container_image: "image"
             pod_annotations: "pod_annotations"
             pod_labels: "pod_labels"
             pod_name: "pod_name"
-        vector_metrics:
-          type: internal_metrics
+
       # Sinks
       sinks:
-        loki_journal_sink:
-          type: vector
-          inputs:
-            - journal_logs
-          address: vector-aggregator:6000
-          version: "2"
         loki_kubernetes_sink:
           type: vector
           inputs:
             - kubernetes_logs
-          address: vector-aggregator:6010
+          address: "vector-aggregator.monitoring:6000"
           version: "2"
-        prometheus_sink:
-          type: prometheus_exporter
-          inputs:
-            - vector_metrics
-          address: 0.0.0.0:9090
-    service:
-      enabled: false
-    podMonitor:
-      enabled: true
-      jobLabel: vector-agent
-      port: prometheus-sink
-    securityContext:
-      privileged: true
-    tolerations:
-      - effect: NoSchedule
-        operator: Exists
-      - effect: NoExecute
-        operator: Exists
