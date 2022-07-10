@@ -116,7 +116,12 @@ spec:
               "*.${SECRET_DOMAIN}"
               # - longhorn.${SECRET_DOMAIN}
               # - homer-config.${SECRET_DOMAIN}
-
+      ntp:
+        address: "time.cloudflare.com:123"
+        version: 3
+        max_desync: 3s
+        disable_startup_check: true
+        disable_failure: true
       session:
         name: authelia_session
         same_site: lax
