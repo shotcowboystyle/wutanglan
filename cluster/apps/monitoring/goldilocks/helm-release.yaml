@@ -33,15 +33,14 @@ spec:
     dashboard:
       replicaCount: 1
       ingress:
-        main:
-          enabled: true
-          ingressClassName: "traefik"
-          annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-staging"
-            # hajimari.io/enable: "true"
-            # hajimari.io/icon: cloud-download
-            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          # hajimari.io/enable: "true"
+          # hajimari.io/icon: cloud-download
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - host: &host "goldilocks.${SECRET_DOMAIN}"
             paths:
