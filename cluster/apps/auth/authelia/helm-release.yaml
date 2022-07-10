@@ -139,12 +139,10 @@ spec:
           username: authelia
       notifier:
         disable_startup_check: true
-        # filesystem:
-        #   filename: /config/notification.txt
         smtp:
           enabled: true
           enabledSecret: true
-          host: ${SMTP_HOST}
+          host: "${SMTP_HOST}"
           port: 587
           timeout: 10s
           username: "${SECRET_SMTP_USERNAME}"
@@ -156,7 +154,7 @@ spec:
           disable_html_emails: false
 
           tls:
-            server_name: ${SMTP_HOST}
+            server_name: "${SMTP_HOST}"
             skip_verify: false
             minimum_version: TLS1.2
     secret:
