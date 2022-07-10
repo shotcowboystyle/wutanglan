@@ -163,28 +163,8 @@ spec:
           username: authelia
       notifier:
         disable_startup_check: true
-        # smtp:
-        #   enabled: true
-        #   enabledSecret: true
-        #   host: "smtp.gmail.com"
-        #   port: 587
-        #   username: "curt.blanton@gmail.com"
-        #   sender: "no-reply@${SECRET_DOMAIN}"
-        #   password: ${SECRET_SMTP_PASSWORD}
-        #   identifier: ${SECRET_DOMAIN}
-        #   subject: "[Authentication] {title}"
-        #   disable_require_tls: false
-        #   disable_html_emails: false
-        #   tls:
-        #     server_name: smtp.gmail.com
-        #     skip_verify: false
-        #     minimum_version: TLS1.2
-        smtp:
-          enabled: true
-          host: mailu-front.biz-ops.svc.cluster.local
-          sender: authelia@${SECRET_DOMAIN}
-          tls:
-            skip_verify: true
+        filesystem:
+          filename: /config/notification.txt
     secret:
       existingSecret: authelia
   postRenderers:
