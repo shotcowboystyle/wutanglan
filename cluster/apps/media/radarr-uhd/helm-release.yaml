@@ -33,10 +33,10 @@ spec:
       RADARR__INSTANCE_NAME: Radarr (UHD)
       RADARR__PORT: &port 80
       RADARR__BRANCH: nightly
-      RADARR__APPLICATION_URL: "https://{{ .Release.Name }}.${SECRET_PUBLIC_DOMAIN}"
+      RADARR__APPLICATION_URL: "https://{{ .Release.Name }}.${SECRET_DOMAIN}"
       RADARR__LOG_LEVEL: info
       PUSHOVER_DEBUG: "false"
-      PUSHOVER_APP_URL: &host "{{ .Release.Name }}.${SECRET_PUBLIC_DOMAIN}"
+      PUSHOVER_APP_URL: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
     envFrom:
       - secretRef:
           name: *app
@@ -53,7 +53,7 @@ spec:
           nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
           nginx.ingress.kubernetes.io/configuration-snippet: |
             proxy_set_header Accept-Encoding "";
-            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/base/radarr/hotline.css"><link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/addons/radarr/radarr-4k-logo/radarr-4k-logo.css"></head>';
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/base/radarr/hotline.css"><link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/addons/radarr/radarr-4k-logo/radarr-4k-logo.css"></head>';
             sub_filter_once on;
         hosts:
           - host: *host

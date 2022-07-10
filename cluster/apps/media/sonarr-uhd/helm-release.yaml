@@ -33,10 +33,10 @@ spec:
       SONARR__INSTANCE_NAME: Sonarr (UHD)
       SONARR__PORT: &port 80
       SONARR__BRANCH: develop
-      SONARR__APPLICATION_URL: "https://{{ .Release.Name }}.${SECRET_PUBLIC_DOMAIN}"
+      SONARR__APPLICATION_URL: "https://{{ .Release.Name }}.${SECRET_DOMAIN}"
       SONARR__LOG_LEVEL: info
       PUSHOVER_DEBUG: "false"
-      PUSHOVER_APP_URL: &host "{{ .Release.Name }}.${SECRET_PUBLIC_DOMAIN}"
+      PUSHOVER_APP_URL: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
     envFrom:
       - secretRef:
           name: *app
@@ -53,7 +53,7 @@ spec:
           nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
           nginx.ingress.kubernetes.io/configuration-snippet: |
             proxy_set_header Accept-Encoding "";
-            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/base/sonarr/hotline.css"><link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_PUBLIC_DOMAIN}/css/addons/sonarr/sonarr-4k-logo/sonarr-4k-logo.css"></head>';
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/base/sonarr/hotline.css"><link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/addons/sonarr/sonarr-4k-logo/sonarr-4k-logo.css"></head>';
             sub_filter_once on;
         hosts:
           - host: *host
