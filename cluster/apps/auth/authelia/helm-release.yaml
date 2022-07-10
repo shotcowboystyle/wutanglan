@@ -139,24 +139,13 @@ spec:
           username: authelia
       notifier:
         disable_startup_check: true
-        smtp:
+        filesystem:
           enabled: true
-          enabledSecret: true
-          host: "${SMTP_HOST}"
-          port: 587
-          username: "${SECRET_SMTP_USERNAME}"
-          sender: "Authelia <curt.blanton+authelia@gmail.com"
-          # identifier: "${SECRET_DOMAIN}"
-          subject: "[Authelia] {title}"
+          filename: /config/notification.txt
+        smtp:
+          enabled: false
     secret:
       existingSecret: authelia
-  # postRenderers:
-  #   - kustomize:
-  #       patchesJson6902:
-  #         - target:
-  #             kind: Ingress
-  #             name: authelia
-  #           patch:
-  #             - op: add
-  #               path: /spec/ingressClassName
-  #               value: traefik
+    persistence:
+      enabled: true
+      existingClaim: authelia-data-pvc

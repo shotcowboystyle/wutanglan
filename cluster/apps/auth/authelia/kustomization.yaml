@@ -2,10 +2,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - authelia-postgresql-pvc.yaml
+  - authelia-redis-pvc.yaml
+  - data-pvc.yaml
+  - postgresql-helm-release.yaml
+  - redis-helm-release.yaml
   - configmap.yaml
   - helm-release.yaml
-  - authelia-secrets.sops.yaml
-  - authelia-postgresql-pvc.yaml
-  - postgresql-helm-release.yaml
-  - authelia-redis-pvc.yaml
-  - redis-helm-release.yaml
+  - secrets.sops.yaml
