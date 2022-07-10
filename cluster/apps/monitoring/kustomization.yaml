@@ -7,10 +7,11 @@ resources:
   # - blackbox-exporter
   # - generic-rules
   - goldilocks
-  # - grafana
-  # - intel-gpu-exporter
-  # - kube-prometheus-stack
-  # - loki
+  - grafana
+  - intel-gpu-exporter
+  - kube-prometheus-stack
+  - loki
+  - node-problem-detector
   # - snmp-exporter
   # - thanos
   # - unifi-poller

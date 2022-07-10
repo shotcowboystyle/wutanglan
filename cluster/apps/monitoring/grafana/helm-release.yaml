@@ -2,37 +2,48 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: &app grafana
+  name: grafana
   namespace: monitoring
 spec:
-  interval: 15m
+  interval: 5m
   chart:
     spec:
+      # renovate: registryUrl=https://grafana.github.io/helm-charts
       chart: grafana
       version: 6.32.2
       sourceRef:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
-      interval: 15m
+      interval: 5m
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
     remediation:
-      retries: 5
+      retries: 3
   values:
-    replicas: 3
+    deploymentStrategy:
+      type: Recreate
+    replicas: 1
+    admin:
+      existingSecret: "grafana"
+      userKey: admin-user
+      passwordKey: admin-pass
     env:
       GF_EXPLORE_ENABLED: true
       GF_PANELS_DISABLE_SANITIZE_HTML: true
       GF_LOG_FILTERS: rendering:debug
+      GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_DATE_FORMATS_FULL_DATE: "MMM Do, YYYY hh:mm:ss a"
-      GF_SECURITY_ALLOW_EMBEDDING: true
-      GF_SECURITY_COOKIE_SAMESITE: grafana
-    admin:
-      existingSecret: *app
+      GF_DATE_FORMATS_INTERVAL_SECOND: "hh:mm:ss a"
+      GF_DATE_FORMATS_INTERVAL_MINUTE: "hh:mm a"
+      GF_DATE_FORMATS_INTERVAL_HOUR: "DD/MM hh:mm a"
+      GF_DATE_FORMATS_INTERVAL_DAY: "DD/MM"
+      GF_DATE_FORMATS_INTERVAL_MONTH: "MM-YYYY"
+      GF_DATE_FORMATS_INTERVAL_YEAR: "YYYY"
+      # VAR_BLOCKY_URL: "http://blocky.networking.svc.cluster.local:4000"
     grafana.ini:
       server:
         root_url: "https://grafana.${SECRET_DOMAIN}"
@@ -61,63 +72,145 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
+              # - name: "teslamate"
+              #   orgId: 1
+              #   folder: Teslamate
+              #   type: file
+              #   disableDeletion: false
+              #   # updateIntervalSeconds: -1
+              #   allowUiUpdates: true
+              #   options:
+              #     path: /var/lib/grafana/dashboards/teslamate
     datasources:
       datasources.yaml:
         apiVersion: 1
-        # list of datasources that should be deleted from the database
         deleteDatasources:
           - name: Loki
             orgId: 1
         datasources:
           - name: Prometheus
             type: prometheus
+            url: http://prometheus-operated:9090
             access: proxy
-            url: http://thanos-query:9090/
-            # url: http://mimir-query-frontend.monitoring.svc.cluster.local:8080/prometheus
             isDefault: true
-          - name: Loki
-            type: loki
-            access: proxy
-            url: http://loki-gateway:80
+            # - name: TeslaMate
+            #   type: postgres
+            #   access: proxy
+            #   url: teslamate-postgresql.home.svc.cluster.local:5432
+            #   database: teslamate
+            #   user: teslamate
+            #   secureJsonData:
+            #     password: "$TESLAMATE_DB_PASSWORD"
+            #   jsonData:
+            #     postgresVersion: 1000
+            #     sslmode: disable
     dashboards:
       default:
-        # Ref: https://grafana.com/grafana/dashboards/7845
-        zfs:
-          gnetId: 7845
-          revision: 4
+        # Ref: https://grafana.com/grafana/dashboards/2842
+        # ceph-cluster:
+        #   gnetId: 2842
+        #   revision: 14
+        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/5336
+        # ceph-osd:
+        #   gnetId: 5336
+        #   revision: 5
+        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/5342
+        # ceph-pools:
+        #   gnetId: 5342
+        #   revision: 5
+        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/11315
+        # nginx-dashboard:
+        #   url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
+        #   datasource: Prometheus
+        # blocky:
+        #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-grafana.json
+        #   datasource: Prometheus
+        flux-cluster:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
           datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/13502
-        minio:
-          gnetId: 13502
-          revision: 10
+        flux-control-plane:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
           datasource: Prometheus
         # Ref: https://grafana.com/grafana/dashboards/11315
-        unifi-client-insights:
-          gnetId: 11315
-          revision: 8
-          datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/11311
-        unifi-network-sites:
-          gnetId: 11311
-          revision: 4
-          datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/11314
-        unifi-uap-insights:
-          gnetId: 11314
-          revision: 9
-          datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/11312
-        unifi-usw-insights:
-          gnetId: 11312
-          revision: 8
-          datasource: Prometheus
+        # unifi-client-insights:
+        #   gnetId: 11315
+        #   revision: 8
+        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/11311
+        # unifi-network-sites:
+        #   gnetId: 11311
+        #   revision: 4
+        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/11314
+        # unifi-uap-insights:
+        #   gnetId: 11314
+        #   revision: 9
+        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/11312
+        # unifi-usw-insights:
+        #   gnetId: 11312
+        #   revision: 8
+        #   datasource: Prometheus
+        # teslamate:
+        #   charge-level:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/charge-level.json
+        #     # datasource: TeslaMate
+        #   charges:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/charges.json
+        #     # datasource: TeslaMate
+        #   charging-stats:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/charging-stats.json
+        #     # datasource: TeslaMate
+        #   drive-stats:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/drive-stats.json
+        #     # datasource: TeslaMate
+        #   drives:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/drives.json
+        #     # datasource: TeslaMate
+        #   efficiency:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/efficiency.json
+        #     # datasource: TeslaMate
+        #   locations:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/locations.json
+        #     # datasource: TeslaMate
+        #   mileage:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/mileage.json
+        #     # datasource: TeslaMate
+        #   overview:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/overview.json
+        #     # datasource: TeslaMate
+        #   projected-range:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/projected-range.json
+        #     # datasource: TeslaMate
+        #   states:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/states.json
+        #     # datasource: TeslaMate
+        #   trip:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/trip.json
+        #     # datasource: TeslaMate
+        #   updates:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/updates.json
+        #     # datasource: TeslaMate
+        #   vampire-drain:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/vampire-drain.json
+        #     # datasource: TeslaMate
+        #   visited:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/visited.json
+        #     # datasource: TeslaMate
+        #   charge-details:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/internal/charge-details.json
+        #   drive-details:
+        #     url: https://raw.githubusercontent.com/adriankumpf/teslamate/v1.26.1/grafana/dashboards/internal/drive-details.json
     sidecar:
       dashboards:
         enabled: true
         searchNamespace: ALL
-        # folderAnnotation: grafana_folder
-        # provider:
-        #   foldersFromFilesStructure: true
+        folderAnnotation: grafana_folder
+        provider:
+          foldersFromFilesStructure: true
       datasources:
         enabled: true
         searchNamespace: ALL
@@ -125,48 +218,35 @@ spec:
       - natel-discrete-panel
       - pr0ps-trackmap-panel
       - grafana-piechart-panel
-      - vonage-status-panel
-      - grafana-worldmap-panel
       - grafana-clock-panel
-    # serviceMonitor:
-    #   enabled: true
+      - vonage-status-panel
+      - https://github.com/panodata/grafana-map-panel/releases/download/0.15.0/grafana-map-panel-0.15.0.zip;grafana-worldmap-panel-ng
+    serviceMonitor:
+      enabled: true
     ingress:
-      main:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
-          # hajimari.io/enable: "true"
-          # hajimari.io/icon: cloud-download
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
-          # nginx.ingress.kubernetes.io/affinity: "cookie"
-          # nginx.ingress.kubernetes.io/session-cookie-name: "grafana"
-          # nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
-          # nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-        hosts:
-          - host: &host grafana.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - *host
-            secretName: "grafana-tls"
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-staging"
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "server-network"
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+      hosts:
+        - host: &host "grafana.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+          secretName: "grafana-tls"
+
+    serviceAccount:
+      create: true
+      autoMount: true
     persistence:
-      enabled: false
-      # type: statefulset
-      # storageClassName: "ceph-block"
-      # size: 10Gi
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - grafana
-              topologyKey: kubernetes.io/hostname
+      enabled: true
+      existingClaim: grafana-data-pvc
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: "grafana"

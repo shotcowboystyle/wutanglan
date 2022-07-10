@@ -5,159 +5,142 @@ metadata:
   name: loki
   namespace: monitoring
 spec:
-  interval: 15m
+  interval: 5m
   chart:
     spec:
-      chart: loki-simple-scalable
-      version: 1.6.2
+      chart: loki-stack
+      version: 2.6.5
       sourceRef:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
-      interval: 15m
-  install:
-    createNamespace: true
-    remediation:
-      retries: 5
-  upgrade:
-    remediation:
-      retries: 5
+      interval: 5m
   values:
     loki:
-      structuredConfig:
-        auth_enabled: false
-        server:
-          log_level: info
-          http_listen_port: 3100
-          grpc_listen_port: 9095
-        memberlist:
-          join_members: ["loki-memberlist"]
-        limits_config:
-          retention_period: 14d
-          enforce_metric_name: false
-          reject_old_samples: true
-          reject_old_samples_max_age: 168h
-          max_cache_freshness_per_query: 10m
-          split_queries_by_interval: 15m
-          ingestion_rate_mb: 8
-          ingestion_burst_size_mb: 16
-        schema_config:
-          configs:
-            - from: "2021-08-01"
-              store: boltdb-shipper
-              object_store: s3
-              schema: v11
-              index:
-                prefix: loki_index_
-                period: 24h
-        common:
-          path_prefix: /var/loki
-          replication_factor: 3
-          storage:
-            s3:
-              s3: null
-              insecure: true
-              s3forcepathstyle: true
-          ring:
-            kvstore:
-              store: memberlist
+      image:
+        repository: grafana/loki
+        tag: 2.5.0
+      isDefault: false
+      config:
+        table_manager:
+          retention_deletes_enabled: true
+          retention_period: 168h
         ruler:
-          enable_api: true
-          enable_alertmanager_v2: true
-          alertmanager_url: http://kube-prometheus-stack-alertmanager:9093
           storage:
             type: local
             local:
               directory: /rules
           rule_path: /tmp/scratch
+          alertmanager_url: http://kube-prometheus-stack-alertmanager:9093
           ring:
             kvstore:
-              store: memberlist
-        distributor:
-          ring:
-            kvstore:
-              store: memberlist
-        compactor:
-          working_directory: /var/loki/boltdb-shipper-compactor
-          shared_store: s3
-          compaction_interval: 10m
-          retention_enabled: true
-          retention_delete_delay: 2h
-          retention_delete_worker_count: 150
-        ingester:
-          max_chunk_age: 1h
-          lifecycler:
-            ring:
-              kvstore:
-                store: memberlist
-        analytics:
-          reporting_enabled: false
-    gateway:
-      enabled: true
-      replicas: 3
-      ingress:
-        main:
-          enabled: true
-          ingressClassName: "traefik"
-          annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-staging"
-            # hajimari.io/enable: "true"
-            # hajimari.io/icon: cloud-download
-            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-            traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
-          hosts:
-            - host: &host loki.${SECRET_DOMAIN}
-              paths:
-                - path: /
-                  pathType: Prefix
-          tls:
-            - hosts:
-                - *host
-              secretName: "loki-tls"
-    write:
-      replicas: 3
+              store: inmemory
+          enable_api: true
       persistence:
-        size: 10Gi
-        storageClass: ceph-block
-    read:
-      replicas: 3
-      extraVolumeMounts:
-        - name: loki-rules
-          mountPath: /rules/fake
-        - name: loki-rules-tmp
-          mountPath: /tmp/scratch
-        - name: loki-tmp
-          mountPath: /tmp/loki-tmp
-      extraVolumes:
-        - name: loki-rules
-          configMap:
-            name: loki-alerting-rules
-        - name: loki-rules-tmp
-          emptyDir: {}
-        - name: loki-tmp
-          emptyDir: {}
-      persistence:
-        size: 10Gi
-        storageClass: ceph-block
-    monitoring:
-      selfMonitoring:
-        enabled: false
-        grafanaAgent:
-          installOperator: false
-  valuesFrom:
-    - targetPath: loki.structuredConfig.common.storage.s3.bucketnames
-      kind: ConfigMap
-      name: loki-chunks-bucket-v1
-      valuesKey: BUCKET_NAME
-    - targetPath: loki.structuredConfig.common.storage.s3.endpoint
-      kind: ConfigMap
-      name: loki-chunks-bucket-v1
-      valuesKey: BUCKET_HOST
-    - targetPath: loki.structuredConfig.common.storage.s3.access_key_id
-      kind: Secret
-      name: loki-chunks-bucket-v1
-      valuesKey: AWS_ACCESS_KEY_ID
-    - targetPath: loki.structuredConfig.common.storage.s3.secret_access_key
-      kind: Secret
-      name: loki-chunks-bucket-v1
-      valuesKey: AWS_SECRET_ACCESS_KEY
+        enabled: true
+        size: 5Gi
+      serviceMonitor:
+        enabled: true
+      alerting_groups:
+        #
+        # SMART Failures
+        #
+        - name: smart-failure
+          rules:
+            - alert: SmartFailures
+              expr: |
+                sum by (hostname) (count_over_time({hostname=~".+"} | json | _SYSTEMD_UNIT = "smartmontools.service" !~ "(?i)previous self-test completed without error" !~ "(?i)Prefailure" |~ "(?i)(error|fail)"[2m])) > 0
+              for: 2m
+              labels:
+                severity: critical
+                category: logs
+              annotations:
+                summary: "SMART has reported failures on host {{ $labels.hostname }}"
+        #
+        # frigate
+        #
+        - name: frigate
+          rules:
+            - alert: FrigateUnableToReachMQTT
+              expr: |
+                sum(count_over_time({app="frigate"} |~ "(?i)unable to connect to mqtt server"[2m])) > 0
+              for: 2m
+              labels:
+                severity: critical
+                category: logs
+              annotations:
+                summary: "Frigate is unable to reach MQTT"
+        #
+        # *arr
+        #
+        # - name: arr
+        #   rules:
+        #     - alert: ArrDatabaseIsLocked
+        #       expr: |
+        #         sum by (app) (count_over_time({app=~".*arr"} |~ "(?i)database is locked"[2m])) > 0
+        #       for: 2m
+        #       labels:
+        #         severity: critical
+        #         category: logs
+        #       annotations:
+        #         summary: "{{ $labels.app }} is experiencing locked database issues"
+        #     - alert: ArrDatabaseIsMalformed
+        #       expr: |
+        #         sum by (app) (count_over_time({app=~".*arr"} |~ "(?i)database disk image is malformed"[2m])) > 0
+        #       for: 2m
+        #       labels:
+        #         severity: critical
+        #         category: logs
+        #       annotations:
+        #         summary: "{{ $labels.app }} is experiencing malformed database disk image issues"
+        #
+        # home-assistant
+        #
+        - name: home-assistant
+          rules:
+            - alert: HomeAssistantUnableToReachPostgresql
+              expr: |
+                sum by (app) (count_over_time({app="home-assistant"} |~ "(?i)error in database connectivity"[2m])) > 0
+              for: 2m
+              labels:
+                severity: critical
+                category: logs
+              annotations:
+                summary: "Home Assistant is unable to connect to postgresql"
+    #
+    # valetudo
+    #
+    # - name: valetudo
+    #   rules:
+    #     - alert: ValetudoUnableToReachMQTT
+    #       expr: |
+    #         sum by (hostname) (count_over_time({hostname="valetudo"} |~ "(?i).*error.*mqtt.*"[2m])) > 0
+    #       for: 2m
+    #       labels:
+    #         severity: critical
+    #         category: logs
+    #       annotations:
+    #         summary: "Valetudo is unable to connect to mqtt"
+    #
+    # node-red
+    #
+    # - name: node-red
+    #   rules:
+    #     - alert: NodeRedUnableToReachHomeAssistant
+    #       expr: |
+    #         sum by (app) (count_over_time({app="node-red"} |~ "(?i)home assistant.*connecting to undefined"[2m])) > 0
+    #       for: 2m
+    #       labels:
+    #         severity: critical
+    #         category: logs
+    #       annotations:
+    #         summary: "Node-Red is unable to connect to Home Assistant"
+
+    promtail:
+      serviceMonitor:
+        enabled: true
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists

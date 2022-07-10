@@ -21,7 +21,7 @@ spec:
     config:
       recommendations: false
       settings:
-        clustername: home-cluster
+        clustername: wutanglan
         kubectl:
           enabled: true
           restrictAccess: true
