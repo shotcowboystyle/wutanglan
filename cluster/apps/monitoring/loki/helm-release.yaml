@@ -39,8 +39,8 @@ spec:
       persistence:
         enabled: true
         size: 5Gi
-      serviceMonitor:
-        enabled: true
+      # serviceMonitor:
+      #   enabled: true
       alerting_groups:
         #
         # SMART Failures
@@ -137,8 +137,8 @@ spec:
     #         summary: "Node-Red is unable to connect to Home Assistant"
 
     promtail:
-      serviceMonitor:
-        enabled: true
+      # serviceMonitor:
+      #   enabled: true
       tolerations:
         - effect: NoSchedule
           operator: Exists
