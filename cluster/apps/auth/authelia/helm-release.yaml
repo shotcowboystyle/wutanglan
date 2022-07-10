@@ -149,3 +149,8 @@ spec:
     persistence:
       enabled: true
       existingClaim: authelia-data-pvc
+    podSecurityContext:
+      runAsUser: 1031
+      runAsGroup: 65537
+      supplementalGroups:
+        - 100
