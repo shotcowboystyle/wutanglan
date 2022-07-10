@@ -8,34 +8,57 @@ spec:
   interval: 5m
   chart:
     spec:
+      # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      version: 36.2.1
+      version: 35.6.2
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
       interval: 5m
   values:
-    prometheus-node-exporter:
-      tolerations:
-        - effect: NoSchedule
-          operator: Exists
-        - effect: NoExecute
-          operator: Exists
-    prometheusOperator:
-      createCustomResource: false
-    kubeControllerManager:
-      enabled: false
-    kubeScheduler:
-      enabled: false
-    kubeEtcd:
-      enabled: false
-    kubeProxy:
-      enabled: false
+    fullnameOverride: prometheus
     alertmanager:
-      image:
-        repository: quay.io/prometheus/alertmanager
-        tag: v0.24.0
+      config:
+        global:
+          slack_api_url: "${SECRET_ALERT_MANAGER_DISCORD_WEBHOOK}"
+          resolve_timeout: 5m
+        receivers:
+          - name: "discord"
+            slack_configs:
+              - channel: "#prometheus"
+                icon_url: https://avatars3.githubusercontent.com/u/3380462
+                username: "${SECRET_ALERT_MANAGER_DISCORD_USERNAME}"
+                send_resolved: true
+                title: |-
+                  [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if ne .CommonAnnotations.summary ""}}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}
+                text: >-
+                  {{ range .Alerts -}}
+                    **Alert:** {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+
+                  **Description:** {{ if ne .Annotations.description ""}}{{ .Annotations.description }}{{else}}N/A{{ end }}
+
+                  **Details:**
+                    {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+                    {{ end }}
+                  {{ end }}
+        route:
+          group_by: ["alertname", "job"]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 6h
+          receiver: "discord"
+          routes:
+            - receiver: "discord"
+              match_re:
+                severity: critical
+              continue: true
+        inhibit_rules:
+          - source_match:
+              severity: "critical"
+            target_match:
+              severity: "warning"
+            equal: ["alertname", "namespace"]
       ingress:
         enabled: true
         ingressClassName: "traefik"
@@ -46,124 +69,94 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
         hosts:
-          - host: &host "alert-manager.${SECRET_DOMAIN}"
+          - host: &alertManagerHost "alert-manager.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - *host
+              - *alertManagerHost
             secretName: "alert-manager-tls"
-
-      config:
-        global:
-          slack_api_url: "${SECRET_ALERT_MANAGER_DISCORD_WEBHOOK}"
-          resolve_timeout: 5m
-        receivers:
-          - name: "null"
-          - name: "discord"
-            slack_configs:
-              - channel: "#prometheus"
-                icon_url: https://avatars3.githubusercontent.com/u/3380462
-                username: "Prometheus"
-                send_resolved: true
-                # https://github.com/onedr0p/home-cluster/blob/main/cluster/apps/monitoring/kube-prometheus-stack/helm-release.yaml#L33
-                title: |-
-                  [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if ne .CommonAnnotations.summary ""}}{{ .CommonAnnotations.summary }} {{ else if ne .CommonAnnotations.message ""}}{{ .CommonAnnotations.message }} {{ else if ne .CommonAnnotations.description ""}}{{ .CommonAnnotations.description }} {{ else }}{{ .CommonLabels.alertname }}{{ end }}
-                text: >-
-                  {{ range .Alerts -}}
-                    **Alert:** {{ .Annotations.title }}{{ if .Labels.severity }} `{{ .Labels.severity }}`{{ end }}
-                  {{ if ne .Annotations.summary ""}}**Summary:** {{ .Annotations.summary }} {{ else if ne .Annotations.message ""}}**Message:** {{ .Annotations.message }} {{ else if ne .Annotations.description ""}}**Description:** {{ .Annotations.description }}{{ end }}
-                    **Details:**
-                    {{ range .Labels.SortedPairs }} • {{ .Name }}: `{{ .Value }}`
-                    {{ end }}
-                  {{ end }}
-        route:
-          group_by: ["alertname", "job"]
-          group_wait: 30s
-          group_interval: 5m
-          repeat_interval: 6h
-          receiver: "discord"
-          routes:
-            - receiver: "null"
-              matchers:
-                - severity =~ "none"
-            - receiver: "discord"
-    # grafana:
-    #   enabled: true
-    #   image:
-    #     repository: grafana/grafana
-    #     tag: 9.0.2
-    #   admin:
-    #     existingSecret: grafana-secrets
-    #   dashboardProviders:
-    #     dashboardproviders.yaml:
-    #       apiVersion: 1
-    #       providers:
-    #         - name: "default"
-    #           orgId: 1
-    #           folder: ""
-    #           type: file
-    #           disableDeletion: false
-    #           editable: true
-    #           options:
-    #             path: /var/lib/grafana/dashboards/default
-    #   dashboards:
-    #     default:
-    #       # # Ref: https://grafana.com/grafana/dashboards/13502
-    #       # minio:
-    #       #   gnetId: 13502
-    #       #   revision: 10
-    #       #   datasource: Prometheus
-    #       flux-cluster:
-    #         url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
-    #         datasource: Prometheus
-    #       flux-control-plane:
-    #         url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
-    #         datasource: Prometheus
-    #       ingress-nginx:
-    #         gnetId: 9614
-    #         revision: 1
-    #         datasource: Prometheus
-    #       cert-manager:
-    #         gnetId: 11001
-    #         revision: 1
-    #         datasource: Prometheus
-    #       redis:
-    #         gnetId: 11835
-    #         revision: 1
-    #         datasource: Prometheus
-    #       postgresql:
-    #         gnetId: 9628
-    #         revision: 7
-    #         datasource: Prometheus
-    #   sidecar:
-    #     dashboards:
-    #       enabled: true
-    #       searchNamespace: ALL
-    #     datasources:
-    #       enabled: true
-    #       searchNamespace: ALL
-    #   serviceMonitor:
-    #     enabled: true
-    #   ingress:
-    #     enabled: true
-    #     pathType: Prefix
-    #     ingressClassName: "nginx"
-    #     annotations:
-    #       external-dns.alpha.kubernetes.io/target: "${SECRET_VPN_GATEWAY_IP}"
-    #       external-dns/is-public: "true"
-    #       nginx.ingress.kubernetes.io/auth-url: http://authelia.networking.svc.cluster.local/api/verify
-    #       nginx.ingress.kubernetes.io/auth-signin: https://auth.${SECRET_DOMAIN}
-    #     hosts:
-    #       - "grafana.${SECRET_DOMAIN}"
-    #     tls:
-    #       - hosts:
-    #           - "grafana.${SECRET_DOMAIN}"
+            # secretName: "alert-manager-${SECRET_DOMAIN/./-}-tls"
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: "nfs-client"
+              resources:
+                requests:
+                  storage: 1Gi
+    nodeExporter:
+      serviceMonitor:
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels:
+              - __meta_kubernetes_pod_node_name
+            targetLabel: kubernetes_node
+    # kube-state-metrics:
+    #   fullnameOverride: kube-state-metrics
+    # prometheus-node-exporter:
+    #   fullnameOverride: node-exporter
+    grafana:
+      forceDeployDashboards: true
+      sidecar:
+        dashboards:
+          multicluster:
+            etcd:
+              enabled: true
+    kubelet:
+      enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          - action: replace
+            sourceLabels:
+              - node
+            targetLabel: instance
+    kubeApiServer:
+      enabled: true
+    kubeControllerManager:
+      enabled: true
+      endpoints:
+        - 10.2.1.1
+        - 10.2.1.2
+        - 10.2.1.3
+      serviceMonitor:
+        https: true
+        insecureSkipVerify: true
+      service:
+        enabled: true
+        port: 10257
+    kubeScheduler:
+      enabled: true
+      endpoints:
+        - 10.2.1.1
+        - 10.2.1.2
+        - 10.2.1.3
+      service:
+        port: 10259
+    kubeProxy:
+      enabled: true
+      endpoints:
+        - 10.2.1.1
+        - 10.2.1.2
+        - 10.2.1.3
+      service:
+        port: 10249
+    kubeEtcd:
+      enabled: true
+      endpoints:
+        - 10.1.1.1
+        - 10.1.1.2
+        - 10.1.1.3
+      service:
+        enabled: true
+        port: 2381
+    # Setting this option to 0 disabled CPU limits
+    prometheusOperator:
+      configReloaderCpu: 0
     prometheus:
-      image:
-        repository: quay.io/prometheus/prometheus
-        tag: v2.36.2
       ingress:
         enabled: true
         ingressClassName: "traefik"
@@ -174,31 +167,57 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
         hosts:
-          - host: &host "prometheus.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
+          - &host "prometheus.${SECRET_DOMAIN}"
         tls:
           - hosts:
               - *host
             secretName: "prometheus-tls"
+            # secretName: "prometheus-${SECRET_DOMAIN/./-}-tls"
+      # thanosService:
+      #   enabled: true
+      # thanosServiceMonitor:
+      #   enabled: true
       prometheusSpec:
+        replicas: 1
+        replicaExternalLabelName: "replica"
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
-        retention: 7d
+        retention: 6h
+        enableAdminAPI: true
+        walCompression: true
         storageSpec:
           volumeClaimTemplate:
             spec:
+              storageClassName: "nfs-client"
               resources:
                 requests:
-                  storage: 25Gi
-                  # additionalScrapeConfigs:
-                  # - job_name: node-exporter
-                  #   honor_timestamps: true
-                  #   static_configs:
-                  #   - targets:
-                  #     - "192.168.1.10:9100"
-                  #     - "192.168.1.11:9100"
-                  #     - "192.168.1.15:9100"
+                  storage: 10Gi
+        # thanos:
+        #   image: quay.io/thanos/thanos:v0.23.0
+        #   version: v0.22.0
+        #   objectStorageConfig:
+        #     name: thanos-objstore
+        #     key: objstore.yml
+        podDisruptionBudget:
+          enabled: true
+          minAvailable: 1
+        # additionalScrapeConfigs:
+        #   - job_name: "coredns"
+        #     honor_timestamps: true
+        #     static_configs:
+        #       - targets:
+        #           - "10.2.0.1:9153"
+        #   - job_name: "node-exporter"
+        #     honor_timestamps: true
+        #     static_configs:
+        #       - targets:
+        #           - "10.2.0.1:9100"
+        #   - job_name: "weather"
+        #     static_configs:
+        #       - targets:
+        #           - "wttr.in"
+        #     metrics_path: "/${SECRET_PROMETHEUS_NODE_EXPORTER_WEATHER_LOCATION}"
+        #     params:
+        #       format: ["p1"]

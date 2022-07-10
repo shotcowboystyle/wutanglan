@@ -14,7 +14,7 @@ resources:
   - node-problem-detector
   # - snmp-exporter
   # - thanos
-  # - unifi-poller
+  - unifi-poller
   # - uptimerobot-heartbeat
   # - vector
   # - vpa

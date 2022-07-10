@@ -142,20 +142,23 @@ spec:
         # filesystem:
         #   filename: /config/notification.txt
         smtp:
+          enabled: true
+          enabledSecret: true
           host: ${SMTP_HOST}
-          port: 567
+          port: 587
           timeout: 10s
           username: "${SECRET_SMTP_USERNAME}"
-          password: ${SECRET_SMTP_PASSWORD}
-          sender: "Authelia <authelia@${SECRET_DOMAIN}>"
-          identifier: "${SECRET_DOMAIN}"
+          # password: ${SECRET_SMTP_PASSWORD}
+          sender: "Authelia <curt.blanton+authelia@gmail.com"
+          # identifier: "${SECRET_DOMAIN}"
           subject: "[Authelia] {title}"
           disable_require_tls: false
           disable_html_emails: false
 
-          tls:
-            skip_verify: false
-            minimum_version: TLS1.2
+          # tls:
+          #   server_name: ${SMTP_HOST}
+          #   skip_verify: false
+          #   minimum_version: TLS1.2
     secret:
       existingSecret: authelia
   postRenderers:

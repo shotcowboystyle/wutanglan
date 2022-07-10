@@ -5,43 +5,49 @@ metadata:
   name: unifi-poller
   namespace: monitoring
 spec:
-  interval: 15m
+  interval: 5m
   chart:
     spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: unifi-poller
       version: 11.0.0
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
-      interval: 15m
-  install:
-    createNamespace: true
-    remediation:
-      retries: 5
-  upgrade:
-    remediation:
-      retries: 5
+      interval: 5m
   values:
     image:
-      repository: docker.io/golift/unifi-poller
+      repository: golift/unifi-poller
       tag: 2.1.3
     env:
       TZ: "${TIMEZONE}"
       UP_UNIFI_DEFAULT_ROLE: "homelab-controller"
       UP_UNIFI_DEFAULT_URL: "https://unifi.${SECRET_DOMAIN}"
       UP_UNIFI_DEFAULT_VERIFY_SSL: false
-      UP_UNIFI_DEFAULT_USER: "unifipoller"
-      UP_UNIFI_DEFAULT_PASS: "unifipoller"
+      # UP_UNIFI_DEFAULT_USER: "${SECRET_UP_USER}"
+      # UP_UNIFI_DEFAULT_PASS: "${SECRET_UP_PASSWORD}"
       UP_UNIFI_DEFAULT_SAVE_SITES: true
-      UP_UNIFI_DEFAULT_SAVE_DPI: false
+      UP_UNIFI_DEFAULT_SAVE_DPI: true
       UP_INFLUXDB_DISABLE: true
       UP_PROMETHEUS_DISABLE: false
       UP_PROMETHEUS_NAMESPACE: "unifipoller"
     metrics:
       enabled: true
-      serviceMonitor:
-        interval: 2m
-        scrapeTimeout: 30s
+      # serviceMonitor:
+      #   interval: 1m
+      #   scrapeTimeout: 30s
       prometheusRule:
-        enabled: false
+        enabled: true
+
+  valuesFrom:
+    - kind: Secret
+      name: unifi-poller
+      valuesKey: unifi-unpoller-user
+      targetPath: env.UP_UNIFI_DEFAULT_USER
+      optional: false
+    - kind: Secret
+      name: unifi-poller
+      valuesKey: unifi-unpoller-password
+      targetPath: env.UP_UNIFI_DEFAULT_PASS
+      optional: false
