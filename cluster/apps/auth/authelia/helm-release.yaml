@@ -58,7 +58,7 @@ spec:
         type: Recreate
       extraVolumeMounts:
         - name: users-database
-          mountPath: "/config/users"
+          mountPath: /config
       extraVolumes:
         - name: users-database
           configMap:
@@ -74,7 +74,7 @@ spec:
           enabled: false
         file:
           enabled: true
-          path: /config/users/users_database.yml
+          path: /config/users_database.yml
           password:
             algorithm: argon2id
             iterations: 1
@@ -145,16 +145,20 @@ spec:
       notifier:
         disable_startup_check: true
         filesystem:
-          enabled: true
-          filename: /config/notifications/notification.txt
-        smtp:
           enabled: false
+          # filename: /config/notifications/notification.txt
+        smtp:
+          enabled: true
+          enabledSecret: true
+          username: ${SECRET_SMTP_USERNAME}
+          host: ${SMPT_HOST}
+          port: 587
+          sender: ${SECRET_SMTP_USERNAME}
+          identifier: ${SECRET_DOMAIN}
+          subject: "[Authelia] {title}"
+          startup_check_address: ${SECRET_SMTP_USERNAME}
     secret:
       existingSecret: authelia
-    persistence:
-      enabled: true
-      existingClaim: authelia-notification-pvc
-      mountPath: /config/notifications
     podSecurityContext:
       runAsUser: 1031
       runAsGroup: 65537
