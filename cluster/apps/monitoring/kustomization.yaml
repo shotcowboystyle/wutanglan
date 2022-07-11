@@ -7,7 +7,7 @@ resources:
   # - alertmanager-discord
   # - blackbox-exporter
   # - generic-rules
-  - botkube
+  # - botkube
   - goldilocks
   # - grafana
   # - intel-gpu-exporter
@@ -15,7 +15,7 @@ resources:
   - loki
   - node-problem-detector
   # - snmp-exporter
-  - thanos
+  # - thanos
   - unifi-poller
   # - vector
   # - vpa
