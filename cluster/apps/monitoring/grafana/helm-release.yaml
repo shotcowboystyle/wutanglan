@@ -2,50 +2,33 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: grafana
+  name: &app grafana
   namespace: monitoring
 spec:
-  interval: 5m
+  interval: 10m
   chart:
     spec:
-      # renovate: registryUrl=https://grafana.github.io/helm-charts
       chart: grafana
       version: 6.32.2
       sourceRef:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
-      interval: 5m
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     deploymentStrategy:
       type: Recreate
-    replicas: 1
-    admin:
-      existingSecret: "grafana"
-      userKey: admin-user
-      passwordKey: admin-pass
     env:
       GF_EXPLORE_ENABLED: true
       GF_PANELS_DISABLE_SANITIZE_HTML: true
       GF_LOG_FILTERS: rendering:debug
-      GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
-      GF_DATE_FORMATS_FULL_DATE: "MMM Do, YYYY hh:mm:ss a"
-      GF_DATE_FORMATS_INTERVAL_SECOND: "hh:mm:ss a"
-      GF_DATE_FORMATS_INTERVAL_MINUTE: "hh:mm a"
-      GF_DATE_FORMATS_INTERVAL_HOUR: "DD/MM hh:mm a"
-      GF_DATE_FORMATS_INTERVAL_DAY: "DD/MM"
-      GF_DATE_FORMATS_INTERVAL_MONTH: "MM-YYYY"
-      GF_DATE_FORMATS_INTERVAL_YEAR: "YYYY"
+    # adminPassword: ${GRAFANA_ADMIN_PASSWORD}
+    admin:
+      existingSecret: "grafana"
+      userKey: admin-user
+      passwordKey: admin-pass
     grafana.ini:
       server:
-        root_url: "https://grafana.${SECRET_DOMAIN}"
+        root_url: https://grafana.${SECRET_DOMAIN}
       paths:
         data: /var/lib/grafana/data
         logs: /var/log/grafana
@@ -57,13 +40,24 @@ spec:
         mode: console
       grafana_net:
         url: https://grafana.net
-      auth.basic:
-        disable_login_form: false
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://thanos-query:9090/
+            access: proxy
+            isDefault: true
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://loki:3100
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
         providers:
-          - name: "default"
+          - name: default
             orgId: 1
             folder: ""
             type: file
@@ -71,47 +65,15 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
-    datasources:
-      datasources.yaml:
-        apiVersion: 1
-        deleteDatasources:
-          - name: Loki
-            orgId: 1
-        datasources:
-          - name: Prometheus
-            type: prometheus
-            url: http://prometheus-operated:9090
-            access: proxy
-            isDefault: true
     dashboards:
       default:
-        # Ref: https://grafana.com/grafana/dashboards/2842
-        # ceph-cluster:
-        #   gnetId: 2842
-        #   revision: 14
-        #   datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/5336
-        # ceph-osd:
-        #   gnetId: 5336
-        #   revision: 5
-        #   datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/5342
-        # ceph-pools:
-        #   gnetId: 5342
-        #   revision: 5
-        #   datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/11315
-        # nginx-dashboard:
-        #   url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
-        #   datasource: Prometheus
-        # blocky:
-        #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-grafana.json
-        #   datasource: Prometheus
-        flux-cluster:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
+        nginx-dashboard:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
           datasource: Prometheus
-        flux-control-plane:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
+        # Ref: https://grafana.com/grafana/dashboards/12175
+        calico-felix:
+          gnetId: 12175
+          revision: 5
           datasource: Prometheus
         # Ref: https://grafana.com/grafana/dashboards/11315
         unifi-client-insights:
@@ -133,13 +95,21 @@ spec:
           gnetId: 11312
           revision: 8
           datasource: Prometheus
+        # Ref: https://grafana.com/grafana/dashboards/13502
+        minio:
+          gnetId: 13502
+          revision: 12
+          datasource: Prometheus
+        flux-cluster:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
+          datasource: Prometheus
+        flux-control-plane:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
+          datasource: Prometheus
     sidecar:
       dashboards:
         enabled: true
         searchNamespace: ALL
-        folderAnnotation: grafana_folder
-        provider:
-          foldersFromFilesStructure: true
       datasources:
         enabled: true
         searchNamespace: ALL
@@ -147,16 +117,16 @@ spec:
       - natel-discrete-panel
       - pr0ps-trackmap-panel
       - grafana-piechart-panel
-      - grafana-clock-panel
       - vonage-status-panel
-      - https://github.com/panodata/grafana-map-panel/releases/download/0.15.0/grafana-map-panel-0.15.0.zip;grafana-worldmap-panel-ng
+      - grafana-worldmap-panel
+      - grafana-clock-panel
     serviceMonitor:
       enabled: true
     ingress:
       enabled: true
+      ingressClassName: "traefik"
       annotations:
         cert-manager.io/cluster-issuer: "letsencrypt-staging"
-        kubernetes.io/ingress.class: "traefik"
         hajimari.io/enable: "true"
         hajimari.io/icon: "server-network"
         hajimari.io/appName: "Grafana"
@@ -168,11 +138,12 @@ spec:
         - hosts:
             - *host
           secretName: "grafana-tls"
-    serviceAccount:
-      create: true
-      autoMount: true
     persistence:
-      enabled: true
-      existingClaim: grafana-data-pvc
+      enabled: false
     podAnnotations:
-      configmap.reloader.stakater.com/reload: "grafana"
+      configmap.reloader.stakater.com/reload: grafana
+    valuesFrom:
+      - kind: Secret
+        name: *app
+        valuesKey: admin-pass
+        targetPath: adminPassword
