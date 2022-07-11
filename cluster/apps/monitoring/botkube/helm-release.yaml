@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: botkube
-      version: v0.12.4
+      version: v9.99.9
       sourceRef:
         kind: HelmRepository
         name: infracloudio
@@ -28,6 +28,8 @@ spec:
         notiftype: short
       discord:
         enabled: true
+    nodeSelector:
+      beta.kubernetes.io/arch: amd64
     config:
       resources:
         - name: v1/pods
