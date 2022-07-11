@@ -9,7 +9,7 @@ resources:
   # - generic-rules
   # - botkube
   - goldilocks
-  # - grafana
+  - grafana
   # - intel-gpu-exporter
   - kube-prometheus-stack
   - loki
