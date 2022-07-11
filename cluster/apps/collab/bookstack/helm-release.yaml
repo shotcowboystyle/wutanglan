@@ -1,0 +1,136 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: bookstack
+  namespace: collab
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: bookstack
+      version: 5.0.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+      interval: 5m
+  install:
+    timeout: 10m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    timeout: 10m
+    recreate: true
+    cleanupOnFail: true
+  values:
+    imagePullSecrets:
+      - name: "regcred"
+    image:
+      repository: ghcr.io/linuxserver/bookstack
+      pullPolicy: IfNotPresent
+      tag: "version-v21.12"
+
+    env:
+      TZ: ${CLUSTER_TZ}
+      APP_ENV: production
+      APP_URL: https://bookstack.${SECRET_DOMAIN}/
+      APP_VIEWS_BOOKS: list
+      APP_VIEWS_BOOKSHELVES: grid
+      APP_VIEWS_BOOKSHELF: grid
+      APP_DEFAULT_DARK_MODE: "true"
+      AVATAR_URL: https://seccdn.libravatar.org/avatar/${hash}?s=${size}&d=identicon
+      DB_HOST: localhost
+      DB_PORT: 3306
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: ${SECRET_BOOKSTACK_DB_PASSWORD}
+      MAIL_FROM_NAME: "BookStack"
+      MAIL_FROM: ${SECRET_SMTP_USER}
+      MAIL_HOST: ${SECRET_SMTP}
+      MAIL_PORT: 587
+      MAIL_USERNAME: ${SECRET_SMTP_USER}
+      MAIL_PASSWORD: ${SECRET_SMTP_PASSWORD}
+      MAIL_ENCRYPTION: SSL
+      AUTH_METHOD: oidc
+      OIDC_NAME: Authentik
+      OIDC_DISPLAY_NAME_CLAIMS: name
+      OIDC_CLIENT_ID: bookstack
+      OIDC_CLIENT_SECRET: ${SECRET_BOOKSTACK_OIDC_CLIENT_SECRET}
+      OIDC_ISSUER: https://id.${SECRET_DOMAIN}/application/o/bookstack/
+      OIDC_ISSUER_DISCOVER: true
+      OIDC_AUTH_ENDPOINT: https://id.${SECRET_DOMAIN}/application/o/authorize/
+      OIDC_TOKEN_ENDPOINT: https://id.${SECRET_DOMAIN}/application/o/token/
+      STORAGE_TYPE: s3
+      STORAGE_S3_KEY: ${SECRET_MINIO_ACCESS_KEY}
+      STORAGE_S3_SECRET: ${SECRET_MINIO_SECRET_KEY}
+      STORAGE_S3_BUCKET: bookstack
+      STORAGE_S3_REGION: minio
+      STORAGE_S3_ENDPOINT: https://${SECRET_MINIO_HOST}
+
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        existingClaim: bookstack-config
+
+    mariadb:
+      enabled: true
+      image:
+        repository: bitnami/mariadb
+        tag: "10.8.3"
+      architecture: standalone
+
+      auth:
+        database: bookstack
+        username: bookstack
+        password: ${SECRET_BOOKSTACK_DB_PASSWORD}
+        rootPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
+        replicationUser: replication
+        replicationPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
+
+      primary:
+        hostAliases:
+          - ip: "127.0.0.1"
+            hostnames:
+              - "mysql"
+        persistence:
+          enabled: true
+          existingClaim: bookstack-db
+
+    service:
+      main:
+        annotations:
+          prometheus.io/probe: "true"
+          prometheus.io/protocol: http
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "books"
+          kubernetes.io/tls-acme: "true"
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          external-dns/is-public: "true"
+          haproxy-ingress-proxy.pfsense.org/enabled: "true"
+          haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
+          haproxy-ingress-proxy.pfsense.org/backend: "nginx-443"
+          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+        hosts:
+          - host: bookstack.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "bookstack.${SECRET_DOMAIN}"
+            secretName: "${SECRET_DOMAIN//./-}-tls"

@@ -1,0 +1,144 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: gollum
+  namespace: collab
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: ./charts/kah-common/
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+      interval: 5m
+  install:
+    timeout: 10m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    timeout: 10m
+    recreate: true
+    cleanupOnFail: true
+  values:
+    imagePullSecrets:
+      - name: "regcred"
+    nameOverride: gollum
+    image:
+      repository: gollumorg/gollum
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      main:
+        ports:
+          http:
+            port: 4567
+    env:
+      TZ: ${CLUSTER_TZ}
+      GITHUB_TOKEN: ${SECRET_GITHUB_TOKEN}
+      GIT_AUTHOR_EMAIL: ${SECRET_EMAIL}
+      GIT_COMMITTER_EMAIL: ${SECRET_EMAIL}
+      OMNIGOLLUM_AUTHORIZED_USERS: ${SECRET_SMTP_USER}
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          kubernetes.io/tls-acme: "true"
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          external-dns/is-public: "true"
+          haproxy-ingress-proxy.pfsense.org/enabled: "true"
+          haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
+          haproxy-ingress-proxy.pfsense.org/backend: "nginx-443"
+          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+        hosts:
+          - host: ${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+          - host: www.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "${SECRET_DOMAIN}"
+              - "www.${SECRET_DOMAIN}"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
+
+    # -- Configure persistence settings for the chart under this key.
+    # @default -- See values.yaml
+    persistence:
+      wiki:
+        enabled: true
+        mountPath: /wiki
+        existingClaim: gollum-config-v1
+
+    gollum:
+      # -- Branch to pull
+      gitBranch: master
+      # -- Repository URL to pull (accepts access tokens)
+      # Example: https://user:access-token@git.example.com/user/repo.git
+      gitUrl: https://dfroberg:${SECRET_GITHUB_TOKEN}@github.com/dfroberg/docs.git
+
+      # -- Additional arguments for starting gollum
+      additionalArgs:
+        - --css
+        - --js
+        - --h1_title
+      # -- Command run during the sync cron
+      syncCommand: git pull && git push
+      # -- Gollum config.rb customizations
+      # [[ref]](https://github.com/gollum/gollum#config-file)
+      config: |
+        Gollum::Page.send :remove_const, :FORMAT_NAMES if defined? Gollum::Page::FORMAT_NAMES
+        wiki_options = {
+          :live_preview => true,
+          :allow_uploads => true,
+          :per_page_uploads => true,
+          :allow_editing => true,
+          :css => true,
+          :js => true,
+          :mathjax => true,
+          :h1_title => true,
+          :emoji => true,
+          :universal_toc => true,
+          :template-dir => 'templates'
+        }
+        Precious::App.set(:wiki_options, wiki_options)
+
+        # Push and pull on commit
+        Gollum::Hook.register(:post_commit, :hook_id) do |committer, sha1|
+            committer.wiki.repo.git.pull('origin', committer.wiki.ref)
+            committer.wiki.repo.git.push('origin', committer.wiki.ref)
+        end
+        require 'omnigollum'
+        require 'omniauth/strategies/twitter'
+        require 'omniauth/strategies/open_id'
+        options = {
+          # OmniAuth::Builder block is passed as a proc
+          :providers => Proc.new do
+            provider :twitter, 'CONSUMER_KEY', 'CONSUMER_SECRET'
+            provider :open_id, OpenID::Store::Filesystem.new('/tmp')
+          end,
+          :dummy_auth => false
+        }
+        # :omnigollum options *must* be set before the Omnigollum extension is registered
+        Precious::App.set(:omnigollum, options)
+        options[:authorized_users] = ENV["OMNIGOLLUM_AUTHORIZED_USERS"].split(",")
+        Precious::App.register Omnigollum::Sinatra
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 500Mi
