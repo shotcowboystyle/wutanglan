@@ -27,7 +27,7 @@ spec:
       podSecurityContext:
         fsGroup: 1001
         supplementalGroups:
-          - 100
+          - 65537
       persistence:
         enabled: true
         existingClaim: authelia-postgresql-data
