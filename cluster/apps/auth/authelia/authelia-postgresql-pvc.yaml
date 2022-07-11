@@ -4,22 +4,25 @@ kind: PersistentVolume
 metadata:
   name: authelia-postgresql-data-pv
   namespace: auth
-  labels:
-    app.kubernetes.io/name: "authelia-postgresql"
 spec:
+  storageClassName: authelia-postgres-nfs
   capacity:
     storage: 4Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
-  mountOptions:
-    - nfsvers=4.1
-    - hard
   nfs:
-    path: /volume2/DockerVol/authelia_postgres_data
     server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/authelia_postgres_data"
+  mountOptions:
+    - nfsvers=4
+    - tcp
+    - intr
+    - hard
+    - noatime
+    - nodiratime
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -27,7 +30,7 @@ metadata:
   name: authelia-postgresql-data
   namespace: auth
 spec:
-  storageClassName: nfs
+  storageClassName: authelia-postgres-nfs
   accessModes:
     - ReadWriteOnce
   resources:

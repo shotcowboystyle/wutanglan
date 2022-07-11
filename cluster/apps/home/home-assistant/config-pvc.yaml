@@ -5,25 +5,24 @@ metadata:
   name: home-assistant-config-pv
   namespace: home
 spec:
+  storageClassName: hassio-nfs
   capacity:
     storage: 5Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/homeassistant_data"
   mountOptions:
-    - nfsvers=4.1
+    - nfsvers=4
     - tcp
     - intr
     - hard
     - noatime
     - nodiratime
-    - rsize=1048576
-    - wsize=1048576
-  nfs:
-    path: /volume2/DockerVol/homeassistant_data
-    server: ${NAS_ADDR}
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -31,7 +30,7 @@ metadata:
   name: home-assistant-config-pvc
   namespace: home
 spec:
-  storageClassName: nfs
+  storageClassName: hassio-nfs
   accessModes:
     - ReadWriteMany
   resources:

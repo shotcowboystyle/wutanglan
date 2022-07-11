@@ -4,28 +4,25 @@ kind: PersistentVolume
 metadata:
   name: transmission-config-pv
   namespace: media
-  labels:
-    app.kubernetes.io/name: "transmission"
 spec:
+  storageClassName: transmission-config-nfs
   capacity:
     storage: 1Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/transmission_data"
   mountOptions:
-    - nfsvers=4.1
+    - nfsvers=4
     - tcp
     - intr
     - hard
     - noatime
     - nodiratime
-    # - rsize=1048576
-    # - wsize=1048576
-  nfs:
-    path: /volume2/DockerVol/transmission_data
-    server: ${NAS_ADDR}
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -33,7 +30,7 @@ metadata:
   name: transmission-config-pvc
   namespace: media
 spec:
-  storageClassName: nfs
+  storageClassName: transmission-config-nfs
   accessModes:
     - ReadWriteMany
   resources:

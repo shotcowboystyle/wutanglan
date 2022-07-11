@@ -4,28 +4,25 @@ kind: PersistentVolume
 metadata:
   name: transmission-media-pv
   namespace: media
-  labels:
-    app.kubernetes.io/name: "transmission"
 spec:
+  storageClassName: transmission-media-nfs
   capacity:
     storage: 50Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/Media"
   mountOptions:
-    - nfsvers=4.1
+    - nfsvers=4
     - tcp
     - intr
     - hard
     - noatime
     - nodiratime
-    # - rsize=1048576
-    # - wsize=1048576
-  nfs:
-    path: /volume2/Media
-    server: ${NAS_ADDR}
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -33,7 +30,7 @@ metadata:
   name: transmission-media-pvc
   namespace: media
 spec:
-  storageClassName: nfs
+  storageClassName: transmission-media-nfs
   accessModes:
     - ReadWriteMany
   resources:

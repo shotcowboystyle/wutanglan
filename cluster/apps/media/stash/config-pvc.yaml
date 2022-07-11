@@ -5,25 +5,24 @@ metadata:
   name: stash-config-pv
   namespace: media
 spec:
+  storageClassName: stash-nfs
   capacity:
     storage: 1Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/stash_config_data"
   mountOptions:
-    - nfsvers=4.1
+    - nfsvers=4
     - tcp
     - intr
     - hard
     - noatime
     - nodiratime
-    # - rsize=1048576
-    # - wsize=1048576
-  nfs:
-    path: /volume2/DockerVol/stash_config_data
-    server: ${NAS_ADDR}
+    - nolock
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -31,7 +30,7 @@ metadata:
   name: stash-config-pvc
   namespace: media
 spec:
-  storageClassName: nfs
+  storageClassName: stash-nfs
   accessModes:
     - ReadWriteMany
   resources:
