@@ -41,6 +41,7 @@ spec:
         hostname: "thanos.${SECRET_DOMAIN}"
         ingressClassName: "traefik"
         annotations:
+          # cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
     queryFrontend:
@@ -59,6 +60,9 @@ spec:
         enabled: false
     storegateway:
       enabled: true
+      podSecurityContext:
+        runAsUser: 1031
+        runAsGroup: 65537
       persistence:
         enabled: true
         existingClaim: thanos-storegateway-data
