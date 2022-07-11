@@ -88,14 +88,23 @@ spec:
     alertmanager:
       ingress:
         enabled: true
+        ingressClassName: "traefik"
         annotations:
-          kubernetes.io/ingress.class: traefik
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          # traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - "alerts.${SECRET_DOMAIN}"
-        path: /
-        pathType: Prefix
+          - host: &alerts-manager-host "alerts.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *alerts-manager-host
+            secretName: "alerts-manager-tls"
       config:
         global:
           resolve_timeout: 5m
@@ -155,14 +164,23 @@ spec:
     prometheus:
       ingress:
         enabled: true
+        ingressClassName: "traefik"
         annotations:
-          kubernetes.io/ingress.class: traefik
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          # traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - "prometheus.${SECRET_DOMAIN}"
-        path: /
-        pathType: Prefix
+          - host: &prometheus-host "prometheus.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *prometheus-host
+            secretName: "prometheus-tls"
       thanosService:
         enabled: true
       thanosServiceMonitor:

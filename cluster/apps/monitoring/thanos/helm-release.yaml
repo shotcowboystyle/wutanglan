@@ -60,6 +60,12 @@ spec:
         enabled: false
     storegateway:
       enabled: true
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1001
+      podSecurityContext:
+        enabled: true
+        fsGroup: 65537
       persistence:
         enabled: true
         existingClaim: thanos-storegateway-data
