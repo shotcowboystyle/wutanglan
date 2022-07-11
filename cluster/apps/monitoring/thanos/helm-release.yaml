@@ -61,7 +61,7 @@ spec:
       enabled: true
       persistence:
         enabled: true
-        existingClaim: thanos-storegateway-data-nfs
+        existingClaim: thanos-storegateway-data
     ruler:
       enabled: false
     metrics:
