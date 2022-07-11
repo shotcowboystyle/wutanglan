@@ -61,7 +61,7 @@ spec:
       enabled: true
       persistence:
         enabled: true
-        size: 10Gi
+        existingClaim: thanos-storegateway-data-nfs
     ruler:
       enabled: false
     metrics:
