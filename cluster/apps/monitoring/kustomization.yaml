@@ -15,7 +15,7 @@ resources:
   - loki
   - node-problem-detector
   # - snmp-exporter
-  # - thanos
+  - thanos
   - unifi-poller
   # - vector
   # - vpa
