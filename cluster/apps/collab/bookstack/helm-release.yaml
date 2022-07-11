@@ -31,15 +31,15 @@ spec:
     recreate: true
     cleanupOnFail: true
   values:
-    imagePullSecrets:
-      - name: "regcred"
+    # imagePullSecrets:
+    #   - name: "regcred"
     image:
       repository: ghcr.io/linuxserver/bookstack
       pullPolicy: IfNotPresent
       tag: "version-v21.12"
 
     env:
-      TZ: ${CLUSTER_TZ}
+      TZ: ${TIMEZONE}
       APP_ENV: production
       APP_URL: https://bookstack.${SECRET_DOMAIN}/
       APP_VIEWS_BOOKS: list
@@ -51,7 +51,7 @@ spec:
       DB_PORT: 3306
       DB_DATABASE: bookstack
       DB_USERNAME: bookstack
-      DB_PASSWORD: ${SECRET_BOOKSTACK_DB_PASSWORD}
+      DB_PASSWORD: ${DB_PASSWORD}
       MAIL_FROM_NAME: "BookStack"
       MAIL_FROM: ${SECRET_SMTP_USER}
       MAIL_HOST: ${SECRET_SMTP}
@@ -69,17 +69,17 @@ spec:
       OIDC_AUTH_ENDPOINT: https://id.${SECRET_DOMAIN}/application/o/authorize/
       OIDC_TOKEN_ENDPOINT: https://id.${SECRET_DOMAIN}/application/o/token/
       STORAGE_TYPE: s3
-      STORAGE_S3_KEY: ${SECRET_MINIO_ACCESS_KEY}
-      STORAGE_S3_SECRET: ${SECRET_MINIO_SECRET_KEY}
+      STORAGE_S3_KEY: ${STORAGE_S3_KEY}
+      STORAGE_S3_SECRET: ${STORAGE_S3_SECRET}
       STORAGE_S3_BUCKET: bookstack
       STORAGE_S3_REGION: minio
-      STORAGE_S3_ENDPOINT: https://${SECRET_MINIO_HOST}
+      STORAGE_S3_ENDPOINT: https://s3.peanutbutterporkchop.com
 
     persistence:
       config:
         enabled: true
         mountPath: /config
-        existingClaim: bookstack-config
+        existingClaim: bookstack-config-pvc
 
     mariadb:
       enabled: true
@@ -114,23 +114,21 @@ spec:
     ingress:
       main:
         enabled: true
-        ingressClassName: "nginx"
+        ingressClassName: "traefik"
         annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           hajimari.io/enable: "true"
           hajimari.io/icon: "books"
           kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: letsencrypt-production
-          external-dns/is-public: "true"
-          haproxy-ingress-proxy.pfsense.org/enabled: "true"
-          haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
-          haproxy-ingress-proxy.pfsense.org/backend: "nginx-443"
-          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - host: bookstack.${SECRET_DOMAIN}
+          - host: &host "bookstack.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - "bookstack.${SECRET_DOMAIN}"
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+              - *host
+            secretName: "bookstack-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
