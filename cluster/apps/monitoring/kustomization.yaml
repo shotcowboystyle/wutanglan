@@ -4,12 +4,12 @@ kind: Kustomization
 namespace: monitoring
 resources:
   - namespace.yaml
-  - alertmanager-discord
+  # - alertmanager-discord
   # - blackbox-exporter
   # - generic-rules
   - botkube
   - goldilocks
-  - grafana
+  # - grafana
   # - intel-gpu-exporter
   - kube-prometheus-stack
   - loki
@@ -17,5 +17,5 @@ resources:
   # - snmp-exporter
   - thanos
   - unifi-poller
-  - vector
-  - vpa
+  # - vector
+  # - vpa
