@@ -30,7 +30,7 @@ spec:
         insecure: true
     query:
       enabled: true
-      replicaCount: 2
+      replicaCount: 1
       replicaLabels:
         - __replica__
       dnsDiscovery:
