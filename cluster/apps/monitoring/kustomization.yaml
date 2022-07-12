@@ -17,5 +17,5 @@ resources:
   # - snmp-exporter
   - thanos
   - unifi-poller
-  # - vector
+  - vector
   - vpa
