@@ -15,13 +15,6 @@ spec:
         name: prometheus-community
         namespace: flux-system
       interval: 15m
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     fullnameOverride: prometheus
     defaultRules:
