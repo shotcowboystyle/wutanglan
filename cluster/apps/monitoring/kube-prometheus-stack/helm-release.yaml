@@ -66,8 +66,8 @@ spec:
       enabled: true
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
-      metricLabelsAllowlist:
-        - persistentvolumeclaims=[*]
+      # metricLabelsAllowlist:
+      #   - persistentvolumeclaims=[*]
       prometheus:
         monitor:
           enabled: true
