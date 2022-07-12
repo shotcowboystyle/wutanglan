@@ -30,8 +30,17 @@ spec:
       defaultEnable: false
       namespaceSelector:
         matchNames:
+          - biz-ops
+          - collab
+          - comms
           - default
+          - dbms
+          - dev
+          - home
+          - media
+          - monitoring
           - networking
+          - observability
       name: "you"
       customApps:
         - name: Some External Cluster Service

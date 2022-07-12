@@ -95,13 +95,13 @@ spec:
           # traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - host: "frigate.${SECRET_DOMAIN}"
+          - host: &host "frigate.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - "frigate.${SECRET_DOMAIN}"
+              - *host
             secretName: "frigate-tls"
     securityContext:
       privileged: true
@@ -134,10 +134,6 @@ spec:
         existingClaim: frigate-data-pvc
       media:
         enabled: true
-        # type: nfs
-        # server: "${TRUENAS_SERVER}"
-        # path: /mnt/tank/data/frigate
-        # mountPath: /media
         existingClaim: frigate-media-pvc
       cache:
         enabled: true

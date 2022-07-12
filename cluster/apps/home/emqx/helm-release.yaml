@@ -50,9 +50,9 @@ spec:
       {emqx_mod_topic_metrics, true}.
 
     service:
-      # annotations:
-      #   prometheus.io/probe: "true"
-      #   prometheus.io/protocol: tcp
+      annotations:
+        prometheus.io/probe: "true"
+        prometheus.io/protocol: tcp
       type: LoadBalancer
       externalIPs:
         - ${METALLB_MQTT_ADDR}
