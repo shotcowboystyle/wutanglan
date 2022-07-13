@@ -36,7 +36,10 @@ spec:
       main:
         ports:
           http:
+            enabled: true
             port: 8096
+            protocol: TCP
+            targetPort: 8096
     ingress:
       main:
         enabled: true
