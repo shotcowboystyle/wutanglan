@@ -1,0 +1,78 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app anonaddy
+  namespace: tools
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: anonaddy
+      version: 4.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+      interval: 5m
+  values:
+    global:
+      nameOverride: *app
+    image:
+      repository: anonaddy/anonaddy
+      tag: 0.8.4
+    env:
+      # -- Application key for encrypter service
+      # You can generate one through `anonaddy key:generate --show` or `echo "base64:$(openssl rand -base64 32)"`
+      APP_KEY: base64:GuNUvmKy8hbKZgdZ0j+sMzZIb1tPqakzTK5ISvLw7Nw=
+      # -- Root domain to receive email from
+      ANONADDY_DOMAIN: ${SECRET_DOMAIN}
+    envFrom:
+      - secretRef:
+          name: *app
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "cctv"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+        hosts:
+          - host: &host "anonaddy.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "anonaddy-tls"
+
+    # -- Configure persistence settings for the chart under this key.
+    # @default -- See values.yaml
+    persistence:
+      config:
+        enabled: true
+        emptydir:
+          enabled: true
+
+    # https://github.com/bitnami/charts/tree/master/bitnami/mariadb/#installing-the-chart
+    mariadb:
+      enabled: false
+      # primary:
+      #   persistence:
+      #     enabled: true
+      # auth:
+      #   username: "username"
+      #   password: "password"
+      #   database: database
+
+    # -- Enable and configure redis subchart under this key.
+    #    For more options see [redis chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/redis)
+    # @default -- See values.yaml
+    redis:
+      enabled: false
+      # auth:
+      #   enabled: false

@@ -16,25 +16,24 @@ spec:
         name: avakarev
         namespace: flux-system
       interval: 5m
-  install:
-    timeout: 10m
-    remediation:
-      retries: 3
-  upgrade:
-    timeout: 10m
-    remediation:
-      retries: 3
-      remediateLastFailure: true
-    cleanupOnFail: true
-  rollback:
-    timeout: 10m
-    recreate: true
-    cleanupOnFail: true
+  # install:
+  #   timeout: 10m
+  #   remediation:
+  #     retries: 3
+  # upgrade:
+  #   timeout: 10m
+  #   remediation:
+  #     retries: 3
+  #     remediateLastFailure: true
+  #   cleanupOnFail: true
+  # rollback:
+  #   timeout: 10m
+  #   recreate: true
+  #   cleanupOnFail: true
   values:
     persistence:
       enabled: true
-      storageClassName: ceph-block
-      size: 1Gi
+      existingClaim: gatus-config-pvc
     image:
       repository: twinproduction/gatus
       tag: v4.0.0
