@@ -8,7 +8,7 @@ resources:
   # - blackbox-exporter
   # - generic-rules
   - botkube
-  - gatus
+  # - gatus
   - goldilocks
   - grafana
   # - intel-gpu-exporter
@@ -17,7 +17,7 @@ resources:
   - node-problem-detector
   - promtail
   # - snmp-exporter
-  - speedtest-exporter
+  # - speedtest-exporter
   - thanos
   - unifi-poller
   - vector
