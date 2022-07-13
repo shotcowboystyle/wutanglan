@@ -16,27 +16,13 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
-  install:
-    timeout: 10m
-    remediation:
-      retries: 3
-  upgrade:
-    timeout: 10m
-    remediation:
-      retries: 3
-      remediateLastFailure: true
-    cleanupOnFail: true
-  rollback:
-    timeout: 10m
-    recreate: true
-    cleanupOnFail: true
   values:
     image:
       repository: ghcr.io/miguelndecarvalho/speedtest-exporter
       tag: v3.5.1
     env:
       TZ: ${TIMEZONE}
-      SPEEDTEST_SERVER: speedtest.gavlenet.com
+      SPEEDTEST_SERVER: speedtest.${SECRET_DOMAIN}
     service:
       main:
         ports:
