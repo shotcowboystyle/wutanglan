@@ -2,60 +2,99 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: goldilocks
+  name: healthchecks
   namespace: monitoring
 spec:
-  interval: 15m
+  interval: 5m
   chart:
     spec:
-      chart: goldilocks
-      version: 6.1.3
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: healthchecks
+      version: 4.3.2
       sourceRef:
         kind: HelmRepository
-        name: fairwinds
+        name: k8s-at-home
         namespace: flux-system
-      interval: 15m
+      interval: 5m
   install:
-    createNamespace: true
+    timeout: 10m
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    timeout: 10m
     remediation:
-      retries: 5
-
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    timeout: 10m
+    recreate: true
+    cleanupOnFail: true
   values:
-    controller:
-      resources:
-        requests:
-          cpu: 10m
-          memory: 64M
-        limits:
-          memory: 250M
+    image:
+      repository: ghcr.io/linuxserver/healthchecks
+      tag: v1.24.1-ls106
+      pullPolicy: IfNotPresent
 
-    dashboard:
-      replicaCount: 1
+    env:
+      TZ: ${CLUSTER_TZ}
+      SITE_ROOT: "https://healthchecks.${SECRET_DOMAIN}"
+      SITE_NAME: "Lab HealthChecks"
+      SITE_LOGO_URL: "https://cdn-icons-png.flaticon.com/512/6266/6266888.png"
+      SECRET_KEY: "${SECRET_HEALTHCHECKS_SECRET_KEY}"
+      REGISTRATION_OPEN: "True"
+      REGENERATE_SETTINGS: "False"
+      EMAIL_USE_TLS: "True"
+      EMAIL_HOST: ${SECRET_SMTP}
+      EMAIL_PORT: 587
+      EMAIL_HOST_USER: ${SECRET_SMTP_USER}
+      EMAIL_HOST_PASSWORD: "${SECRET_SMTP_PASSWORD}"
+      EMAIL_USE_VERIFICATION: "True"
+      DEFAULT_FROM_EMAIL: "WuTangLan HealthChecks <${SECRET_SMTP_USER}>"
+      ALLOWED_HOSTS: "*"
+      DB: postgres
+      DB_HOST: ${SECRET_POSTGRES_HOST}
+      DB_PORT: 5432
+      DB_NAME: healthchecks
+      DB_USER: healthchecks
+      DB_PASSWORD: ${SECRET_HEALTHCHECKS_DB_PASSWORD}
+      SUPERUSER_EMAIL: ${SECRET_HEALTHCHECKS_SUPERUSER_EMAIL}
+      SUPERUSER_PASSWORD: "${SECRET_HEALTHCHECKS_SUPERUSER_PASSWORD}"
+      DISCORD_CLIENT_ID: ${SECRET_HEALTHCHECKS_DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${SECRET_HEALTHCHECKS_DISCORD_CLIENT_SECRET}
+      MATRIX_ACCESS_TOKEN: "${SECRET_MATRIX_HEALTHCHECKS_ACCESS_TOKEN}"
+      MATRIX_HOMESERVER: "https://matrix.${SECRET_DOMAIN}"
+      MATRIX_USER_ID: "@mychecks:matrix.${SECRET_DOMAIN}"
+    persistence:
+      config:
+        enabled: true
+        existingClaim: healthchecks-config-pvc
+        mountpath: /config
 
-      ingress:
+    service:
+      main:
+        annotations:
+          prometheus.io/probe: "true"
+          prometheus.io/protocol: http
+
+    ingress:
+      main:
         enabled: true
         ingressClassName: "traefik"
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
-          # hajimari.io/enable: "true"
-          # hajimari.io/icon: cloud-download
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
+          # traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
-          - host: &host "goldilocks.${SECRET_DOMAIN}"
+          - host: &host "healthchecks.${SECRET_DOMAIN}"
             paths:
               - path: /
-                type: Prefix
+                pathType: Prefix
         tls:
           - hosts:
               - *host
-            secretName: "goldilocks-tls"
-      resources:
-        requests:
-          cpu: 10m
-          memory: 64Mi
-        limits:
-          memory: 100M
+            secretName: "healthchecks-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"

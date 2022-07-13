@@ -6,7 +6,7 @@ resources:
   - cert-manager
   - descheduler
   - intel-gpu-plugin
-  - kube-vip
+  - kube-cleanup-operator
   - kured
   - metrics-server
   - node-feature-discovery

@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: haste-server-redis
-  namespace: default
+  namespace: dev
 spec:
   interval: 5m
   chart:
@@ -13,17 +13,32 @@ spec:
       version: 16.13.2
       sourceRef:
         kind: HelmRepository
-        name: bitnami-charts
+        name: bitnami
         namespace: flux-system
       interval: 5m
   values:
+    architecture: standalone
+    securityContext:
+      sysctls:
+        - name: net.core.somaxconn
+          value: "10000"
+    global:
+      storageClass: "nfs-client"
     master:
+      podSecurityContext:
+        fsGroup: 100
+        supplementalGroups:
+          - 100
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
       persistence:
-        storageClass: rook-ceph-block
-        size: 1Gi
+        enabled: true
+        existingClaim: haste-redis-data
     replica:
       replicaCount: 0
     metrics:
       enabled: true
+      serviceMonitor:
+        enabled: true
     auth:
       enabled: false

@@ -81,9 +81,10 @@ spec:
     alertmanager:
       ingress:
         enabled: true
+        ingressClassName: "traefik"
         annotations:
-          kubernetes.io/ingress.class: traefik
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          # kubernetes.io/ingress.class: traefik
+          # traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - "alerts.${SECRET_DOMAIN}"
@@ -148,9 +149,10 @@ spec:
     prometheus:
       ingress:
         enabled: true
+        ingressClassName: "traefik"
         annotations:
-          kubernetes.io/ingress.class: traefik
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          # kubernetes.io/ingress.class: traefik
+          # traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - "prometheus.${SECRET_DOMAIN}"

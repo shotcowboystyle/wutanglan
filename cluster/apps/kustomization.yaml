@@ -5,6 +5,7 @@ resources:
   # - auth
   # - biz-ops
   - dbms
+  - dev
   - default
   - flux-system
   - home

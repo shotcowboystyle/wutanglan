@@ -1,0 +1,105 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: gatus
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://avakarev.github.io/gatus-chart
+      chart: gatus
+      version: 2.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: avakarev
+        namespace: flux-system
+      interval: 5m
+  install:
+    timeout: 10m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    timeout: 10m
+    recreate: true
+    cleanupOnFail: true
+  values:
+    persistence:
+      enabled: true
+      storageClassName: ceph-block
+      size: 1Gi
+    image:
+      repository: twinproduction/gatus
+      tag: v4.0.0
+      pullPolicy: IfNotPresent
+    updateStrategy: Recreate
+    replicas: 1
+    resources:
+      requests:
+        cpu: 22m
+        memory: 132M
+      limits:
+        cpu: 100m
+        memory: 200M
+    nodeSelector:
+      worker: yes
+    env:
+      TZ: ${TIMEZONE}
+    ingress:
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-staging"
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "cctv"
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+      hosts:
+        - host: &host "gatus.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+          secretName: "gatus-tls"
+          # secretName: "${SECRET_DOMAIN//./-}-tls"
+
+    config:
+      # Config Options available: https://github.com/TwiN/gatus#configuration
+      metrics: true
+      storage:
+        type: sqlite
+        file: /data/data.db
+      # endpoints:
+      #   - name: Default Ingress
+      #     url: https://default.${SECRET_DOMAIN}
+      #     conditions:
+      #       - "[STATUS] == 200"
+      #       - "[RESPONSE_TIME] < 300"   # Response time must be under 300ms
+      #       - "[CERTIFICATE_EXPIRATION] > 72h"
+      #   - name: Login Service
+      #     url: https://login.${SECRET_DOMAIN}
+      #     conditions:
+      #       - "[STATUS] == 200"
+      #       - "[RESPONSE_TIME] < 300"   # Response time must be under 300ms
+      #       - "[CERTIFICATE_EXPIRATION] > 72h"
+      #   - name: Authentik Service
+      #     url: https://id.${SECRET_DOMAIN}
+      #     conditions:
+      #       - "[STATUS] == 200"
+      #       - "[RESPONSE_TIME] < 300"   # Response time must be under 300ms
+      #       - "[CERTIFICATE_EXPIRATION] > 72h"
+      #   - name: Matrix Service
+      #     url: https://matrix.${SECRET_DOMAIN}/_matrix/client/versions
+      #     conditions:
+      #       - "[STATUS] == 200"
+      #       - "[RESPONSE_TIME] < 300"   # Response time must be under 300ms
+      #       - "[CERTIFICATE_EXPIRATION] > 72h"
