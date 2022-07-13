@@ -6,4 +6,4 @@ resources:
   - emqx
   - frigate
   - home-assistant
-  - appdaemon
+  # - appdaemon
