@@ -6,4 +6,4 @@ metadata:
   namespace: networking
 spec:
   defaultCertificate:
-    secretName: wildcard-tls
+    secretName: "${SECRET_DOMAIN/./-}-tls"

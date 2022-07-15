@@ -5,32 +5,37 @@ metadata:
   name: traefik
   namespace: networking
 spec:
-  interval: 15m
+  interval: 5m
   chart:
     spec:
       chart: traefik
-      version: 10.22.0
+      version: 10.24.0
       sourceRef:
         kind: HelmRepository
         name: traefik
         namespace: flux-system
-      interval: 15m
+      interval: 5m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   dependsOn:
     - name: cert-manager
       namespace: kube-system
     - name: metallb
       namespace: networking
+
   values:
     deployment:
       kind: Deployment
       replicas: 1
+
     service:
       enabled: true
       type: LoadBalancer
@@ -39,6 +44,7 @@ spec:
           ${METALLB_TRAEFIK_ADDR}
       spec:
         externalTrafficPolicy: Local
+
     logs:
       general:
         format: json
@@ -46,13 +52,16 @@ spec:
       access:
         enabled: true
         format: json
+
     ingressClass:
       enabled: true
       isDefaultClass: true
       fallbackApiVersion: v1
+
     ingressRoute:
       dashboard:
         enabled: false
+
     globalArguments:
       - "--api.insecure=true"
       - "--serverstransport.insecureskipverify=true"
@@ -86,7 +95,7 @@ spec:
       enabled: false
     experimental:
       plugins:
-        enabled: false
+        enabled: true
     resources:
       requests:
         memory: 100Mi

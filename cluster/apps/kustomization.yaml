@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   # - auth
   # - biz-ops
+  - calico-system
   - dbms
   - dev
   - default

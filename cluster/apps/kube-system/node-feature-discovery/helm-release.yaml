@@ -5,7 +5,7 @@ metadata:
   name: node-feature-discovery
   namespace: kube-system
 spec:
-  interval: 5m
+  interval: 15m
   chart:
     spec:
       chart: node-feature-discovery
@@ -14,25 +14,44 @@ spec:
         kind: HelmRepository
         name: node-feature-discovery
         namespace: flux-system
+
   install:
     createNamespace: true
     crds: CreateReplace
+
   upgrade:
     crds: CreateReplace
+
   values:
     nodeFeatureRule:
       createCRD: true
+
+    master:
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Equal"
+          value: ""
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: "node-role.kubernetes.io/master"
+                    operator: In
+                    values: [""]
+
     worker:
       annotations:
         configmap.reloader.stakater.com/reload: node-feature-discovery-worker-conf
-      nodeSelector:
-        node-role.kubernetes.io/worker: "true"
       config:
         core:
           sources:
             - custom
             - pci
             - usb
+
         sources:
           usb:
             deviceClassWhitelist:
@@ -43,30 +62,24 @@ spec:
               - "fe"
               - "ff"
             deviceLabelFields:
-              - class
-              - vendor
-              - device
+              - "class"
+              - "vendor"
+              - "device"
           custom:
-            # - name: zwave
-            #   matchOn:
-            #     - usbId:
-            #         class: ["02"]
-            #         vendor: ["0658"]
-            #         device: ["0200"]
-            - name: intel-gpu
+            - name: "intel-gpu"
               matchOn:
                 - pciId:
                     class: ["0300"]
                     vendor: ["8086"]
-            # - name: coral-tpu
-            #   matchOn:
-            #     - usbId:
-            #         class: ["0880"]
-            #         vendor: ["1a6e", "18d1"]
-            #         device: ["089a"]
-            # - name: ups-apc
-            #   matchOn:
-            #     - usbId:
-            #         class: ["03"]
-            #         vendor: ["051d"]
-            #         device: ["0002"]
+            - name: "ups-apc"
+              matchOn:
+                - usbId:
+                    class: ["03"]
+                    vendor: ["051d"]
+                    device: ["0002"]
+
+      tolerations:
+        - effect: "NoExecute"
+          operator: "Exists"
+        - effect: "NoSchedule"
+          operator: "Exists"
