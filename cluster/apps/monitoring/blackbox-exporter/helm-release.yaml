@@ -128,14 +128,17 @@ spec:
 
     ingress:
       enabled: true
-      pathType: Prefix
+      className: "traefik"
       ingressClassName: "traefik"
       annotations:
         cert-manager.io/cluster-issuer: "letsencrypt-staging"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
       hosts:
-        - "blackbox.${SECRET_DOMAIN}"
+        - host: &host "blackbox.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
       tls:
         - hosts:
-            - "blackbox.${SECRET_DOMAIN}"
+            - *host
           secretName: blackbox-exporter-tls
