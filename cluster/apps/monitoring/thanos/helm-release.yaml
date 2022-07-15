@@ -57,6 +57,19 @@ spec:
           - hosts:
               - *host
             secretName: "thanos-tls"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
     queryFrontend:
       enabled: false
@@ -78,6 +91,19 @@ spec:
           - hosts:
               - *hostbweb
             secretName: thanos-bucketweb-tls
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
     compactor:
       enabled: true
@@ -97,6 +123,19 @@ spec:
 
       persistence:
         enabled: false
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
     storegateway:
       enabled: true
@@ -166,6 +205,19 @@ spec:
       persistence:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
     metrics:
       enabled: true
