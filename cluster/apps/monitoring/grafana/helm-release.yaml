@@ -32,6 +32,8 @@ spec:
 
   values:
     replicas: 1
+    image:
+      repository: ghcr.io/k8s-at-home/grafana
 
     podAnnotations:
       configmap.reloader.stakater.com/reload: "grafana"
