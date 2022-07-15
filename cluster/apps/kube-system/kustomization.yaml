@@ -4,11 +4,11 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - cert-manager
-  # - descheduler
+  - descheduler
   - intel-gpu-plugin
-  # - kube-cleanup-operator
+  - kube-cleanup-operator
   - kured
-  # - metrics-server
+  - metrics-server
   - node-feature-discovery
   - reflector
   - reloader

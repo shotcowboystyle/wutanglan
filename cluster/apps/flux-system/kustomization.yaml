@@ -4,6 +4,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - dashboard
-  # - monitoring
+  - monitoring
   - notifications
   - webhooks

@@ -147,6 +147,9 @@ spec:
           - hosts:
               - *hostruler
             secretName: thanos-ruler-tls
+      podSecurityContext:
+        enabled: true
+        fsGroup: 65537
       persistence:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
