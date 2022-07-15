@@ -24,23 +24,21 @@ spec:
       namespace: monitoring
 
   install:
+    createNamespace: true
     remediation:
-      retries: 7
+      retries: 5
   upgrade:
     remediation:
-      retries: 7
+      retries: 5
 
   values:
     replicas: 1
     image:
       repository: ghcr.io/k8s-at-home/grafana
 
-    podAnnotations:
-      configmap.reloader.stakater.com/reload: "grafana"
-
     persistence:
       enabled: false
-      # storageClassName: "nfs-client"
+      # dbmsClassName: "nfs-client"
       # size: 10Gi
       # accessModes:
       #   - ReadWriteOnce
@@ -81,7 +79,9 @@ spec:
       security:
         allow_embedding: true
 
-    adminUser: admin
+    # adminUser: admin
+    admin:
+      existingSecret: grafana-admin-creds
 
     dashboardProviders:
       dashboardproviders.yaml:
@@ -114,15 +114,15 @@ spec:
             allowUiUpdates: true
             options:
               path: /var/lib/grafana/dashboards/loki
-          - name: "media"
-            orgId: 1
-            folder: "media"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/media
+          # - name: "media"
+          #   orgId: 1
+          #   folder: "media"
+          #   type: file
+          #   updateIntervalSeconds: 10
+          #   disableDeletion: false
+          #   allowUiUpdates: true
+          #   options:
+          #     path: /var/lib/grafana/dashboards/media
           - name: "networking"
             orgId: 1
             folder: "networking"
@@ -132,24 +132,24 @@ spec:
             allowUiUpdates: true
             options:
               path: /var/lib/grafana/dashboards/networking
-          - name: "power"
+          # - name: "power"
+          #   orgId: 1
+          #   folder: "power"
+          #   type: file
+          #   updateIntervalSeconds: 10
+          #   disableDeletion: false
+          #   allowUiUpdates: true
+          #   options:
+          #     path: /var/lib/grafana/dashboards/power
+          - name: "dbms"
             orgId: 1
-            folder: "power"
+            folder: "dbms"
             type: file
             updateIntervalSeconds: 10
             disableDeletion: false
             allowUiUpdates: true
             options:
-              path: /var/lib/grafana/dashboards/power
-          - name: "storage"
-            orgId: 1
-            folder: "storage"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/storage
+              path: /var/lib/grafana/dashboards/dbms
           - name: "thanos"
             orgId: 1
             folder: "thanos"
@@ -224,7 +224,7 @@ spec:
           gnetId: 12175
           revision: 5
           datasource: Prometheus
-      storage:
+      dbms:
         # # Ref: https://grafana.com/grafana/dashboards/2842
         # ceph-cluster:
         #   gnetId: 2842
@@ -284,16 +284,16 @@ spec:
           gnetId: 11312
           revision: 8
           datasource: Prometheus
-      media:
-        lidarr:
-          url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/lidarr.json
-          datasource: Prometheus
-        radarr:
-          url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/radarr.json
-          datasource: Prometheus
-        sonarr:
-          url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/sonarr.json
-          datasource: Prometheus
+          # media:
+          # lidarr:
+          #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/lidarr.json
+          #   datasource: Prometheus
+          # radarr:
+          #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/radarr.json
+          #   datasource: Prometheus
+          # sonarr:
+          #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/sonarr.json
+          #   datasource: Prometheus
           # qbittorrent:
           #   url: https://raw.githubusercontent.com/esanchezm/prometheus-qbittorrent-exporter/master/grafana/dashboard.json
           #   datasource: Prometheus
@@ -359,9 +359,9 @@ spec:
       create: true
       autoMount: true
 
-  valuesFrom:
-    - kind: Secret
-      name: grafana
-      valuesKey: admin-pass
-      targetPath: adminPassword
-      optional: false
+  # valuesFrom:
+  #   - kind: Secret
+  #     name: grafana
+  #     valuesKey: admin-pass
+  #     targetPath: adminPassword
+  #     optional: false
