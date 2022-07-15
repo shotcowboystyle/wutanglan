@@ -87,15 +87,15 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - &alert-manager-host "alerts.${SECRET_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
+        # paths:
+        #   - path: /
+        #     pathType: Prefix
         tls:
           - hosts:
               - *alert-manager-host
             secretName: "frigate-tls"
-        # path: /
-        # pathType: Prefix
+        path: /
+        pathType: ImplementationSpecific
       config:
         global:
           resolve_timeout: 5m
@@ -161,15 +161,15 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - &prometheus-host "prometheus.${SECRET_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
+        # paths:
+        #   - path: /
+        #     pathType: Prefix
         tls:
           - hosts:
               - *prometheus-host
             secretName: "frigate-tls"
-        # path: /
-        # pathType: Prefix
+        path: /
+        pathType: ImplementationSpecific
       thanosService:
         enabled: true
       thanosServiceMonitor:
