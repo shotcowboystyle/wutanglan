@@ -56,8 +56,26 @@ spec:
         interval: 2m
         scrapeTimeout: 30s
       targets:
-        - name: synology
+        - name: udm
+          url: 192.168.1.1
+          module: icmp
+        - name: homelab-switch-flex-mini-one
+          url: 192.168.1.143
+          module: icmp
+        - name: homelab-switch-flex-mini-two
+          url: 192.168.1.106
+          module: icmp
+        - name: office-switch-flex-mini
+          url: 192.168.1.238
+          module: icmp
+        - name: long-range-ap
+          url: 192.168.1.176
+          module: icmp
+        - name: synology-nas
           url: "${NAS_ADDR}"
+          module: icmp
+        - name: hue-bridge
+          url: 192.168.20.122
           module: icmp
 
     prometheusRule:
@@ -65,6 +83,7 @@ spec:
       additionalLabels:
         app: prometheus-operator
         release: prometheus
+        namespace: monitoring
       rules:
         - alert: HostDown
           expr: probe_success == 0
@@ -80,6 +99,30 @@ spec:
           for: 15m
           labels:
             severity: warning
+        - alert: BlackboxSslCertificateWillExpireSoon
+          expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 3
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            description: |-
+              The SSL certificate for {{"{{ $labels.target }}"}} will expire in less than 3 days
+        - alert: BlackboxSslCertificateExpired
+          expr: probe_ssl_earliest_cert_expiry - time() <= 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            description: |-
+              The SSL certificate for {{"{{ $labels.target }}"}} has expired
+        - alert: BlackboxProbeFailed
+          expr: probe_success == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            description: |-
+              The host {{"{{ $labels.target }}"}} is currently unreachable
 
     ingress:
       enabled: true
