@@ -7,4 +7,4 @@ resources:
   - helm-release.yaml
   # - podmonitor.yaml
   - prometheus-rule.yaml
-  - service-monitor.yaml
+  # - service-monitor.yaml
