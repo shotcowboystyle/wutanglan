@@ -56,7 +56,7 @@ alertmanager:
       hajimari.io/enable: "true"
       hajimari.io/appName: "Alert Manager"
     hosts:
-      - &alerthost "alert-manager.${SECRET_DOMAIN}"
+      - &alerthost "alerts.${SECRET_DOMAIN}"
     tls:
       - hosts:
           - *alerthost
@@ -67,7 +67,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: "nfs-client"
+          storageClassName: "alertmanager-data-nfs"
           resources:
             requests:
               storage: 1Gi
