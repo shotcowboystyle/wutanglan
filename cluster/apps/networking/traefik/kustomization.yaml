@@ -6,6 +6,6 @@ resources:
   - tls-store
   - dashboard
   - middlewares
-  - routers
+  # - routers
   # - external-services
   - service-monitor.yaml
