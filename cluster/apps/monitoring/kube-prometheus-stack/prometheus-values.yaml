@@ -67,7 +67,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: "ceph-block"
+          storageClassName: "nfs-client"
           resources:
             requests:
               storage: 15Gi
