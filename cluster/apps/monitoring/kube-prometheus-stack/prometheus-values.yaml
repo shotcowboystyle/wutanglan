@@ -67,7 +67,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: "prometheus-data-nfs"
+          # storageClassName: "prometheus-data-nfs"
           resources:
             requests:
               storage: 15Gi

@@ -67,7 +67,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: "alertmanager-data-nfs"
+          # storageClassName: "alertmanager-data-nfs"
           resources:
             requests:
               storage: 1Gi
