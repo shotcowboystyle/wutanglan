@@ -5,4 +5,4 @@ resources:
   - pvc.yaml
   - secrets.sops.yaml
   - helm-release.yaml
-  - monitoring
+  # - monitoring
