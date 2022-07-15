@@ -71,7 +71,7 @@ spec:
         ingressClassName: traefik
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-staging
-          traefik.ingress.kubernetes.io/service.: h2c
+          traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         tls: true
         extraTls:
