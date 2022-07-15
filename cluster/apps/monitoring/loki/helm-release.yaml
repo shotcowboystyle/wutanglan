@@ -103,6 +103,9 @@ spec:
           endpoint: "minio.dbms.svc.cluster.local:9000"
           access_key_id: ${SECRET_MINIO_LOKI_ACCESS_KEY}
           secret_access_key: ${SECRET_MINIO_LOKI_SECRET_KEY}
+          region: ${SECRET_MINIO_REGION}
+          # s3: s3://${SECRET_MINIO_LOKI_ACCESS_KEY}:${SECRET_MINIO_LOKI_SECRET_KEY}@${SECRET_MINIO_REGION}/loki
+          # endpoint: ${SECRET_MINIO_SERVER}
           s3forcepathstyle: true
           insecure: true
         boltdb_shipper:
