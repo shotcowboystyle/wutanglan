@@ -2,18 +2,18 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: anonaddy-mariadb-data-pv
-  namespace: tools
+  name: anonaddy-config-pv
+  namespace: privacy
 spec:
-  storageClassName: anonaddy-mariadb-nfs
+  storageClassName: anonaddy-config-nfs
   capacity:
-    storage: 4Gi
+    storage: 1Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: ${NAS_ADDR}
-    path: "/volume2/DockerVol/anonaddy_mariadb_data"
+    path: "/volume2/DockerVol/anonaddy_data"
   mountOptions:
     - nfsvers=4
     - tcp
@@ -27,12 +27,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: anonaddy-mariadb-data
-  namespace: tools
+  name: anonaddy-config-pvc
+  namespace: privacy
 spec:
-  storageClassName: authelia-mariadb-nfs
+  storageClassName: anonaddy-config-nfs
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 4Gi
+      storage: 1Gi

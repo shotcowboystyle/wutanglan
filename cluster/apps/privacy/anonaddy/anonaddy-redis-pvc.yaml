@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: anonaddy-redis-data-pv
-  namespace: tools
+  namespace: privacy
 spec:
   storageClassName: anonaddy-redis-nfs
   capacity:
@@ -28,7 +28,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: anonaddy-redis-data
-  namespace: tools
+  namespace: privacy
 spec:
   storageClassName: anonaddy-redis-nfs
   accessModes:

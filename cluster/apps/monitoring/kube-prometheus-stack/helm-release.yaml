@@ -88,6 +88,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - "alerts.${SECRET_DOMAIN}"
+        tls: true
         path: /
         pathType: Prefix
       config:
@@ -156,6 +157,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - "prometheus.${SECRET_DOMAIN}"
+        tls: true
         path: /
         pathType: Prefix
       thanosService:
@@ -163,7 +165,7 @@ spec:
       thanosServiceMonitor:
         enabled: true
       prometheusSpec:
-        replicas: 3
+        replicas: 1
         podAntiAffinity: hard
         retentionSize: "6GB"
         replicaExternalLabelName: "replica"

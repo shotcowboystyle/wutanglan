@@ -13,5 +13,6 @@ resources:
   - media
   - monitoring
   - networking
+  # - privacy
   # - security
   # - system-upgrade
