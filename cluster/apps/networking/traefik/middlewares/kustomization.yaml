@@ -2,6 +2,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - error-pages.yaml
+  - redirect-path.yaml
+  - rate-limit.yaml
+  - wutanglan-auth.yaml
   - cloudflare-only.yaml
   - internal-only.yaml
+  - secure-headers.yaml
+  - chain-no-auth.yaml
+  - error-pages.yaml
+  - chain-no-error-pages.yaml

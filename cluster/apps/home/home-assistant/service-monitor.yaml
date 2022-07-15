@@ -1,0 +1,52 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: home-assistant
+  namespace: home
+  labels:
+    app.kubernetes.io/name: home-assistant
+    k8s-app: home-assistant
+spec:
+  jobLabel: home-assistant
+  selector:
+    matchLabels:
+      k8s-app: home-assistant
+  namespaceSelector:
+    matchNames:
+      - home
+      - networking
+  endpoints:
+    - port: "8123"
+      interval: 60s
+      honorTimestamps: true
+      path: /api/prometheus
+      relabelings:
+        - sourceLabels:
+            - __address__
+          targetLabel: __address__
+          regex: (.*)
+          replacement: "hassio.peanutbutterporkchop.com:8123"
+          action: replace
+      authorization:
+        credentials:
+          key: token
+          name: home-assistant-prometheus-token
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: home-assistant
+  namespace: home
+  labels:
+    app.kubernetes.io/name: home-assistant
+    k8s-app: home-assistant
+subsets:
+  - addresses:
+      # Doesn't actually matter what goes here as it will get replaced by the serviceMonitor
+      - ip: hassio.peanutbutterporkchop.com
+        nodeName: home-assistant
+    ports:
+      - name: http
+        protocol: TCP
+        port: 8123

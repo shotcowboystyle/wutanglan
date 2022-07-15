@@ -4,6 +4,8 @@ set -o nounset
 set -o errexit
 
 current_ipv4="$(curl -s https://ipv4.icanhazip.com/)"
+current_ipv6="$(curl -s https://ipv6.icanhazip.com/)"
+
 zone_id=$(curl -s -X GET \
     "https://api.cloudflare.com/client/v4/zones?name=${CLOUDFLARE_RECORD_NAME#*.}&status=active" \
     -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
@@ -17,7 +19,14 @@ record_ipv4=$(curl -s -X GET \
     -H "X-Auth-Key: ${CLOUDFLARE_APIKEY}" \
     -H "Content-Type: application/json" \
 )
+record_ipv6=$(curl -s -X GET \
+    "https://api.cloudflare.com/client/v4/zones/${zone_id}/dns_records?name=${CLOUDFLARE_RECORD_NAME}&type=A" \
+    -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
+    -H "X-Auth-Key: ${CLOUDFLARE_APIKEY}" \
+    -H "Content-Type: application/json" \
+)
 old_ip4=$(echo "$record_ipv4" | jq --raw-output '.result[0] | .content')
+old_ip6=$(echo "$record_ipv6" | jq --raw-output '.result[0] | .content')
 if [[ "${current_ipv4}" == "${old_ip4}" ]]; then
     printf "%s - IP Address '%s' has not changed" "$(date -u)" "${current_ipv4}"
     exit 0

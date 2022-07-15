@@ -1,0 +1,12 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: chain-no-error-pages
+  namespace: networking
+spec:
+  chain:
+    middlewares:
+      - name: networking-secure-headers@kubernetescrd
+      - name: networking-rate-limit@kubernetescrd
+      - name: networking-authelia@kubernetescrd

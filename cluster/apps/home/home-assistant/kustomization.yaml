@@ -6,4 +6,5 @@ resources:
   - secret.sops.yaml
   - helm-release.yaml
   # - podmonitor.yaml
-  # - rules.yaml
+  - prometheus-rule.yaml
+  - service-monitor.yaml
