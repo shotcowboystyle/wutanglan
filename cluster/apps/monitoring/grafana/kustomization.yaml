@@ -4,4 +4,4 @@ resources:
   - pvc.yaml
   - secret.sops.yaml
   - helm-release.yaml
-  - dashboards
+  # - dashboards
