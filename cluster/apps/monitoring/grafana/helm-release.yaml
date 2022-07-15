@@ -50,14 +50,14 @@ spec:
             url: http://thanos-query.monitoring.svc.cluster.local:9090
             access: proxy
             isDefault: true
-          - name: Loki
-            type: loki
-            access: proxy
-            url: http://loki.monitoring.svc.cluster.local:3100
-            version: 1
-            # isDefault: true
-            jsonData:
-              maxLines: 1000
+          # - name: Loki
+          #   type: loki
+          #   access: proxy
+          #   url: http://loki.monitoring.svc.cluster.local:3100
+          #   version: 1
+          #   # isDefault: true
+          #   jsonData:
+          #     maxLines: 1000
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
