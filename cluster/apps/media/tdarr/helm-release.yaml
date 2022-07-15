@@ -5,7 +5,18 @@ metadata:
   name: tdarr
   namespace: media
 spec:
+  dependsOn:
+    - name: traefik
+      namespace: networking
+    - name: node-feature-discovery
+      namespace: kube-system
+
+  maxHistory: 3
+
   interval: 5m
+
+  suspend: false
+
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
@@ -13,21 +24,31 @@ spec:
       version: 4.5.2
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: k8s-at-home
         namespace: flux-system
       interval: 5m
+
   values:
     image:
       repository: haveagitgat/tdarr
       tag: 2.00.18
       pullPolicy: IfNotPresent
-
     env:
       TZ: ${TIMEZONE}
-      webUIPort: 8265
       serverIP: 0.0.0.0
-      serverPort: 8266
+      ffmpegPath: /usr/bin/ffmpeg
+      PGID: 65537
 
+    podSecurityContext:
+      # Required for passthrough of /dev/dri devices from NFD
+      # https://dgpu-docs.intel.com/installation-guides/ubuntu/ubuntu-focal.html
+      supplementalGroups:
+        - 44
+        - 109
+        # Custom Camelus Group(s)
+        - 65541
+        - 65536
+        - 65537
     node:
       enabled: true
       id: node
@@ -35,33 +56,45 @@ spec:
         repository: haveagitgat/tdarr_node
         tag: 2.00.18
         pullPolicy: IfNotPresent
-
+      env:
+        PGID: 65537
+      resources:
+        requests:
+          gpu.intel.com/i915: 1
+        limits:
+          gpu.intel.com/i915: 1
     persistence:
       data:
         enabled: true
         mountPath: /app/server
-        existingClaim: tdarr-data
-      music:
+        existingClaim: tdarr-config-v1
+
+      shared:
         enabled: true
-        type: nfs
-        server: "${LOCAL_LAN_TRUENAS}"
-        path: /mnt/storage/music
-        mountPath: /mnt/storage/music
-      video:
+        type: emptyDir
+        mountPath: /shared
+
+      media:
         enabled: true
-        type: nfs
-        server: "${LOCAL_LAN_TRUENAS}"
-        path: /mnt/storage/video
-        mountPath: /mnt/storage/video
+        type: custom
+        volumeSpec:
+          nfs:
+            path: /volume2/Media
+            server: ${NAS_ADDR}
+        mountPath: /volume2/Media
+        readOnly: false
+
+      media2:
+        enabled: true
+        existingClaim: nfs-media-2-pvc
+        mountPath: /volume2/Data2
+        readOnly: false
 
     service:
       main:
         ports:
           http:
             port: 8265
-          annotations:
-            prometheus.io/probe: "true"
-            prometheus.io/protocol: http
           server:
             enabled: true
             protocol: TCP
@@ -70,17 +103,53 @@ spec:
     ingress:
       main:
         enabled: true
-        ingressClassName: "nginx"
         annotations:
-          nginx.ingress.kubernetes.io/auth-url: "http://authelia.networking.svc.cluster.local/api/verify"
-          nginx.ingress.kubernetes.io/auth-signin: "https://login.${SECRET_CLUSTER_DOMAIN}"
-          # traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: networking-forward-auth@kubernetescrd
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-bloopnet-xyz-auth@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/instance: "bloop-quarky"
+          hajimari.io/icon: alpha-t-circle
+          hajimari.io/group: media
         hosts:
-          - host: "tdarr.${SECRET_CLUSTER_DOMAIN}"
+          - host: &host tdarr.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - "tdarr.${SECRET_CLUSTER_DOMAIN}"
+              - *host
+            secretName: tdarr-tls
+
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: feature.node.kubernetes.io/custom-intel-gpu
+                  operator: In
+                  values:
+                    - "true"
+
+      # This is not very helpful at the moment due to my limited devices
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - jellyfin
+              namespaceSelector:
+                matchExpressions:
+                  - key: ns
+                    operator: In
+                    values:
+                      - media
+              topologyKey: kubernetes.io/hostname
+              namespaces:
+                - media
+
+    resources: {}
