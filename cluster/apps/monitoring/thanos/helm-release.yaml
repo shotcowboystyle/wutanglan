@@ -154,20 +154,20 @@ spec:
             secretName: thanos-storegateway-tls
       persistence:
         enabled: true
-        size: 20Gi
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 60
-              preference:
-                matchExpressions:
-                  - key: kubernetes.io/arch
-                    operator: In
-                    values:
-                      - amd64
-                      - i386
-                      - i686
-                      - x86
+        existingClaim: thanos-storegateway-data-pvc
+      # affinity:
+      #   nodeAffinity:
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #       - weight: 60
+      #         preference:
+      #           matchExpressions:
+      #             - key: kubernetes.io/arch
+      #               operator: In
+      #               values:
+      #                 - amd64
+      #                 - i386
+      #                 - i686
+      #                 - x86
 
     ruler:
       enabled: true
