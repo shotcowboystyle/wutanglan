@@ -199,25 +199,25 @@ spec:
           - hosts:
               - *hostruler
             secretName: thanos-ruler-tls
-      podSecurityContext:
-        enabled: true
-        fsGroup: 65537
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
       persistence:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 60
-              preference:
-                matchExpressions:
-                  - key: kubernetes.io/arch
-                    operator: In
-                    values:
-                      - amd64
-                      - i386
-                      - i686
-                      - x86
+      # affinity:
+      #   nodeAffinity:
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #       - weight: 60
+      #         preference:
+      #           matchExpressions:
+      #             - key: kubernetes.io/arch
+      #               operator: In
+      #               values:
+      #                 - amd64
+      #                 - i386
+      #                 - i686
+      #                 - x86
 
     metrics:
       enabled: true
