@@ -5,7 +5,7 @@ namespace: monitoring
 resources:
   - namespace.yaml
   - alertmanager-discord
-  - blackbox-exporter
+  # - blackbox-exporter
   # - generic-rules
   - botkube
   # - gatus
