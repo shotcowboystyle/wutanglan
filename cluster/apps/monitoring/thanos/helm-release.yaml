@@ -229,6 +229,7 @@ spec:
       config:
         bucket: thanos
         endpoint: "minio.dbms.svc.cluster.local:9000"
-        access_key: "${SECRET_MINIO_THANOS_ACCESS_KEY}"
-        secret_key: "${SECRET_MINIO_THANOS_SECRET_KEY}"
+        access_key: ${SECRET_MINIO_THANOS_ACCESS_KEY}
+        secret_key: ${SECRET_MINIO_THANOS_SECRET_KEY}
+        region: ${SECRET_MINIO_REGION}
         insecure: true
