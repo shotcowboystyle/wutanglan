@@ -60,7 +60,7 @@ alertmanager:
     tls:
       - hosts:
           - *alerthost
-        secretName: "${SECRET_DOMAIN//./-}-tls"
+        # secretName: "${SECRET_DOMAIN//./-}-tls"
   alertmanagerSpec:
     replicas: 2
     podAntiAffinity: hard

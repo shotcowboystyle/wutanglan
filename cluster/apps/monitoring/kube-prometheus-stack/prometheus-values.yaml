@@ -20,7 +20,7 @@ prometheus:
     tls:
       - hosts:
           - *promhost
-        secretName: "${SECRET_DOMAIN//./-}-tls"
+        # secretName: "${SECRET_DOMAIN//./-}-tls"
 
   thanosIngress:
     enabled: true
@@ -34,7 +34,7 @@ prometheus:
     tls:
       - hosts:
           - *host
-        secretName: "${SECRET_DOMAIN//./-}-tls"
+        # secretName: "${SECRET_DOMAIN//./-}-tls"
   thanosService:
     enabled: true
   thanosServiceMonitor:

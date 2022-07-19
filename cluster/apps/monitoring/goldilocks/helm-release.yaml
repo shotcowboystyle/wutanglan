@@ -40,8 +40,8 @@ spec:
         ingressClassName: "traefik"
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
-          # hajimari.io/enable: "true"
-          # hajimari.io/icon: cloud-download
+          hajimari.io/enable: "true"
+          hajimari.io/icon: cloud-download
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
         hosts:
@@ -52,7 +52,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
       resources:
         requests:
           cpu: 10m

@@ -351,8 +351,8 @@ spec:
       hosts:
         - &host "grafana.${SECRET_DOMAIN}"
       tls:
-        - secretName: "${SECRET_DOMAIN//./-}-tls"
-          hosts:
+        # - secretName: "${SECRET_DOMAIN//./-}-tls"
+        - hosts:
             - *host
 
     serviceAccount:

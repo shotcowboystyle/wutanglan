@@ -56,7 +56,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -90,7 +90,7 @@ spec:
         extraTls:
           - hosts:
               - *hostbweb
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -119,7 +119,7 @@ spec:
         extraTls:
           - hosts:
               - *hostcompact
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
       persistence:
         enabled: false
@@ -151,7 +151,7 @@ spec:
         extraTls:
           - hosts:
               - *hostgateway
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
       podSecurityContext:
         enabled: true
         fsGroup: 65537
@@ -201,7 +201,7 @@ spec:
         extraTls:
           - hosts:
               - *hostruler
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
       podSecurityContext:
         enabled: true
         fsGroup: 65537
