@@ -16,4 +16,5 @@ resources:
   - networking
   # - privacy
   # - security
+  - tools
   # - system-upgrade

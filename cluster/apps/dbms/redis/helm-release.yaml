@@ -3,7 +3,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: redis
-  namespace: db
+  namespace: dbms
+
 spec:
   interval: 5m
   chart:
@@ -15,35 +16,53 @@ spec:
         kind: HelmRepository
         name: bitnami
         namespace: flux-system
+
   install:
     createNamespace: true
     remediation:
       retries: 3
+
   upgrade:
     remediation:
       retries: 3
+
   values:
-    image:
-      registry: docker.io
-      repository: bitnami/redis
-      tag: 6.2.7
+    architecture: standalone
     securityContext:
       sysctls:
         - name: net.core.somaxconn
           value: "10000"
-    architecture: standalone
     global:
       storageClass: "nfs-client"
       redis:
         password: ${SECRET_REDIS_PASSWORD}
-    auth:
-      enabled: true
     master:
       podSecurityContext:
+        fsGroup: 100
         supplementalGroups:
           - 100
       nodeSelector:
         beta.kubernetes.io/arch: amd64
+
       persistence:
         enabled: true
         existingClaim: redis-data-pvc
+
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                    - amd64
+                    - i386
+                    - i686
+                    - x86
