@@ -58,20 +58,15 @@ spec:
               - *host
             # secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
-        nodeAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
               preference:
                 matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
                   - key: kubernetes.io/arch
                     operator: In
                     values:
@@ -101,20 +96,15 @@ spec:
               - *hostbweb
             # secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
-        nodeAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
               preference:
                 matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
                   - key: kubernetes.io/arch
                     operator: In
                     values:
@@ -142,20 +132,15 @@ spec:
       persistence:
         enabled: false
       affinity:
-        nodeAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
               preference:
                 matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
                   - key: kubernetes.io/arch
                     operator: In
                     values:
@@ -186,20 +171,15 @@ spec:
         enabled: true
         existingClaim: thanos-storegateway-data-pvc
       affinity:
-        nodeAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
               preference:
                 matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
                   - key: kubernetes.io/arch
                     operator: In
                     values:
@@ -245,20 +225,15 @@ spec:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
       affinity:
-        nodeAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
               preference:
                 matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
                   - key: kubernetes.io/arch
                     operator: In
                     values:
