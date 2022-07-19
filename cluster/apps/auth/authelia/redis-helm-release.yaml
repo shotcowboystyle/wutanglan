@@ -37,6 +37,19 @@ spec:
       enabled: true
       serviceMonitor:
         enabled: true
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                    - amd64
+                    - i386
+                    - i686
+                    - x86
     auth:
       existingSecret: authelia
       existingSecretPasswordKey: REDIS_PASSWORD
