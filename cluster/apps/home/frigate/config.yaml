@@ -74,7 +74,7 @@ record:
 
 birdseye:
   # Optional: Enable birdseye view (default: shown below)
-  enabled: False
+  enabled: True
 #   # Optional: Width of the output resolution (default: shown below)
 #   width: 2560
 #   # Optional: Height of the output resolution (default: shown below)
