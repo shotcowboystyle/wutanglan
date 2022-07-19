@@ -31,11 +31,11 @@ spec:
       tag: sha-4bfc5bb
     env:
       TZ: "${TIMEZONE}"
-    # service:
-    #   main:
-    #     ports:
-    #       http:
-    #         port: 80
+    service:
+      main:
+        ports:
+          http:
+            port: 80
     ingress:
       main:
         enabled: true
