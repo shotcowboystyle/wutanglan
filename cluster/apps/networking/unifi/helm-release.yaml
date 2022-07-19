@@ -6,66 +6,28 @@ metadata:
   namespace: networking
 spec:
   interval: 5m
+  releaseName: unifi
   chart:
     spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: unifi
-      version: 5.0.0
+      version: 4.10.1
       sourceRef:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
+      interval: 5m
   values:
+    image:
+      repository: jacobalberty/unifi
+      tag: v7.1.66
+    persistence:
+      data:
+        enabled: true
+        existingClaim: unifi-data-pvc
     env:
       TZ: ${TIMEZONE}
-      # PUID: 1031
-      # PGID: 65537
-      MEM_LIMIT: 1024 #optional
-      MEM_STARTUP: 1024 #optional
-    service:
-      main:
-        enabled: true
-        type: LoadBalancer
-        annotations:
-          metallb.universe.tf/allow-shared-ip: *app
-          metallb.universe.tf/loadBalancerIPs: ${METALLB_UNIFI_INKY_ADDR}
-        ports:
-          http:
-            port: 8443
-            protocol: HTTPS
-          controller:
-            enabled: true
-            port: 8080
-            protocol: TCP
-          speedtest:
-            enabled: true
-            port: 6789
-            protocol: TCP
-          stun:
-            enabled: false
-          syslog:
-            enabled: false
-          discovery:
-            enabled: false
-      udp:
-        enabled: true
-        type: LoadBalancer
-        annotations:
-          metallb.universe.tf/allow-shared-ip: *app
-          metallb.universe.tf/loadBalancerIPs: ${METALLB_UNIFI_INKY_ADDR}
-        ports:
-          stun:
-            enabled: true
-            port: 3478
-            protocol: UDP
-          syslog:
-            enabled: true
-            port: 5514
-            protocol: UDP
-          discovery:
-            enabled: true
-            port: 10001
-            protocol: UDP
-
+    runAsRoot: false
     ingress:
       main:
         enabled: true
@@ -88,14 +50,9 @@ spec:
 
     podSecurityContext:
       runAsUser: 1031
-      runAsGroup: 65537
       fsGroup: 65537
-      fsGroupChangePolicy: "OnRootMismatch"
       supplementalGroups:
-        - 44
         - 100
-        - 109
-        - 568
         - 65537
 
     nodeSelector:
@@ -109,7 +66,63 @@ spec:
                   operator: In
                   values:
                     - inky
-    persistence:
-      data:
+
+    service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: "${METALLB_UNIFI_INKY_ADDR}"
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/allow-shared-ip: unifi
+        ports:
+          http:
+            port: 8443
+            protocol: HTTPS
+          controller:
+            enabled: true
+            port: 8080
+            protocol: TCP
+          portal-http:
+            enabled: false
+            port: 8880
+            protocol: HTTP
+          portal-https:
+            enabled: false
+            port: 8843
+            protocol: HTTPS
+          speedtest:
+            enabled: false
+            port: 6789
+            protocol: TCP
+          stun:
+            enabled: false
+            port: 3478
+            protocol: UDP
+          syslog:
+            enabled: false
+            port: 5514
+            protocol: UDP
+          discovery:
+            enabled: false
+            port: 10001
+            protocol: UDP
+      udp:
         enabled: true
-        existingClaim: unifi-data-pvc
+        type: LoadBalancer
+        loadBalancerIP: "${METALLB_UNIFI_INKY_ADDR}"
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/allow-shared-ip: unifi
+        ports:
+          stun:
+            enabled: true
+            port: 3478
+            protocol: UDP
+          syslog:
+            enabled: false
+            port: 5514
+            protocol: UDP
+          discovery:
+            enabled: true
+            port: 10001
+            protocol: UDP
