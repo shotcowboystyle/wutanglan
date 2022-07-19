@@ -29,18 +29,18 @@ spec:
       repository: mpepping/cyberchef
       tag: v9.46.0
     nameOverride: cyberchef
-    env:
-    service:
-      main:
-        ports:
-          http:
-            port: 8000
+    # env:
+    # service:
+    #   main:
+    #     ports:
+    #       http:
+    #         port: 8000
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "document"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -53,8 +53,7 @@ spec:
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
-            secretName: "cyberchef-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
 
     persistence:
       config:

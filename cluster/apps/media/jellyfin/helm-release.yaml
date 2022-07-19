@@ -58,7 +58,7 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "movie-open-play"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -69,8 +69,7 @@ spec:
               - path: /
                 pathType: Prefix
         tls:
-          # - secretName: "${SECRET_DOMAIN//./-}-tls"
-          - secretName: "jellyfin-tls"
+          - secretName: "${SECRET_DOMAIN//./-}-tls"
             hosts:
               - *host
 

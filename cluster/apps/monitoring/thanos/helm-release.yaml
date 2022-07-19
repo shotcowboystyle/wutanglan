@@ -43,7 +43,7 @@ spec:
         hostname: "thanos.${SECRET_DOMAIN}"
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/appName: "Thanos"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -56,8 +56,7 @@ spec:
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
-            secretName: "thanos-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -84,15 +83,14 @@ spec:
         hostname: &hostbweb "thanos-bucketweb.${SECRET_DOMAIN}"
         ingressClassName: traefik
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         tls: true
         extraTls:
           - hosts:
               - *hostbweb
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
-            secretName: "thanos-bucketweb-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -114,15 +112,14 @@ spec:
         hostname: &hostcompact "thanos-compactor.${SECRET_DOMAIN}"
         ingressClassName: traefik
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         tls: true
         extraTls:
           - hosts:
               - *hostcompact
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
-            secretName: "thanos-compactor-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
 
       persistence:
         enabled: false
@@ -147,15 +144,14 @@ spec:
         hostname: &hostgateway "thanos-storegateway.${SECRET_DOMAIN}"
         ingressClassName: traefik
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         tls: true
         extraTls:
           - hosts:
               - *hostgateway
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
-            secretName: "thanos-storegateway-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
       podSecurityContext:
         enabled: true
         fsGroup: 65537
@@ -198,15 +194,14 @@ spec:
         hostname: &hostruler "thanos-ruler.${SECRET_DOMAIN}"
         ingressClassName: traefik
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         tls: true
         extraTls:
           - hosts:
               - *hostruler
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
-            secretName: "thanos-ruler-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
       podSecurityContext:
         enabled: true
         fsGroup: 65537
