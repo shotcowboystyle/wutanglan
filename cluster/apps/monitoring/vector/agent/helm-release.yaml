@@ -55,3 +55,13 @@ spec:
             - kubernetes_logs
           address: "vector-aggregator.monitoring:6000"
           version: "2"
+    affinity:
+      nodeAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            nodeSelectorTerms:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - inky

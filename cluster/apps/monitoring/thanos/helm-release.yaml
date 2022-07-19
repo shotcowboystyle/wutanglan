@@ -58,6 +58,15 @@ spec:
               - *host
             # secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
+        nodeAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              nodeSelectorTerms:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
@@ -92,6 +101,15 @@ spec:
               - *hostbweb
             # secretName: "${SECRET_DOMAIN//./-}-tls"
       affinity:
+        nodeAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              nodeSelectorTerms:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
@@ -124,6 +142,15 @@ spec:
       persistence:
         enabled: false
       affinity:
+        nodeAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              nodeSelectorTerms:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
@@ -159,6 +186,15 @@ spec:
         enabled: true
         existingClaim: thanos-storegateway-data-pvc
       affinity:
+        nodeAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              nodeSelectorTerms:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60
@@ -209,6 +245,15 @@ spec:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
       affinity:
+        nodeAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              nodeSelectorTerms:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - inky
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 60

@@ -64,3 +64,13 @@ spec:
         cpu: 100m
       limits:
         memory: 500Mi
+    affinity:
+      nodeAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            nodeSelectorTerms:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - inky

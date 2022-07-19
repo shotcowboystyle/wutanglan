@@ -35,3 +35,13 @@ spec:
 
     updater:
       enabled: false
+    affinity:
+      nodeAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            nodeSelectorTerms:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - inky

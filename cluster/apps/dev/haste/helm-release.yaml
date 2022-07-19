@@ -64,3 +64,13 @@ spec:
           - hosts:
               - *host
             # secretName: "${SECRET_DOMAIN//./-}-tls"
+    affinity:
+      nodeAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            nodeSelectorTerms:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - inky
