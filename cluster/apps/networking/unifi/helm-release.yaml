@@ -48,12 +48,12 @@ spec:
               - *host
             secretName: "unifi-inky-tls"
 
-    podSecurityContext:
-      runAsUser: 1031
-      fsGroup: 65537
-      supplementalGroups:
-        - 100
-        - 65537
+    # podSecurityContext:
+    #   # runAsUser: 1031
+    #   fsGroup: 65537
+    #   supplementalGroups:
+    #     - 100
+    #     - 65537
 
     nodeSelector:
       kubernetes.io/hostname: "inky"
