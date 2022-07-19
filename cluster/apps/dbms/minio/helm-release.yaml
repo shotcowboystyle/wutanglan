@@ -51,7 +51,7 @@ spec:
         enabled: true
         ingressClassName: traefik
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -72,10 +72,10 @@ spec:
         tls:
           - hosts:
               - *host-minio
-            secretName: "minio-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
           - hosts:
               - *host-s3
-            secretName: "minio-s3-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
     persistence:
       data:
         enabled: true

@@ -56,7 +56,7 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -69,8 +69,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "gatus-tls"
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
 
     config:
       # Config Options available: https://github.com/TwiN/gatus#configuration

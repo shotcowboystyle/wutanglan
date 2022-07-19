@@ -33,7 +33,7 @@ spec:
       enabled: true
       ingressClassName: "traefik"
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-staging"
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
         hajimari.io/enable: "true"
         hajimari.io/icon: "lock"
         hajimari.io/appName: "Authelia"
@@ -42,7 +42,7 @@ spec:
       subdomain: auth
       tls:
         enabled: true
-        secret: authelia-tls
+        secret: "${SECRET_DOMAIN//./-}-tls"
       # traefikCRD:
       #   enabled: true
       #   disableIngressRoute: true

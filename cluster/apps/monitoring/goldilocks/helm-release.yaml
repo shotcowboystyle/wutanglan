@@ -39,11 +39,11 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           # hajimari.io/enable: "true"
           # hajimari.io/icon: cloud-download
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
         hosts:
           - host: &host "goldilocks.${SECRET_DOMAIN}"
             paths:
@@ -52,7 +52,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "goldilocks-tls"
+            secretName: "${SECRET_DOMAIN//./-}-tls"
       resources:
         requests:
           cpu: 10m
