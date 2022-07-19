@@ -66,10 +66,9 @@ spec:
             # secretName: "${SECRET_DOMAIN//./-}-tls"
     affinity:
       nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            nodeSelectorTerms:
-              matchExpressions:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
                 - key: kubernetes.io/hostname
                   operator: NotIn
                   values:
