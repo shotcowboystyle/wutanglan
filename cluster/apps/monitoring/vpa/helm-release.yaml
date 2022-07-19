@@ -35,10 +35,9 @@ spec:
 
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
                   - key: kubernetes.io/hostname
                     operator: NotIn
                     values:
@@ -48,10 +47,9 @@ spec:
       enabled: false
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              nodeSelectorTerms:
-                matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
                   - key: kubernetes.io/hostname
                     operator: NotIn
                     values:
