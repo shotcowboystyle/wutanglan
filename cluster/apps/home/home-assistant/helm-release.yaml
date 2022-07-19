@@ -53,7 +53,7 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           hajimari.io/enable: "true"
           hajimari.io/icon: "house"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -66,7 +66,8 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
+            secretName: "hassio-tls"
 
     podAnnotations:
       secret.reloader.stakater.com/reload: *app
@@ -97,7 +98,7 @@ spec:
           enabled: true
           ingressClassName: "traefik"
           annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-production"
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
             traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
             traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
           hosts:
@@ -113,7 +114,8 @@ spec:
           tls:
             - hosts:
                 - *host-code
-              secretName: "${SECRET_DOMAIN//./-}-tls"
+              # secretName: "${SECRET_DOMAIN//./-}-tls"
+              secretName: "hassio-config-tls"
         volumeMounts:
           - name: config
             mountPath: /config
