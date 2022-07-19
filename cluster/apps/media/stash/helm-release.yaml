@@ -46,7 +46,7 @@ spec:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -58,7 +58,8 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: *host
+            # secretName: *host
+            secretName: "${SECRET_DOMAIN//./-}-tls"
     nodeSelector:
       kubernetes.io/hostname: "clyde"
     affinity:

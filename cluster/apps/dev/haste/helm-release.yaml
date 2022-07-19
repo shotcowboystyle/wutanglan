@@ -54,8 +54,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "content-paste"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
         hosts:
           - host: &host "bin.${SECRET_DOMAIN}"
             paths:

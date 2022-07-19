@@ -2,13 +2,13 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: wutanglan-auth
+  name: chain-internal-wutanglan-auth
   namespace: networking
 spec:
   chain:
     middlewares:
       # Note this requires cloudflare proxy
-      # - name: cloudflare-ips
+      - name: networking-internal-only@kubernetescrd
       - name: networking-secure-headers@kubernetescrd
       - name: networking-rate-limit@kubernetescrd
       - name: networking-authelia@kubernetescrd

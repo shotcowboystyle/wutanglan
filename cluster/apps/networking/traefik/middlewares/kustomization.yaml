@@ -4,10 +4,10 @@ kind: Kustomization
 resources:
   - redirect-path.yaml
   - rate-limit.yaml
-  - wutanglan-auth.yaml
   - cloudflare-only.yaml
   - internal-only.yaml
   - secure-headers.yaml
   - chain-no-auth.yaml
   - error-pages.yaml
+  - chain-internal-wutanglan-auth.yaml
   - chain-no-error-pages.yaml
