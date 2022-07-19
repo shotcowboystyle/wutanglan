@@ -24,6 +24,12 @@ spec:
       password: "${SECRET_AUTHELIA_DB_PASSWORD}"
       database: authelia
     primary:
+      podSecurityContext:
+        enabled: true
+        fsGroup: 65537
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1031
       persistence:
         enabled: true
         existingClaim: authelia-postgresql-data

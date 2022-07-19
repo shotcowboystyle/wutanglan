@@ -21,4 +21,5 @@ data:
   RPI_CAM_3_IP_ADDR: 192.168.20.202
   RPI_CAM_4_IP_ADDR: 192.168.20.203
   SMTP_HOST: smtp.gmail.com
+  SMTP_PORT: "587"
   CLUSTER_NAME: wutanglan

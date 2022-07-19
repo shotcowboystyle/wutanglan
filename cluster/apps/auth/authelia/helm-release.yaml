@@ -140,8 +140,8 @@ spec:
         postgres:
           enabled: true
           host: authelia-postgresql
-          database: authelia
-          username: authelia
+          database: *app
+          username: *app
       notifier:
         disable_startup_check: true
         filesystem:
@@ -151,13 +151,34 @@ spec:
           enabledSecret: true
           username: ${SECRET_SMTP_USERNAME}
           host: ${SMTP_HOST}
-          port: 587
+          port: ${SMTP_PORT}
           sender: ${SECRET_SMTP_USERNAME}
           identifier: ${SECRET_DOMAIN}
           subject: "[Authelia] {title}"
           startup_check_address: ${SECRET_SMTP_USERNAME}
     secret:
-      existingSecret: authelia
+      existingSecret: *app
+      # secret:
+      #   storage:
+      #     key: STORAGE_PASSWORD
+      #     value: "${SECRET_AUTHELIA_POSTGRES_PASSWORD}"
+      #     filename: STORAGE_PASSWORD
+      #   jwt:
+      #     key: JWT_TOKEN
+      #     value: "${SECRET_AUTHELIA_JWT_SECRET}"
+      #     filename: JWT_TOKEN
+      #   redis:
+      #     key: REDIS_PASSWORD
+      #     value: "${SECRET_AUTHELIA_REDIS_PASSWORD}"
+      #     filename: REDIS_PASSWORD
+      #   smtp:
+      #     key: SMTP_PASSWORD
+      #     value: "${SECRET_AUTHELIA_SMTP_PASSWORD}"
+      #     filename: SMTP_PASSWORD
+      #   storageEncryptionKey:
+      #     key: STORAGE_ENCRYPTION_KEY
+      #     value: "${SECRET_AUTHELIA_STORAGE_ENCRYPTION_KEY}"
+      #     filename: STORAGE_ENCRYPTION_KEY
     podSecurityContext:
       runAsUser: 1031
       runAsGroup: 65537
