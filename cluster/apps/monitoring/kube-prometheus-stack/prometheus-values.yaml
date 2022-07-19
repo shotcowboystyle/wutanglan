@@ -11,7 +11,7 @@ prometheus:
     pathType: Prefix
     ingressClassName: "traefik"
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-production
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hajimari.io/enable: "true"
       hajimari.io/appName: "Prometheus"
@@ -20,21 +20,21 @@ prometheus:
     tls:
       - hosts:
           - *promhost
-        secretName: prometheus-tls
+        secretName: "${SECRET_DOMAIN//./-}-tls"
 
   thanosIngress:
     enabled: true
     pathType: Prefix
     ingressClassName: traefik
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-production
       traefik.ingress.kubernetes.io/service.serversscheme: h2c
     hosts:
       - &host "thanos-sidecar.${SECRET_DOMAIN}"
     tls:
       - hosts:
           - *host
-        secretName: thanos-sidecar-tls
+        secretName: "${SECRET_DOMAIN//./-}-tls"
   thanosService:
     enabled: true
   thanosServiceMonitor:
