@@ -43,7 +43,7 @@ spec:
           # hajimari.io/enable: "true"
           # hajimari.io/icon: cloud-download
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd,auth-authelia-auth@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
         hosts:
           - host: &host "goldilocks.${SECRET_DOMAIN}"
             paths:
