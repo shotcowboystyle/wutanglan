@@ -17,8 +17,8 @@ spec:
   values:
     env:
       TZ: ${TIMEZONE}
-      PUID: 1031
-      PGID: 65537
+      # PUID: 1031
+      # PGID: 65537
       MEM_LIMIT: 1024 #optional
       MEM_STARTUP: 1024 #optional
     service:
