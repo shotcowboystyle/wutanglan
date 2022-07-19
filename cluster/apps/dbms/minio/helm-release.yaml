@@ -72,11 +72,11 @@ spec:
         tls:
           - hosts:
               - *host-minio
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
             # secretName: "minio-tls"
           - hosts:
               - *host-s3
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
             # secretName: "minio-s3-tls"
     persistence:
       data:

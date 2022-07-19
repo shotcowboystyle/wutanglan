@@ -48,7 +48,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     # -- Configure persistence settings for the chart under this key.
     # @default -- See values.yaml

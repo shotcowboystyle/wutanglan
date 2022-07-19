@@ -53,7 +53,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     persistence:
       config:

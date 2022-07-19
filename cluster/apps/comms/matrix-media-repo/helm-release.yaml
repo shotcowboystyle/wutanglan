@@ -79,8 +79,8 @@ spec:
           paths:
             - "/_matrix/media"
       tls:
-        - secretName: "${SECRET_DOMAIN//./-}-tls"
-          hosts:
+        # - secretName: "${SECRET_DOMAIN//./-}-tls"
+        - hosts:
             - matrix.${SECRET_DOMAIN}
 
     postgresql:

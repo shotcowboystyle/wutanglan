@@ -66,7 +66,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     podAnnotations:
       secret.reloader.stakater.com/reload: *app
@@ -108,7 +108,7 @@ spec:
           tls:
             - hosts:
                 - *host-code
-              secretName: "${SECRET_DOMAIN//./-}-tls"
+              # secretName: "${SECRET_DOMAIN//./-}-tls"
         volumeMounts:
           - name: config
             mountPath: /config

@@ -73,7 +73,7 @@ spec:
           - hosts:
               - "${SECRET_DOMAIN}"
               - "www.${SECRET_DOMAIN}"
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     # -- Configure persistence settings for the chart under this key.
     # @default -- See values.yaml

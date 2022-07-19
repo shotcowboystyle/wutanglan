@@ -122,8 +122,8 @@ spec:
         external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
       tls:
-        - secretName: "${SECRET_DOMAIN//./-}-tls"
-          hosts:
+        # - secretName: "${SECRET_DOMAIN//./-}-tls"
+        - hosts:
             - matrix.${SECRET_DOMAIN}
 
     postgresql:

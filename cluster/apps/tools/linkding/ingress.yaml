@@ -17,7 +17,7 @@ spec:
   tls:
     - hosts:
         - &host "linkding.${SECRET_DOMAIN}"
-      secretName: "${SECRET_DOMAIN//./-}-tls"
+      # secretName: "${SECRET_DOMAIN//./-}-tls"
   rules:
     - host: *host
       http:

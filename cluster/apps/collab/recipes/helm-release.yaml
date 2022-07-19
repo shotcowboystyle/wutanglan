@@ -93,4 +93,4 @@ spec:
         tls:
           - hosts:
               - "recipes.${SECRET_DOMAIN}"
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"

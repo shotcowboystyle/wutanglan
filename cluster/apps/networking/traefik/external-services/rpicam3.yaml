@@ -29,7 +29,7 @@ spec:
   tls:
     - hosts:
         - "rpicam3.${SECRET_DOMAIN}"
-      secretName: "${SECRET_DOMAIN//./-}-tls"
+      # secretName: "${SECRET_DOMAIN//./-}-tls"
   rules:
     - host: rpicam3.${SECRET_DOMAIN}
       http:

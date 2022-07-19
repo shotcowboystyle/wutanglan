@@ -17,7 +17,7 @@ spec:
   tls:
     - hosts:
         - "matrix-hook.${SECRET_DOMAIN}"
-      secretName: "${SECRET_DOMAIN//./-}-tls"
+      # secretName: "${SECRET_DOMAIN//./-}-tls"
   rules:
     - host: "matrix-hook.${SECRET_DOMAIN}"
       http:

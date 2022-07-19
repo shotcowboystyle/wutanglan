@@ -59,15 +59,15 @@ spec:
         annotations:
           kubernetes.io/tls-acme: "true"
           cert-manager.io/cluster-issuer: letsencrypt-production
-          # traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         hosts:
           - host: "ma-slack.${SECRET_DOMAIN}"
             paths:
               - path: /public
                 pathType: Prefix
         tls:
-          - secretName: "${SECRET_DOMAIN//./-}-tls"
-            hosts:
+          # - secretName: "${SECRET_DOMAIN//./-}-tls"
+          - hosts:
               - "ma-slack.${SECRET_DOMAIN}"
 
     persistence:
