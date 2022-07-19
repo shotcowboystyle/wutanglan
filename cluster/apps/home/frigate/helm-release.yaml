@@ -43,6 +43,10 @@ spec:
       # FRIGATE_MQTT_PASSWORD: "Afaqn2oBGbQJwIJzz8CvuYYsx2NtZ5"
     service:
       main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/loadBalancerIPs: "${METALLB_FRIGATE_ADDR}"
         ports:
           http:
             port: &port 5000
