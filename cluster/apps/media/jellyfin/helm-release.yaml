@@ -41,6 +41,13 @@ spec:
         - 109
         - 568
 
+    service:
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/loadBalancerIPs: "${METALLB_JELLYFIN_ADDR}"
+
     ingress:
       main:
         enabled: true
@@ -57,7 +64,7 @@ spec:
               - path: /
                 pathType: Prefix
         tls:
-          - secretName: jellyfin-tls
+          - secretName: "${SECRET_DOMAIN//./-}-tls"
             hosts:
               - *host
 
