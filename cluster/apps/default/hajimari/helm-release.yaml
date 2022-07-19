@@ -30,10 +30,12 @@ spec:
       defaultEnable: false
       namespaceSelector:
         matchNames:
+          - auth
           - biz-ops
           - collab
           - comms
           - default
+          - dev
           - dbms
           - dev
           - home
@@ -41,6 +43,8 @@ spec:
           - monitoring
           - networking
           - observability
+          - privacy
+          - tools
       name: "you"
       customApps:
         - name: Some External Cluster Service

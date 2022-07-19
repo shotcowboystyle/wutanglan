@@ -30,11 +30,11 @@ spec:
       tag: v9.46.0
     nameOverride: cyberchef
     env:
-    # service:
-    #   main:
-    #     ports:
-    #       http:
-    #         port: 8000
+    service:
+      main:
+        ports:
+          http:
+            port: 8000
     ingress:
       main:
         enabled: true

@@ -23,6 +23,7 @@ resources:
   - metrics-server.yaml
   - minio.yaml
   - node-feature-discovery.yaml
+  - pascaliske.yaml
   - prometheus-community.yaml
   - stakater.yaml
   - traefik.yaml

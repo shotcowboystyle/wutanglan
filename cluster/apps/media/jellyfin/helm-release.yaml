@@ -14,15 +14,19 @@ spec:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
-  # install:
-  #   createNamespace: true
-  # upgrade:
-  #   createNamespace: true
-  # dependsOn:
-  #   - name: intel-gpu-plugin
-  #     namespace: kube-system
-  #   - name: node-feature-discovery
-  #     namespace: kube-system
+
+  install:
+    createNamespace: true
+
+  upgrade:
+    createNamespace: true
+
+  dependsOn:
+    - name: intel-gpu-plugin
+      namespace: kube-system
+    - name: node-feature-discovery
+      namespace: kube-system
+
   values:
     global:
       nameOverride: *app
@@ -34,12 +38,16 @@ spec:
       JELLYFIN_CACHE_DIR: "/config/cache"
 
     podSecurityContext:
-      fsGroup: 100
+      runAsUser: 1031
+      runAsGroup: 65537
+      fsGroup: 65537
+      fsGroupChangePolicy: "OnRootMismatch"
       supplementalGroups:
         - 44
         - 100
         - 109
         - 568
+        - 65537
 
     service:
       main:
@@ -47,6 +55,9 @@ spec:
         externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/loadBalancerIPs: "${METALLB_JELLYFIN_ADDR}"
+        ports:
+          http:
+            port: 8096
 
     ingress:
       main:
