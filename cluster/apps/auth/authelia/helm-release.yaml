@@ -15,6 +15,13 @@ spec:
         name: authelia
         namespace: flux-system
       interval: 5m
+
+  dependsOn:
+    - name: authelia-postgresql
+      namespace: auth
+    - name: authelia-redis
+      namespace: auth
+
   values:
     domain: ${SECRET_DOMAIN}
     service:
@@ -142,6 +149,7 @@ spec:
           host: authelia-postgresql
           database: *app
           username: *app
+          sslmode: disable
       notifier:
         disable_startup_check: true
         filesystem:
@@ -179,22 +187,18 @@ spec:
       #     key: STORAGE_ENCRYPTION_KEY
       #     value: "${SECRET_AUTHELIA_STORAGE_ENCRYPTION_KEY}"
       #     filename: STORAGE_ENCRYPTION_KEY
-    podSecurityContext:
-      runAsUser: 1031
-      runAsGroup: 65537
-      supplementalGroups:
-        - 100
+      # podSecurityContext:
+      #   runAsUser: 1031
+      #   runAsGroup: 65537
+      #   supplementalGroups:
+      #     - 100
 
     affinity:
       nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 60
-            preference:
-              matchExpressions:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
                 - key: kubernetes.io/arch
                   operator: In
                   values:
                     - amd64
-                    - i386
-                    - i686
-                    - x86
