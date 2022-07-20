@@ -46,6 +46,7 @@ spec:
     env:
       TZ: America/New_York
       LIBVA_DRIVER_NAME: "i965"
+      LIBVA_DRIVER_NAME_JELLYFIN: "i965"
 
     service:
       main:
