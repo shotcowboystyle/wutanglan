@@ -124,10 +124,10 @@ cameras:
   patio:
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
