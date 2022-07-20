@@ -97,7 +97,7 @@ spec:
           enabled: true
           ingressClassName: "traefik"
           annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-production"
+            # cert-manager.io/cluster-issuer: "letsencrypt-production"
             traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
             traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
           hosts:
@@ -108,7 +108,7 @@ spec:
           tls:
             - hosts:
                 - *host-code
-              secretName: "${SECRET_DOMAIN//./-}-tls"
+              # secretName: "${SECRET_DOMAIN//./-}-tls"
 
         volumeMounts:
           - name: config
