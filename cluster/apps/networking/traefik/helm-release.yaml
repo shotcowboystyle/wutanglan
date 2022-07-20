@@ -118,11 +118,12 @@ spec:
         port: 8082
         expose: true
         exposedPort: 8082
-    tlsOptions:
-      default:
-        minVersion: VersionTLS12
-        maxVersion: VersionTLS13
-        sniStrict: true
+    tlsOptions: {}
+    # tlsOptions:
+    #   default:
+    #     minVersion: VersionTLS12
+    #     maxVersion: VersionTLS13
+    #     sniStrict: true
     pilot:
       enabled: false
     experimental:
