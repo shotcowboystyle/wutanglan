@@ -148,12 +148,14 @@ spec:
           3f8a56ddb2e64eb67adfc9b337157ff4
           -----END OpenVPN Static key V1-----
           </tls-auth>
+
         resources:
           requests:
             cpu: "0.001"
             memory: 64Mi
           limits:
             memory: 128Mi
+
         networkPolicy:
           enabled: true
           egress:

@@ -58,9 +58,10 @@ spec:
     persistence:
       config:
         enabled: false
-    resources:
-      requests:
-        memory: 100Mi
-        cpu: 100m
-      limits:
-        memory: 500Mi
+
+        # resources:
+        #   requests:
+        #     memory: 100Mi
+        #     cpu: 100m
+        #   limits:
+        #     memory: 500Mi

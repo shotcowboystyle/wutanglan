@@ -66,9 +66,10 @@ spec:
         enabled: true
         existingClaim: overseerr-config-v1
         mountPath: /app/config
-    resources:
-      requests:
-        cpu: 10m
-        memory: 250Mi
-      limits:
-        memory: 500Mi
+
+        # resources:
+        #   requests:
+        #     cpu: 10m
+        #     memory: 250Mi
+        #   limits:
+        #     memory: 500Mi

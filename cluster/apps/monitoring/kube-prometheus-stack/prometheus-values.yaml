@@ -47,6 +47,7 @@ prometheus:
         cpu: 250m
       limits:
         memory: 8000Mi
+
     enableAdminAPI: true
     podAntiAffinity: hard
     podMonitorNamespaceSelector: {}

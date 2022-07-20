@@ -80,9 +80,10 @@ spec:
         path: /tycho/Apps/External/Backups/readarr
         mountPath: /config/Backups
         readOnly: false
-    resources:
-      requests:
-        cpu: 10m
-        memory: 250Mi
-      limits:
-        memory: 1000Mi
+
+        # resources:
+        #   requests:
+        #     cpu: 10m
+        #     memory: 250Mi
+        #   limits:
+        #     memory: 1000Mi

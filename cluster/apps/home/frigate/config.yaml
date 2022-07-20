@@ -10,10 +10,6 @@ detectors:
     type: cpu
   cpu2:
     type: cpu
-  cpu3:
-    type: cpu
-  cpu4:
-    type: cpu
 
 database:
   path: /data/frigate.db
@@ -25,11 +21,18 @@ ffmpeg:
     - warning
   hwaccel_args:
     - -hwaccel
-    - qsv
-    - -qsv_device
+
+    # - qsv
+    - vaapi
+
+    # - -qsv_device
+    - -hwaccel_device
+
     - /dev/dri/renderD128
     - -hwaccel_output_format
     - yuv420p
+  output_args:
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
 # Optional: Detect configuration
 # NOTE: Can be overridden at the camera level
@@ -47,16 +50,16 @@ objects:
     - dog
   filters:
     person:
-      min_area: 2500
-      max_area: 100000
+      # min_area: 2500
+      # max_area: 100000
       threshold: 0.7
     cat:
-      min_area: 2500
-      max_area: 100000
+      # min_area: 2500
+      # max_area: 100000
       threshold: 0.7
     dog:
-      min_area: 2500
-      max_area: 100000
+      # min_area: 2500
+      # max_area: 100000
       threshold: 0.7
 
 record:
@@ -75,18 +78,18 @@ record:
 birdseye:
   # Optional: Enable birdseye view (default: shown below)
   enabled: True
-#   # Optional: Width of the output resolution (default: shown below)
-#   width: 2560
-#   # Optional: Height of the output resolution (default: shown below)
-#   height: 1440
-#   # Optional: Encoding quality of the mpeg1 feed (default: shown below)
-#   # 1 is the highest quality, and 31 is the lowest. Lower quality feeds utilize less CPU resources.
-#   quality: 8
-#   # Optional: Mode of the view. Available options are: objects, motion, and continuous
-#   #   objects - cameras are included if they have had a tracked object within the last 30 seconds
-#   #   motion - cameras are included if motion was detected in the last 30 seconds
-#   #   continuous - all cameras are included always
-#   mode: continuous
+  # Optional: Width of the output resolution (default: shown below)
+  width: 2560
+  # Optional: Height of the output resolution (default: shown below)
+  height: 1440
+  # Optional: Encoding quality of the mpeg1 feed (default: shown below)
+  # 1 is the highest quality, and 31 is the lowest. Lower quality feeds utilize less CPU resources.
+  quality: 2
+  # Optional: Mode of the view. Available options are: objects, motion, and continuous
+  #   objects - cameras are included if they have had a tracked object within the last 30 seconds
+  #   motion - cameras are included if motion was detected in the last 30 seconds
+  #   continuous - all cameras are included always
+  mode: continuous
 
 live:
   # Optional: Set the height of the live stream. (default: 720)
@@ -121,93 +124,79 @@ cameras:
   patio:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:N8AGxdHV9DUEKjVGa5nRaHH5FodqgkJ@192.168.32.141:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:N8AGxdHV9DUEKjVGa5nRaHH5FodqgkJ@192.168.32.141:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   garage_side:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:RrPhGaTo5g6UiKYYc8awLTwn9q3PWL5@192.168.33.142:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_GARAGE_SIDE}@192.168.33.142:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:RrPhGaTo5g6UiKYYc8awLTwn9q3PWL5@192.168.33.142:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_GARAGE_SIDE}@192.168.33.142:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   apartment:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:oS9gwAtMoUkGysfvkjCrfy7jJseGDLb@192.168.34.143:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_APARTMENT}@192.168.34.143:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:oS9gwAtMoUkGysfvkjCrfy7jJseGDLb@192.168.34.143:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_APARTMENT}@192.168.34.143:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   driveway:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:TvnxR99bwbBM6oufVCCuSDqZv4ttYMs@192.168.35.144:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_DRIVEWAY}@192.168.35.144:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:TvnxR99bwbBM6oufVCCuSDqZv4ttYMs@192.168.35.144:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_DRIVEWAY}@192.168.35.144:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   driveway_entrance:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:S49t7BSb4gKNfYpHZdhidnB6py8CqxH@192.168.36.145:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_DRIVEWAY_ENTRANCE}@192.168.36.145:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:S49t7BSb4gKNfYpHZdhidnB6py8CqxH@192.168.36.145:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_DRIVEWAY_ENTRANCE}@192.168.36.145:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   firepit:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:7Wmh6STGbXdRwKH9SxAY6bhHEHNRdGH@192.168.37.146:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_FIREPIT}@192.168.37.146:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:7Wmh6STGbXdRwKH9SxAY6bhHEHNRdGH@192.168.37.146:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_FIREPIT}@192.168.37.146:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   house_side:
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:CB8y8c45T7zF3kzsSD79NGbcEZn9DNo@192.168.38.147:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_HOUSE_SIDE}@192.168.38.147:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:CB8y8c45T7zF3kzsSD79NGbcEZn9DNo@192.168.38.147:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_HOUSE_SIDE}@192.168.38.147:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp
-      output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
 
   front_yard:
     #    zones:
@@ -215,10 +204,10 @@ cameras:
     #        coordinates: 568,504,1280,248,1280,0,0,0,0,425
     ffmpeg:
       inputs:
-        - path: rtsp://frigate:Vg5L7jWvWJbDaYWnje6httKPmJSE7q5@192.168.39.148:554/cam/realmonitor?channel=1&subtype=0
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_FRONT_YARD}@192.168.39.148:554/cam/realmonitor?channel=1&subtype=0
           roles:
             - record
-        - path: rtsp://frigate:Vg5L7jWvWJbDaYWnje6httKPmJSE7q5@192.168.39.148:554/cam/realmonitor?channel=1&subtype=1
+        - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_FRONT_YARD}@192.168.39.148:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
             - rtmp

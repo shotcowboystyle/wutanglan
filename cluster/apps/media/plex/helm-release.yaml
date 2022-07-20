@@ -95,6 +95,7 @@ spec:
                   operator: In
                   values:
                     - "true"
+
     resources:
       requests:
         gpu.intel.com/i915: 1

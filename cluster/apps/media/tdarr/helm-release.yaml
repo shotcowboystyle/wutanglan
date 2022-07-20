@@ -58,11 +58,13 @@ spec:
         pullPolicy: IfNotPresent
       env:
         PGID: 65537
-      resources:
-        requests:
-          gpu.intel.com/i915: 1
-        limits:
-          gpu.intel.com/i915: 1
+
+        # resources:
+        #   requests:
+        #     gpu.intel.com/i915: 1
+        #   limits:
+        #     gpu.intel.com/i915: 1
+
     persistence:
       data:
         enabled: true

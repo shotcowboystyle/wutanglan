@@ -65,9 +65,10 @@ spec:
         path: /tycho/Apps/External/Backups/tautulli
         mountPath: /config/backups
         readOnly: false
-    resources:
-      requests:
-        cpu: 10m
-        memory: 250Mi
-      limits:
-        memory: 500Mi
+
+        # resources:
+        #   requests:
+        #     cpu: 10m
+        #     memory: 250Mi
+        #   limits:
+        #     memory: 500Mi

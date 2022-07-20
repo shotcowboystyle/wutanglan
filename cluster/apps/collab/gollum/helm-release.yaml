@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: gollum
   namespace: collab
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
@@ -15,39 +17,48 @@ spec:
         name: flux-system
         namespace: flux-system
       interval: 5m
+
   install:
     timeout: 10m
     remediation:
       retries: 3
+
   upgrade:
     timeout: 10m
     remediation:
       retries: 3
       remediateLastFailure: true
     cleanupOnFail: true
+
   rollback:
     timeout: 10m
     recreate: true
     cleanupOnFail: true
+
   values:
+    nameOverride: gollum
+
     imagePullSecrets:
       - name: "regcred"
-    nameOverride: gollum
+
     image:
       repository: gollumorg/gollum
       tag: latest
       pullPolicy: IfNotPresent
+
     service:
       main:
         ports:
           http:
             port: 4567
+
     env:
       TZ: ${CLUSTER_TZ}
       GITHUB_TOKEN: ${SECRET_GITHUB_TOKEN}
       GIT_AUTHOR_EMAIL: ${SECRET_EMAIL}
       GIT_COMMITTER_EMAIL: ${SECRET_EMAIL}
       OMNIGOLLUM_AUTHORIZED_USERS: ${SECRET_SMTP_USER}
+
     ingress:
       main:
         enabled: true
@@ -82,6 +93,13 @@ spec:
         enabled: true
         mountPath: /wiki
         existingClaim: gollum-config-v1
+
+        # resources:
+        #   requests:
+        #     memory: 100Mi
+        #     cpu: 100m
+        #   limits:
+        #     memory: 500Mi
 
     gollum:
       # -- Branch to pull
@@ -136,9 +154,3 @@ spec:
         Precious::App.set(:omnigollum, options)
         options[:authorized_users] = ENV["OMNIGOLLUM_AUTHORIZED_USERS"].split(",")
         Precious::App.register Omnigollum::Sinatra
-    resources:
-      requests:
-        memory: 100Mi
-        cpu: 100m
-      limits:
-        memory: 500Mi

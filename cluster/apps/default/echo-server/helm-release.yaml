@@ -89,9 +89,10 @@ spec:
           - hosts:
               - *host
             secretName: "${SECRET_DOMAIN//./-}-tls"
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        memory: 96Mi
+
+            # resources:
+            #   requests:
+            #     cpu: 50m
+            #     memory: 64Mi
+            #   limits:
+            #     memory: 96Mi

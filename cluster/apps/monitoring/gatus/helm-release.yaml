@@ -34,23 +34,30 @@ spec:
     persistence:
       enabled: true
       existingClaim: gatus-config-pvc
+
     image:
       repository: twinproduction/gatus
       tag: v4.0.0
       pullPolicy: IfNotPresent
+
     updateStrategy: Recreate
+
     replicas: 1
-    resources:
-      requests:
-        cpu: 22m
-        memory: 132M
-      limits:
-        cpu: 100m
-        memory: 200M
+
+    # resources:
+    #   requests:
+    #     cpu: 22m
+    #     memory: 132M
+    #   limits:
+    #     cpu: 100m
+    #     memory: 200M
+
     nodeSelector:
       worker: yes
+
     env:
       TZ: ${TIMEZONE}
+
     ingress:
       main:
         enabled: true

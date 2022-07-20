@@ -94,9 +94,9 @@ spec:
                       - emqx
               topologyKey: kubernetes.io/hostname
 
-    resources:
-      requests:
-        cpu: 100m
-        memory: 150Mi
-      limits:
-        memory: 512Mi
+              # resources:
+              #   requests:
+              #     cpu: 100m
+              #     memory: 150Mi
+              #   limits:
+              #     memory: 512Mi

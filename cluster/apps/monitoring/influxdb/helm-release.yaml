@@ -61,13 +61,15 @@ spec:
         enabled: true
         fsGroup: 1001
         runAsUser: 1001
-      resources:
-        requests:
-          cpu: 50m
-          memory: 263M
-        limits:
-          cpu: 100m
-          memory: 263M
+
+        # resources:
+        #   requests:
+        #     cpu: 50m
+        #     memory: 263M
+        #   limits:
+        #     cpu: 100m
+        #     memory: 263M
+
       livenessProbe:
         enabled: true
         initialDelaySeconds: 180
@@ -185,13 +187,15 @@ spec:
         enabled: true
         fsGroup: 1001
         runAsUser: 1001
-      resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
+
+        # resources:
+        #   limits:
+        #     cpu: 100m
+        #     memory: 128Mi
+        #   requests:
+        #     cpu: 100m
+        #     memory: 128Mi
+
       livenessProbe:
         enabled: true
         initialDelaySeconds: 30
