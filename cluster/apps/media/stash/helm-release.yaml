@@ -59,7 +59,7 @@ spec:
           - hosts:
               - *host
             # secretName: *host
-            secretName: "${SECRET_DOMAIN//./-}-tls"
+            # secretName: "${SECRET_DOMAIN//./-}-tls"
     nodeSelector:
       kubernetes.io/hostname: "clyde"
     affinity:

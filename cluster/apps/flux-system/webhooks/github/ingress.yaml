@@ -25,4 +25,4 @@ spec:
   tls:
     - hosts:
         - "flux-receiver.${SECRET_DOMAIN}"
-      secretName: "${SECRET_DOMAIN//./-}-tls"
+      # secretName: "${SECRET_DOMAIN//./-}-tls"
