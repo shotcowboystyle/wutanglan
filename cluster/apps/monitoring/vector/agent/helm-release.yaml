@@ -21,8 +21,8 @@ spec:
   values:
     role: "Agent"
 
-    # podMonitor:
-    #   enabled: true
+    podMonitor:
+      enabled: true
 
     service:
       enabled: false

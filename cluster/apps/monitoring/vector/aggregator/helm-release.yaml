@@ -21,8 +21,8 @@ spec:
   values:
     role: "Stateless-Aggregator"
 
-    # podMonitor:
-    #   enabled: true
+    podMonitor:
+      enabled: true
 
     service:
       enabled: true

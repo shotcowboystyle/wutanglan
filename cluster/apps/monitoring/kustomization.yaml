@@ -8,6 +8,7 @@ resources:
   # - blackbox-exporter
   # - generic-rules
   - botkube
+  - flux-system
   # - gatus
   - goldilocks
   - grafana
