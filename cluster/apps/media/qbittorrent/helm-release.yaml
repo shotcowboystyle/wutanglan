@@ -23,6 +23,11 @@ spec:
   upgrade:
     remediation:
       retries: 5
+
+  dependsOn:
+    - name: metallb
+      namespace: metallb-system
+
   values:
     global:
       nameOverride: *app

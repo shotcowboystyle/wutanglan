@@ -24,6 +24,9 @@ spec:
     - name: node-feature-discovery
       namespace: kube-system
 
+    - name: metallb
+      namespace: metallb-system
+
   values:
     global:
       nameOverride: *app

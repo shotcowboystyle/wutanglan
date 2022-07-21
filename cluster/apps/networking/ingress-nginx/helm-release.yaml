@@ -16,6 +16,9 @@ spec:
         name: ingress-nginx-charts
         namespace: flux-system
       interval: 5m
+  dependsOn:
+    - name: metallb
+      namespace: metallb-system
   values:
     controller:
       replicaCount: 1

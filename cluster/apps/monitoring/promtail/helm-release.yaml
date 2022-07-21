@@ -5,10 +5,8 @@ metadata:
   name: promtail
   namespace: monitoring
 spec:
-  dependsOn:
-    - name: loki
-      namespace: monitoring
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://grafana.github.io/helm-charts
@@ -19,6 +17,14 @@ spec:
         name: grafana
         namespace: flux-system
       interval: 5m
+
+  dependsOn:
+    - name: loki
+      namespace: monitoring
+
+    - name: metallb
+      namespace: metallb-system
+
   values:
     image:
       registry: ghcr.io

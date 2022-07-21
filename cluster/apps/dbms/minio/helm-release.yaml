@@ -18,6 +18,10 @@ spec:
         namespace: flux-system
       interval: 15m
 
+  dependsOn:
+    - name: metallb
+      namespace: metallb-system
+
   values:
     nameOverride: minio
 

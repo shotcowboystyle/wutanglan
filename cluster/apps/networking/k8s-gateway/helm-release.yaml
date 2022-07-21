@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: k8s-gateway
   namespace: networking
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: k8s-gateway
@@ -15,20 +17,27 @@ spec:
         name: k8s-gateway
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   dependsOn:
     - name: metallb
       namespace: metallb-system
+
   values:
     fullnameOverride: k8s-gateway
+
     domain: ${SECRET_DOMAIN}
+
     ttl: 1
+
     service:
       type: LoadBalancer
       port: 53
@@ -43,6 +52,8 @@ spec:
       # ipFamilies:
       #   - "IPv4"
       #   - "IPv6"
+
       annotations:
         metallb.universe.tf/loadBalancerIPs: ${METALLB_K8S_GATEWAY_ADDR}
+
       externalTrafficPolicy: Local

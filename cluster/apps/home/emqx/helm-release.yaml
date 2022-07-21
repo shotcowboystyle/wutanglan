@@ -19,6 +19,10 @@ spec:
         namespace: flux-system
       interval: 5m
 
+  dependsOn:
+    - name: metallb
+      namespace: metallb-system
+
   values:
     replicaCount: 3
     recreatePods: true

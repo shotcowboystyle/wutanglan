@@ -5,10 +5,8 @@ metadata:
   name: vector-aggregator
   namespace: monitoring
 spec:
-  dependsOn:
-    - name: loki
-      namespace: monitoring
   interval: 15m
+
   chart:
     spec:
       chart: vector
@@ -18,6 +16,14 @@ spec:
         name: vector
         namespace: flux-system
       interval: 15m
+
+  dependsOn:
+    - name: loki
+      namespace: monitoring
+
+    - name: metallb
+      namespace: metallb-system
+
   values:
     role: "Stateless-Aggregator"
 

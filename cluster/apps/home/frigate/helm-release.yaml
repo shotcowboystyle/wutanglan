@@ -34,6 +34,8 @@ spec:
       namespace: kube-system
     - name: node-feature-discovery
       namespace: kube-system
+    - name: metallb
+      namespace: metallb-system
 
   values:
     global:
