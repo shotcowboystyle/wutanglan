@@ -98,10 +98,10 @@ spec:
         add:
           - NET_ADMIN
 
-    resources:
-      requests:
-        cpu: 15m
-        memory: 64M
-      limits:
-        cpu: 15m
-        memory: 64M
+    # resources:
+    #   requests:
+    #     cpu: 15m
+    #     memory: 64M
+    #   limits:
+    #     cpu: 15m
+    #     memory: 64M
