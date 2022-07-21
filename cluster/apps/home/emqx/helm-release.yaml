@@ -84,8 +84,8 @@ spec:
     #           - "emqx.peanutbutterporkchop.com"
     #         secretName: "emqx"
 
-    metrics:
-      enabled: true
+    # metrics:
+    #   enabled: true
 
     # resources:
     #   requests:
