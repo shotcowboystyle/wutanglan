@@ -64,6 +64,10 @@ spec:
                     operator: NotIn
                     values:
                       - inky
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - clyde
 
     metrics:
       enabled: true
