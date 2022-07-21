@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: metallb
   namespace: networking
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: metallb
@@ -14,13 +16,16 @@ spec:
         kind: HelmRepository
         name: metallb
         namespace: flux-system
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   values:
     configInline:
       address-pools:

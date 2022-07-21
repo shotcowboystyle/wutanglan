@@ -17,4 +17,4 @@ resources:
   # - privacy
   # - security
   # - tools
-  # - system-upgrade
+  - system-upgrade
