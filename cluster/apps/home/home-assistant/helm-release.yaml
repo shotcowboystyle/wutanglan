@@ -3,8 +3,10 @@ kind: HelmRelease
 metadata:
   name: &app home-assistant
   namespace: home
+
 spec:
   interval: 15m
+
   chart:
     spec:
       # registryUrl=https://k8s-at-home.com/charts/
@@ -16,68 +18,64 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   values:
     global:
       nameOverride: *app
+
     image:
       repository: ghcr.io/home-assistant/home-assistant
       tag: 2022.7.2
+
     env:
       TZ: "${TIMEZONE}"
     envFrom:
       - secretRef:
           name: *app
-    # hostNetwork: true
-    # dnsPolicy: ClusterFirstWithHostNet
-    probes:
-      liveness:
-        enabled: false
-      readiness:
-        enabled: false
-      startup:
-        enabled: false
-    service:
-      main:
-        ports:
-          http:
-            port: 8123
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "house"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "hassio.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
+    # -- Enable devices to be discoverable
+    hostNetwork: true
+    # -- When hostNetwork is true set dnsPolicy to ClusterFirstWithHostNet
+    dnsPolicy: ClusterFirstWithHostNet
 
     podAnnotations:
       secret.reloader.stakater.com/reload: *app
+
     persistence:
       config:
         enabled: true
         existingClaim: home-assistant-config-pvc
-      # media:
-      #   enabled: true
-      #   mountPath: /mnt/media/nvr
-      #   existingClaim: "nvr-media-pvc"
 
     addons:
       codeserver:
@@ -93,6 +91,7 @@ spec:
           - "/config/.vscode"
           - --extensions-dir
           - "/config/.vscode"
+
         ingress:
           enabled: true
           ingressClassName: "traefik"
@@ -100,15 +99,16 @@ spec:
             cert-manager.io/cluster-issuer: "letsencrypt-production"
             traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
             traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
+
           hosts:
             - host: &host-code "haconfig.${SECRET_DOMAIN}"
               paths:
                 - path: /
                   pathType: Prefix
+
           tls:
             - hosts:
                 - *host-code
-              # secretName: "${SECRET_DOMAIN//./-}-tls"
 
         volumeMounts:
           - name: config
