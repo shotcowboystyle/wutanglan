@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: haste-server-redis
   namespace: dev
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://charts.bitnami.com/bitnami
@@ -16,22 +18,43 @@ spec:
         name: bitnami
         namespace: flux-system
       interval: 5m
+
   values:
     architecture: standalone
+
+    replica:
+      replicaCount: 0
+
     securityContext:
       sysctls:
         - name: net.core.somaxconn
           value: "10000"
+
     global:
       storageClass: "nfs-client"
+
+    auth:
+      enabled: false
+
     master:
       podSecurityContext:
         fsGroup: 65537
+
       nodeSelector:
         beta.kubernetes.io/arch: amd64
+
       persistence:
         enabled: true
         existingClaim: haste-redis-data
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M
+
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -41,11 +64,17 @@ spec:
                     operator: NotIn
                     values:
                       - inky
-    replica:
-      replicaCount: 0
+
     metrics:
       enabled: true
+
       serviceMonitor:
         enabled: true
-    auth:
-      enabled: false
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M

@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app cyberchef
   namespace: dev
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: kah-common-chart
@@ -15,53 +17,64 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   values:
+    nameOverride: *app
     global:
       nameOverride: *app
+
     image:
       repository: mpepping/cyberchef
       tag: v9.46.0
-    nameOverride: cyberchef
+
     env:
+
     service:
       main:
         ports:
           http:
             port: 8000
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "document"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
+
         hosts:
           - host: &host "cyberchef.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     persistence:
       config:
         enabled: false
 
-        # resources:
-        #   requests:
-        #     memory: 100Mi
-        #     cpu: 100m
-        #   limits:
-        #     memory: 500Mi
+    resources:
+      requests:
+        cpu: 15m
+        memory: 64M
+      limits:
+        cpu: 15m
+        memory: 64M

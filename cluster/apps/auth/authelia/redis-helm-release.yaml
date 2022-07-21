@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: authelia-redis
   namespace: auth
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: redis
@@ -15,41 +17,63 @@ spec:
         name: bitnami
         namespace: flux-system
       interval: 5m
+
   values:
     architecture: standalone
+
     securityContext:
       sysctls:
         - name: net.core.somaxconn
           value: "10000"
+
+    auth:
+      existingSecret: authelia
+      existingSecretPasswordKey: REDIS_PASSWORD
+
     global:
       storageClass: "nfs-client"
+
     master:
-      podSecurityContext:
-        fsGroup: 100
-        supplementalGroups:
-          - 100
       nodeSelector:
         beta.kubernetes.io/arch: amd64
+
       persistence:
         enabled: true
         existingClaim: authelia-redis-data
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M
+
     metrics:
       enabled: true
+
       serviceMonitor:
         enabled: true
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M
+
     affinity:
       nodeAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 60
             preference:
               matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                    - inky
                 - key: kubernetes.io/arch
                   operator: In
                   values:
                     - amd64
-                    - i386
-                    - i686
-                    - x86
-    auth:
-      existingSecret: authelia
-      existingSecretPasswordKey: REDIS_PASSWORD

@@ -4,11 +4,16 @@ kind: HelmRelease
 metadata:
   name: haste-server
   namespace: dev
+
 spec:
   maxHistory: 3
+
   interval: 10m0s
+
   suspend: false
+
   releaseName: haste-server
+
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
@@ -18,13 +23,15 @@ spec:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
+
   values:
     image:
       repository: ghcr.io/k8s-at-home/haste-server
       pullPolicy: IfNotPresent
       tag: latest
+
     env:
-      TZ: America/New_York
+      TZ: ${TIMEZONE}
       HOST: 0.0.0.0
       PORT: "7777"
       KEY_LENGTH: "10"
@@ -42,28 +49,41 @@ spec:
       RATELIMITS_BLACKLIST: ""
       STORAGE_TYPE: "redis"
       STORAGE_EXPIRE_SECONDS: "604800"
-      STORAGE_HOST: haste-server-redis-master.dev.svc
+      STORAGE_HOST: haste-server-redis-master.dev.svc.cluster.local
       STORAGE_PORT: "6379"
       STORAGE_DB: "2"
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "content-paste"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
+
         hosts:
           - host: &host "bin.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
+    resources:
+      requests:
+        cpu: 15m
+        memory: 64M
+      limits:
+        cpu: 15m
+        memory: 64M
+
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

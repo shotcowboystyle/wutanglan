@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app excalidraw
   namespace: dev
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: kah-common-chart
@@ -15,56 +17,68 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   values:
+    fullnameOverride: *app
     global:
       nameOverride: *app
-    fullnameOverride: excalidraw
+
     image:
       repository: excalidraw/excalidraw
       tag: sha-4bfc5bb
+
     env:
       TZ: "${TIMEZONE}"
+
     service:
       main:
         ports:
           http:
             port: 80
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "chart"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
+
         hosts:
           - host: &host "draw.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
     persistence:
       config:
         enabled: false
 
-        # resources:
-        #   requests:
-        #     memory: 100Mi
-        #     cpu: 100m
-        #   limits:
-        #     memory: 500Mi
+    resources:
+      requests:
+        cpu: 15m
+        memory: 64M
+      limits:
+        cpu: 15m
+        memory: 64M
 
     affinity:
       nodeAffinity:
@@ -79,6 +93,3 @@ spec:
                   operator: In
                   values:
                     - amd64
-                    - i386
-                    - i686
-                    - x86

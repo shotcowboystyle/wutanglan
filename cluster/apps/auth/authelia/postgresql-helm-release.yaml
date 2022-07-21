@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: authelia-postgresql
   namespace: auth
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: postgresql
@@ -15,28 +17,52 @@ spec:
         name: bitnami
         namespace: flux-system
       interval: 5m
+
   values:
     image:
       repository: bitnami/postgresql
       tag: 11.15.0-debian-10-r28
+
     auth:
       username: authelia
       password: "${SECRET_AUTHELIA_DB_PASSWORD}"
       database: authelia
+
     primary:
       podSecurityContext:
         enabled: true
         fsGroup: 65537
+
       containerSecurityContext:
         enabled: true
         runAsUser: 1031
+
       persistence:
         enabled: true
         existingClaim: authelia-postgresql-data
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 50M
+        limits:
+          cpu: 11m
+          memory: 50M
+
     metrics:
       enabled: true
+
       serviceMonitor:
         enabled: true
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M
+
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

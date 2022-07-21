@@ -4,10 +4,13 @@ kind: HelmRelease
 metadata:
   name: &app transmission
   namespace: media
+
 spec:
   interval: 5m
+
   upgrade:
     force: true
+
   chart:
     spec:
       chart: kah-common-chart
@@ -17,54 +20,61 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+
   timeout: 10m0s
+
   values:
     image:
       repository: haugene/transmission-openvpn
       tag: "4.0"
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cloud-download-outline"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "transmission.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
     service:
       main:
-        # annotations:
-        #   traefik.ingress.kubernetes.io/service.serversscheme: http
         ports:
           http:
             port: 9091
+
     persistence:
       config:
         enabled: true
         existingClaim: transmission-config-pvc
         mountPath: /config/transmission-home
+
       downloads:
         enabled: true
         existingClaim: transmission-downloads-pvc
         mountPath: /data
+
     podSecurityContext:
       fsGroup: 100
       supplementalGroups:
         - 100
+
     env:
       OPENVPN_PROVIDER: SURFSHARK
-      # OPENVPN_USERNAME: "${vpn_surfshark_username}"
-      # OPENVPN_PASSWORD: "${vpn_surfshark_password}"
       OPENVPN_CONFIG: nl-ams_udp
       LOCAL_NETWORK: "10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
       CREATE_TUN_DEVICE: "true"
@@ -74,10 +84,20 @@ spec:
       TRANSMISSION_RPC_HOST_WHITELIST: "127.0.0.1,192.168.*.*"
       PUID: 1024
       PGID: 100
+
     envFrom:
       - secretRef:
           name: *app
+
     securityContext:
       capabilities:
         add:
           - NET_ADMIN
+
+    resources:
+      requests:
+        cpu: 15m
+        memory: 64M
+      limits:
+        cpu: 15m
+        memory: 64M

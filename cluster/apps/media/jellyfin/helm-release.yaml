@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app jellyfin
   namespace: media
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: jellyfin
@@ -18,15 +20,18 @@ spec:
   dependsOn:
     - name: intel-gpu-plugin
       namespace: kube-system
+
     - name: node-feature-discovery
       namespace: kube-system
 
   values:
     global:
       nameOverride: *app
+
     image:
       repository: jellyfin/jellyfin
       tag: 10.8.1
+
     env:
       TZ: "${TIMEZONE}"
       JELLYFIN_CACHE_DIR: "/config/cache"
@@ -47,8 +52,10 @@ spec:
       main:
         type: LoadBalancer
         externalTrafficPolicy: Local
+
         annotations:
           metallb.universe.tf/loadBalancerIPs: "${METALLB_JELLYFIN_ADDR}"
+
         ports:
           http:
             port: 8096
@@ -57,19 +64,22 @@ spec:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "movie-open-play"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "jellyfin.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
-          # - secretName: "${SECRET_DOMAIN//./-}-tls"
           - hosts:
               - *host
 
@@ -77,11 +87,13 @@ spec:
       config:
         enabled: true
         existingClaim: jellyfin-config-pvc
+
       media:
         enabled: true
         existingClaim: jellyfin-media-pvc
         mountPath: /media
         readOnly: true
+
       transcode:
         enabled: true
         type: emptyDir
@@ -92,6 +104,10 @@ spec:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                    - inky
                 - key: feature.node.kubernetes.io/custom-intel-gpu
                   operator: In
                   values:
@@ -99,9 +115,14 @@ spec:
 
     resources:
       requests:
-        gpu.intel.com/i915: 1
+        cpu: 15m
+        memory: 545M
         # cpu: 100m
-        memory: 1000Mi
-      limits:
+        # memory: 1000Mi
         gpu.intel.com/i915: 1
-        memory: 6000Mi
+
+      limits:
+        cpu: 54m
+        memory: 6489M
+        # memory: 6000Mi
+        gpu.intel.com/i915: 1

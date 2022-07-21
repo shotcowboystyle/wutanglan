@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: emqx
   namespace: home
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://repos.emqx.io/charts
@@ -16,6 +18,7 @@ spec:
         name: emqx
         namespace: flux-system
       interval: 5m
+
   values:
     replicaCount: 3
     recreatePods: true
@@ -32,6 +35,7 @@ spec:
       {allow, {ipaddr, "127.0.0.1"}, pubsub, ["$SYS/#", "#"]}.
       {allow, all, subscribe, ["$SYS/#", {eq, "#"}]}.
       {allow, all}.
+
     emqxLoadedPlugins: >
       {emqx_management, true}.
       {emqx_recon, true}.
@@ -42,6 +46,7 @@ spec:
       {emqx_bridge_mqtt, false}.
       {emqx_auth_mnesia, true}.
       {emqx_prometheus, true}.
+
     emqxLoadedModules: >
       {emqx_mod_presence, true}.
       {emqx_mod_delayed, false}.
@@ -53,6 +58,7 @@ spec:
       annotations:
         prometheus.io/probe: "true"
         prometheus.io/protocol: tcp
+
       type: LoadBalancer
       externalIPs:
         - ${METALLB_MQTT_ADDR}
@@ -81,6 +87,14 @@ spec:
     metrics:
       enabled: true
 
+    resources:
+      requests:
+        cpu: 49m
+        memory: 226M
+      limits:
+        cpu: 49m
+        memory: 226M
+
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
@@ -93,10 +107,3 @@ spec:
                     values:
                       - emqx
               topologyKey: kubernetes.io/hostname
-
-              # resources:
-              #   requests:
-              #     cpu: 100m
-              #     memory: 150Mi
-              #   limits:
-              #     memory: 512Mi

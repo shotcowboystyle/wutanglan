@@ -4,9 +4,12 @@ kind: HelmRelease
 metadata:
   name: &app stash
   namespace: media
+
 spec:
   releaseName: stash
+
   interval: 15m
+
   chart:
     spec:
       chart: stash
@@ -15,53 +18,65 @@ spec:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
+
   timeout: 5m
+
   values:
     image:
       repository: stashapp/stash
       tag: latest
+
     controller:
       replicas: 1 # active longhorn-webapp nas
+
     env:
       TZ: "${TIMEZONE}"
       STASH_STASH: /media/data
       STASH_GENERATED: /media/generated
       STASH_METADATA: /media/metadata
       STASH_CACHE: /cache
+
     persistence:
       config:
         enabled: true
         existingClaim: stash-config-pvc
+
       media:
         enabled: true
         existingClaim: stash-media-pvc
+
       cache:
         enabled: true
         type: emptyDir
         medium: Memory
         sizeLimit: 2Gi
         mountPath: /cache
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "stash.${SECRET_DOMAIN}"
             paths:
               - path: "/"
+
         tls:
           - hosts:
               - *host
-            # secretName: *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
     nodeSelector:
       kubernetes.io/hostname: "clyde"
+
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -71,3 +86,11 @@ spec:
                   operator: In
                   values:
                     - clyde
+
+    resources:
+      requests:
+        cpu: 15m
+        memory: 64M
+      limits:
+        cpu: 54m
+        memory: 117M

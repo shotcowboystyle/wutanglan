@@ -181,12 +181,16 @@ spec:
 
     resources:
       requests:
-        cpu: 800m
-        memory: 800Mi
+        cpu: 3110m
+        memory: 2264M
+        # cpu: 800m
+        # memory: 800Mi
         gpu.intel.com/i915: "1"
       limits:
-        memory: 4096Mi
-        cpu: 4000m
+        cpu: 16551m
+        memory: 12G
+        # memory: 4096Mi
+        # cpu: 4000m
         gpu.intel.com/i915: "1"
 
   valuesFrom:

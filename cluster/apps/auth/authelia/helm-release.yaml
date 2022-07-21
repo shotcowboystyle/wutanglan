@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app authelia
   namespace: auth
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: authelia
@@ -24,6 +26,7 @@ spec:
 
   values:
     domain: ${SECRET_DOMAIN}
+
     service:
       annotations:
         prometheus.io/probe: "true"
@@ -31,41 +34,32 @@ spec:
 
     ingress:
       enabled: true
+
       ingressClassName: "traefik"
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
         hajimari.io/enable: "true"
         hajimari.io/icon: "lock"
         hajimari.io/appName: "Authelia"
+
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
       subdomain: auth
+
       tls:
         enabled: true
-        secret: "${SECRET_DOMAIN//./-}-tls"
-      # traefikCRD:
-      #   enabled: true
-      #   disableIngressRoute: true
-      #   entryPoints:
-      #     - websecure
-      #   middlewares:
-      #     auth:
-      #       nameOverride: authelia-auth
-      #       authresponseHeaders:
-      #         - Remote-User
-      #         - Remote-Groups
-      #     chains:
-      #       auth:
-      #         nameOverride: authelia-chain
 
     pod:
       kind: Deployment
       replicas: 1
       strategy:
         type: Recreate
+
       extraVolumeMounts:
         - name: users-database
           mountPath: /config
+
       extraVolumes:
         - name: users-database
           configMap:
@@ -76,9 +70,11 @@ spec:
 
     configMap:
       theme: dark
+
       authentication_backend:
         ldap:
           enabled: false
+
         file:
           enabled: true
           path: /config/users_database.yml
@@ -89,6 +85,7 @@ spec:
             salt_length: 16
             memory: 1024
             parallelism: 8
+
       access_control:
         default_policy: deny
         # networks:
@@ -109,40 +106,35 @@ spec:
           #     - mailu.${SECRET_DOMAIN}
           #   resources:
           #     - "^/admin.*$"
-          # Applications with built-in auth
           - policy: one_factor
             domain:
               - traefik.${SECRET_DOMAIN}
-              # - grafana.${SECRET_DOMAIN}
-              # - rancher.${SECRET_DOMAIN}
-              # - bw.${SECRET_DOMAIN}
-              # - cloud.${SECRET_DOMAIN}
-          # Applications without auth
           - policy: two_factor
-            domain:
-              "*.${SECRET_DOMAIN}"
-              # - longhorn.${SECRET_DOMAIN}
-              # - homer-config.${SECRET_DOMAIN}
+            domain: "*.${SECRET_DOMAIN}"
+
       ntp:
         address: "time.cloudflare.com:123"
         version: 3
         max_desync: 3s
         disable_startup_check: true
         disable_failure: true
+
       session:
         name: authelia_session
         same_site: lax
         expiration: 1h
-        inactivity: 5m
+        inactivity: 15m
         remember_me_duration: 1M
         redis:
           enabled: true
           enabledSecret: true
           host: authelia-redis-master
+
       regulation:
         max_retries: 3
         find_time: 2m
         ban_time: 5m
+
       storage:
         postgres:
           enabled: true
@@ -150,10 +142,13 @@ spec:
           database: *app
           username: *app
           sslmode: disable
+
       notifier:
         disable_startup_check: true
+
         filesystem:
           enabled: false
+
         smtp:
           enabled: true
           enabledSecret: true
@@ -164,34 +159,9 @@ spec:
           identifier: ${SECRET_DOMAIN}
           subject: "[Authelia] {title}"
           startup_check_address: ${SECRET_SMTP_USERNAME}
+
     secret:
       existingSecret: *app
-      # secret:
-      #   storage:
-      #     key: STORAGE_PASSWORD
-      #     value: "${SECRET_AUTHELIA_POSTGRES_PASSWORD}"
-      #     filename: STORAGE_PASSWORD
-      #   jwt:
-      #     key: JWT_TOKEN
-      #     value: "${SECRET_AUTHELIA_JWT_SECRET}"
-      #     filename: JWT_TOKEN
-      #   redis:
-      #     key: REDIS_PASSWORD
-      #     value: "${SECRET_AUTHELIA_REDIS_PASSWORD}"
-      #     filename: REDIS_PASSWORD
-      #   smtp:
-      #     key: SMTP_PASSWORD
-      #     value: "${SECRET_AUTHELIA_SMTP_PASSWORD}"
-      #     filename: SMTP_PASSWORD
-      #   storageEncryptionKey:
-      #     key: STORAGE_ENCRYPTION_KEY
-      #     value: "${SECRET_AUTHELIA_STORAGE_ENCRYPTION_KEY}"
-      #     filename: STORAGE_ENCRYPTION_KEY
-      # podSecurityContext:
-      #   runAsUser: 1031
-      #   runAsGroup: 65537
-      #   supplementalGroups:
-      #     - 100
 
     affinity:
       nodeAffinity:
@@ -202,3 +172,11 @@ spec:
                   operator: In
                   values:
                     - amd64
+
+    resources:
+      requests:
+        cpu: 15m
+        memory: 1390M
+      limits:
+        cpu: 15m
+        memory: 1390M

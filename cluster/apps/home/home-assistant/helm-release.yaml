@@ -77,13 +77,24 @@ spec:
         enabled: true
         existingClaim: home-assistant-config-pvc
 
+    resources:
+      requests:
+        cpu: 10m
+        memory: 408M
+      limits:
+        cpu: 1125m
+        memory: 3158M
+
     addons:
       codeserver:
         enabled: true
+
         image:
           repository: codercom/code-server
           tag: 4.5.0
+
         workingDir: "/config"
+
         args:
           - --auth
           - "none"
@@ -94,6 +105,7 @@ spec:
 
         ingress:
           enabled: true
+
           ingressClassName: "traefik"
           annotations:
             cert-manager.io/cluster-issuer: "letsencrypt-production"
@@ -113,3 +125,11 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /config
+
+        resources:
+          requests:
+            cpu: 11m
+            memory: 814M
+          limits:
+            cpu: 11m
+            memory: 814M

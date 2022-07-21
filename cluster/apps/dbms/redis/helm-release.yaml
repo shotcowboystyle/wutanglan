@@ -7,6 +7,7 @@ metadata:
 
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://charts.bitnami.com/bitnami
@@ -28,19 +29,19 @@ spec:
 
   values:
     architecture: standalone
+
     securityContext:
       sysctls:
         - name: net.core.somaxconn
           value: "10000"
+
     global:
       storageClass: "nfs-client"
+
       redis:
         password: ${SECRET_REDIS_PASSWORD}
+
     master:
-      podSecurityContext:
-        fsGroup: 100
-        supplementalGroups:
-          - 100
       nodeSelector:
         beta.kubernetes.io/arch: amd64
 
@@ -48,10 +49,27 @@ spec:
         enabled: true
         existingClaim: redis-data-pvc
 
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M
+
     metrics:
       enabled: true
+
       serviceMonitor:
         enabled: true
+
+      resources:
+        requests:
+          cpu: 11m
+          memory: 32M
+        limits:
+          cpu: 11m
+          memory: 32M
 
     affinity:
       nodeAffinity:
@@ -59,10 +77,11 @@ spec:
           - weight: 60
             preference:
               matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                    - inky
                 - key: kubernetes.io/arch
                   operator: In
                   values:
                     - amd64
-                    - i386
-                    - i686
-                    - x86
