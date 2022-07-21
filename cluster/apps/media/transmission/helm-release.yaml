@@ -24,6 +24,10 @@ spec:
   timeout: 10m0s
 
   values:
+    global:
+      nameOverride: *app
+    fullnameOverride: *app
+
     image:
       repository: haugene/transmission-openvpn
       tag: "4.0"
