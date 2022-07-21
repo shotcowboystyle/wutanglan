@@ -87,13 +87,13 @@ spec:
     metrics:
       enabled: true
 
-    resources:
-      requests:
-        cpu: 49m
-        memory: 226M
-      limits:
-        cpu: 49m
-        memory: 226M
+    # resources:
+    #   requests:
+    #     cpu: 49m
+    #     memory: 226M
+    #   limits:
+    #     cpu: 49m
+    #     memory: 226M
 
     affinity:
       podAntiAffinity:
