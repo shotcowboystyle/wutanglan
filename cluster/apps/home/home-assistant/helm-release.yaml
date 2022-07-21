@@ -34,8 +34,8 @@ spec:
     envFrom:
       - secretRef:
           name: *app
-    hostNetwork: true
-    dnsPolicy: ClusterFirstWithHostNet
+    # hostNetwork: true
+    # dnsPolicy: ClusterFirstWithHostNet
     probes:
       liveness:
         enabled: false
