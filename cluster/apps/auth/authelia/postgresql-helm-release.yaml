@@ -72,11 +72,7 @@ spec:
                 #   operator: NotIn
                 #   values:
                 #     - inky
-                # - key: kubernetes.io/arch
-                #   operator: In
-                #   values:
-                #     - amd64
-                - key: kubernetes.io/hostname
+                - key: kubernetes.io/arch
                   operator: In
                   values:
-                    - clyde
+                    - amd64
