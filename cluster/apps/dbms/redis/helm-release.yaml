@@ -42,6 +42,11 @@ spec:
         password: ${SECRET_REDIS_PASSWORD}
 
     master:
+      podSecurityContext:
+        fsGroup: 100
+        supplementalGroups:
+          - 100
+
       nodeSelector:
         beta.kubernetes.io/arch: amd64
 
