@@ -68,10 +68,10 @@ spec:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: NotIn
-                  values:
-                    - inky
+                # - key: kubernetes.io/hostname
+                #   operator: NotIn
+                #   values:
+                #     - inky
                 - key: kubernetes.io/arch
                   operator: In
                   values:
