@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app thanos
   namespace: monitoring
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: thanos
@@ -32,31 +34,39 @@ spec:
   values:
     query:
       enabled: true
+
       replicaCount: 1
       replicaLabels:
         - replica
+
       dnsDiscovery:
         sidecarsService: prometheus-thanos-discovery
         sidecarsNamespace: monitoring
+
       ingress:
         enabled: true
+
         hostname: "thanos.${SECRET_DOMAIN}"
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/appName: "Thanos"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "thanos.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -67,34 +77,35 @@ spec:
                     operator: NotIn
                     values:
                       - inky
+
                   - key: kubernetes.io/arch
                     operator: In
                     values:
                       - amd64
-                      - i386
-                      - i686
-                      - x86
 
     queryFrontend:
       enabled: false
 
     bucketweb:
       enabled: true
-      # replicaCount: 2
-      # podAntiAffinityPreset: hard
+
       ingress:
         enabled: true
+
         hostname: &hostbweb "thanos-bucketweb.${SECRET_DOMAIN}"
         ingressClassName: traefik
+
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         tls: true
+
         extraTls:
           - hosts:
               - *hostbweb
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -105,32 +116,35 @@ spec:
                     operator: NotIn
                     values:
                       - inky
+
                   - key: kubernetes.io/arch
                     operator: In
                     values:
                       - amd64
-                      - i386
-                      - i686
-                      - x86
 
     compactor:
       enabled: true
+
       ingress:
         enabled: true
+
         hostname: &hostcompact "thanos-compactor.${SECRET_DOMAIN}"
         ingressClassName: traefik
+
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         tls: true
+
         extraTls:
           - hosts:
               - *hostcompact
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
       persistence:
         enabled: false
+
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -141,35 +155,40 @@ spec:
                     operator: NotIn
                     values:
                       - inky
+
                   - key: kubernetes.io/arch
                     operator: In
                     values:
                       - amd64
-                      - i386
-                      - i686
-                      - x86
 
     storegateway:
       enabled: true
+
       ingress:
         enabled: true
+
         hostname: &hostgateway "thanos-storegateway.${SECRET_DOMAIN}"
         ingressClassName: traefik
+
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         tls: true
+
         extraTls:
           - hosts:
               - *hostgateway
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
       podSecurityContext:
         enabled: true
         fsGroup: 65537
+
       persistence:
         enabled: true
         existingClaim: thanos-storegateway-data-pvc
+
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -180,50 +199,58 @@ spec:
                     operator: NotIn
                     values:
                       - inky
+
                   - key: kubernetes.io/arch
                     operator: In
                     values:
                       - amd64
-                      - i386
-                      - i686
-                      - x86
 
     ruler:
       enabled: true
-      # replicaCount: 3
-      # podAntiAffinityPreset: hard
+
       dnsDiscovery:
         enabled: true
+
       alertmanagers:
         - http://kube-prometheus-stack-alertmanager.monitoring:9093
+
       clusterName: ${CLUSTER_NAME}
+
       extraFlags:
         - "--web.prefix-header=X-Forwarded-Prefix"
+
       config: |-
         groups:
           - name: "PrometheusWatcher"
             rules:
               - alert: "PrometheusDown"
                 expr: absent(up{job="kube-prometheus-stack-prometheus"})
+
       ingress:
         enabled: true
+
         hostname: &hostruler "thanos-ruler.${SECRET_DOMAIN}"
         ingressClassName: traefik
+
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         tls: true
+
         extraTls:
           - hosts:
               - *hostruler
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
       podSecurityContext:
         enabled: true
         fsGroup: 65537
+
       persistence:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
+
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -234,16 +261,15 @@ spec:
                     operator: NotIn
                     values:
                       - inky
+
                   - key: kubernetes.io/arch
                     operator: In
                     values:
                       - amd64
-                      - i386
-                      - i686
-                      - x86
 
     metrics:
       enabled: true
+
       serviceMonitor:
         enabled: true
 
