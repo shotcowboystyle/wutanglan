@@ -1,7 +1,7 @@
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
-  name: metallb-ip-pool
+  name: default
   namespace: networking
 spec:
   addresses:
@@ -12,8 +12,8 @@ spec:
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
-  name: metallb-l2-network
+  name: default
   namespace: networking
 spec:
   ipAddressPools:
-    - metallb-ip-pool
+    - default

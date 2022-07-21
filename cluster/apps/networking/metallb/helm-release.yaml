@@ -26,6 +26,6 @@ spec:
     remediation:
       retries: 5
 
-  # values:
-  #   crds:
-  #     enabled: true
+  values:
+    crds:
+      enabled: true
