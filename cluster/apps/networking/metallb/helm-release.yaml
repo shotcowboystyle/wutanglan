@@ -27,9 +27,5 @@ spec:
       retries: 5
 
   values:
-    configInline:
-      address-pools:
-        - name: default
-          protocol: layer2
-          addresses:
-            - "${METALLB_LB_RANGE}"
+    crds:
+      enabled: true
