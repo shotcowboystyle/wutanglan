@@ -6,4 +6,5 @@ resources:
   - kube-prometheus-stack
   - node-feature-discovery
   - system-upgrade-controller
+  - metallb
   - traefik
