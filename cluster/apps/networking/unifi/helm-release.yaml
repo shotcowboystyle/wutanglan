@@ -4,9 +4,12 @@ kind: HelmRelease
 metadata:
   name: &app unifi
   namespace: networking
+
 spec:
   interval: 5m
+
   releaseName: unifi
+
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
@@ -17,6 +20,7 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+
   values:
     strategy:
       type: Recreate
@@ -24,56 +28,46 @@ spec:
     image:
       repository: jacobalberty/unifi
       tag: v7.1.66
+
     persistence:
       data:
         enabled: true
         existingClaim: unifi-data-pvc-v2
+
     env:
       TZ: ${TIMEZONE}
+
     runAsRoot: false
+
     ingress:
       main:
         enabled: true
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "router-network"
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "unifi-inky.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            secretName: "unifi-inky-tls"
 
     hostNetwork: true
     dnsPolicy: ClusterFirstWithHostNet
 
-    # podSecurityContext:
-    #   # runAsUser: 1031
-    #   fsGroup: 65537
-    #   supplementalGroups:
-    #     - 100
-    #     - 65537
-    # externalIPs:
-    #   - "192.168.30.1"
-    #   - "192.168.31.1"
-    #   - "192.168.31.10"
-    #   - "192.168.32.141"
-    #   - "192.168.33.142"
-    #   - "192.168.34.143"
-    #   - "192.168.35.144"
-    #   - "192.168.36.145"
-    #   - "192.168.37.146"
-    #   - "192.168.38.147"
-    #   - "192.168.39.148"
     nodeSelector:
       kubernetes.io/hostname: "inky"
+
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -89,56 +83,71 @@ spec:
         type: LoadBalancer
         loadBalancerIP: "${METALLB_UNIFI_INKY_ADDR}"
         externalTrafficPolicy: Local
+
         annotations:
           metallb.universe.tf/allow-shared-ip: unifi
+
         ports:
           http:
             port: 8443
             protocol: HTTPS
+
           controller:
             enabled: true
             port: 8080
             protocol: TCP
+
           portal-http:
             enabled: false
             port: 8880
             protocol: HTTP
+
           portal-https:
             enabled: false
             port: 8843
             protocol: HTTPS
+
           speedtest:
             enabled: false
             port: 6789
             protocol: TCP
+
           stun:
             enabled: false
             port: 3478
             protocol: UDP
+
           syslog:
             enabled: false
             port: 5514
             protocol: UDP
+
           discovery:
             enabled: false
             port: 10001
             protocol: UDP
+
       udp:
         enabled: true
+
         type: LoadBalancer
         loadBalancerIP: "${METALLB_UNIFI_INKY_ADDR}"
         externalTrafficPolicy: Local
+
         annotations:
           metallb.universe.tf/allow-shared-ip: unifi
+
         ports:
           stun:
             enabled: true
             port: 3478
             protocol: UDP
+
           syslog:
             enabled: false
             port: 5514
             protocol: UDP
+
           discovery:
             enabled: true
             port: 10001
