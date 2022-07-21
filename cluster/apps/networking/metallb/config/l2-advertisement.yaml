@@ -4,6 +4,6 @@ kind: L2Advertisement
 metadata:
   name: default
   namespace: networking
-spec:
-  ipAddressPools:
-    - default
+# spec:
+#   ipAddressPools:
+#     - default
