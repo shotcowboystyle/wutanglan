@@ -20,7 +20,7 @@ spec:
       nameOverride: *app
     image:
       repository: anonaddy/anonaddy
-      tag: 0.8.4
+      tag: 0.12.3
     env:
       # -- Application key for encrypter service
       # You can generate one through `anonaddy key:generate --show` or `echo "base64:$(openssl rand -base64 32)"`
