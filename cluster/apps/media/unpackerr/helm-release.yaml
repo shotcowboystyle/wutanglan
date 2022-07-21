@@ -27,7 +27,7 @@ spec:
       nameOverride: *app
     image:
       repository: ghcr.io/onedr0p/unpackerr
-      tag: 0.10.1@sha256:1511c92ac8963f56c94ddef457e0ae18f39259a5333551b6b64889563979d129
+      tag: 0.10.1@sha256:50fb21262b5c958b0ccae8eba8401263e852699e29f04500a543d10768773787
     env:
       TZ: "${TIMEZONE}"
       UN_SONARR_0_URL: http://sonarr
