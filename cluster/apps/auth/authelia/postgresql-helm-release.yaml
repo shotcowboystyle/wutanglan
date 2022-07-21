@@ -41,13 +41,13 @@ spec:
         enabled: true
         existingClaim: authelia-postgresql-data
 
-      resources:
-        requests:
-          cpu: 11m
-          memory: 50M
-        limits:
-          cpu: 11m
-          memory: 50M
+      # resources:
+      #   requests:
+      #     cpu: 11m
+      #     memory: 50M
+      #   limits:
+      #     cpu: 11m
+      #     memory: 50M
 
     metrics:
       enabled: true
@@ -55,13 +55,13 @@ spec:
       serviceMonitor:
         enabled: true
 
-      resources:
-        requests:
-          cpu: 11m
-          memory: 32M
-        limits:
-          cpu: 11m
-          memory: 32M
+      # resources:
+      #   requests:
+      #     cpu: 11m
+      #     memory: 32M
+      #   limits:
+      #     cpu: 11m
+      #     memory: 32M
 
     affinity:
       nodeAffinity:
