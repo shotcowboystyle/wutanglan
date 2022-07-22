@@ -23,7 +23,7 @@ spec:
 
   dependsOn:
     - name: metallb
-      namespace: metallb-system
+      namespace: networking
 
   values:
     strategy:

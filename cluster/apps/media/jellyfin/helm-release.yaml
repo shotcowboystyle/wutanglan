@@ -25,7 +25,7 @@ spec:
       namespace: kube-system
 
     - name: metallb
-      namespace: metallb-system
+      namespace: networking
 
   values:
     global:

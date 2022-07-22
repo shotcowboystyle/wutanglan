@@ -21,7 +21,7 @@ spec:
 
   dependsOn:
     - name: metallb
-      namespace: metallb-system
+      namespace: networking
 
   values:
     replicaCount: 3

@@ -29,7 +29,7 @@ spec:
 
   dependsOn:
     - name: metallb
-      namespace: metallb-system
+      namespace: networking
 
   values:
     fullnameOverride: k8s-gateway

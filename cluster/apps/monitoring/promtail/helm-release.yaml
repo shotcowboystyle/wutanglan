@@ -23,7 +23,7 @@ spec:
       namespace: monitoring
 
     - name: metallb
-      namespace: metallb-system
+      namespace: networking
 
   values:
     image:

@@ -35,7 +35,7 @@ spec:
   #   namespace: rook-ceph
   dependsOn:
     - name: metallb
-      namespace: metallb-system
+      namespace: networking
   values:
     global:
       storageClass: "ceph-block"
