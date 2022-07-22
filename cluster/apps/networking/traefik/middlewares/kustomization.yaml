@@ -10,5 +10,6 @@ resources:
   - secure-headers.yaml
   - chain-no-auth.yaml
   - error-pages.yaml
+  - chain-internal-no-auth.yaml
   - chain-internal-wutanglan-auth.yaml
   - chain-no-error-pages.yaml
