@@ -7,4 +7,4 @@ resources:
   # - node-feature-discovery
   - system-upgrade-controller
   # - metallb
-  # - traefik
+  - traefik
