@@ -6,8 +6,10 @@ metadata:
   namespace: kube-system
   labels:
     kustomize.toolkit.fluxcd.io/substitute: "disabled"
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
@@ -15,16 +17,19 @@ spec:
       version: 4.0.14
       sourceRef:
         kind: HelmRepository
-        name: nfs-subdir-external-provisioner-charts
+        name: nfs-subdir-external-provisioner
         namespace: flux-system
       interval: 5m
+
   values:
     replicaCount: 1
     nfs:
       server: "${NAS_ADDR}"
+
     storageClass:
       defaultClass: true
       pathPattern: "${.PVC.namespace}-${.PVC.name}"
+
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:

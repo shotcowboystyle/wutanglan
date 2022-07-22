@@ -8,5 +8,5 @@ spec:
   chain:
     middlewares:
       - name: networking-rate-limit@kubernetescrd
-      - name: networking-secure-headers@kubernetescrd
+      # - name: networking-secure-headers@kubernetescrd
       # - name: networking-error-pages@kubernetescrd

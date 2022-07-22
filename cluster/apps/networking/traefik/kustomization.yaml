@@ -8,4 +8,4 @@ resources:
   - middlewares
   # - routers
   # - external-services
-  - service-monitor.yaml
+  # - service-monitor.yaml

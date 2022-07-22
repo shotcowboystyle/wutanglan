@@ -4,17 +4,17 @@ kind: Kustomization
 resources:
   # - auth
   # - biz-ops
-  - calico-system
-  - dbms
-  - dev
+  # - calico-system
+  # - dbms
+  # - dev
   - default
   - flux-system
   - home
   - kube-system
-  - media
+  # - media
   - monitoring
   - networking
-  - observability
+  # - observability
   # - privacy
   # - security
   # - tools

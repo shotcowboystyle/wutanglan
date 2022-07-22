@@ -23,6 +23,7 @@ resources:
   - metallb.yaml
   - metrics-server.yaml
   - minio.yaml
+  - nfs-subdir-external-provisioner.yaml
   - node-feature-discovery.yaml
   - pascaliske.yaml
   - prometheus-community.yaml

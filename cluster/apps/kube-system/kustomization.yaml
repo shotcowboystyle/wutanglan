@@ -6,9 +6,10 @@ resources:
   - cert-manager
   - descheduler
   - intel-gpu-plugin
-  - kube-cleanup-operator
+  # - kube-cleanup-operator
   - kured
   - metrics-server
+  - nfs-subdir-external-provisioner
   - node-feature-discovery
   - reflector
   - reloader
