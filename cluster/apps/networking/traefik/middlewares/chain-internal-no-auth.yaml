@@ -9,6 +9,5 @@ spec:
     middlewares:
       # Note this requires cloudflare proxy
       - name: networking-internal-only@kubernetescrd
-      - name: networking-secure-headers@kubernetescrd
       - name: networking-rate-limit@kubernetescrd
       - name: networking-error-pages@kubernetescrd
