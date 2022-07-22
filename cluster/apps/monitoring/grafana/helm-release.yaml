@@ -181,7 +181,7 @@ spec:
           - name: Prometheus
             type: prometheus
             access: proxy
-            url: http://thanos-query.monitoring.svc.cluster.local:9090
+            url: http://thanos-query:9090
             isDefault: true
           - name: Loki
             type: loki
@@ -259,9 +259,9 @@ spec:
         # cert-manager:
         #   url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
         #   datasource: Prometheus
-        metallb:
-          url: https://raw.githubusercontent.com/jr0dd/grafana-dashboards/main/metallb.json
-          datasource: Prometheus
+        # metallb:
+        #   url: https://raw.githubusercontent.com/jr0dd/grafana-dashboards/main/metallb.json
+        #   datasource: Prometheus
         # Ref: https://grafana.com/grafana/dashboards/13665
         speedtest:
           gnetId: 13665

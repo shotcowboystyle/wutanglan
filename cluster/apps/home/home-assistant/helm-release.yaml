@@ -79,6 +79,18 @@ spec:
         enabled: true
         existingClaim: home-assistant-config-pvc
 
+    podSecurityContext:
+      runAsUser: 1031
+      runAsGroup: 65537
+      fsGroup: 65537
+      fsGroupChangePolicy: "OnRootMismatch"
+      supplementalGroups:
+        - 44
+        - 100
+        - 109
+        - 568
+        - 65537
+
         # resources:
         #   requests:
         #     cpu: 10m

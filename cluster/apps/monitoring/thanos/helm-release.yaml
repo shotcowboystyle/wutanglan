@@ -40,7 +40,8 @@ spec:
         - replica
 
       dnsDiscovery:
-        sidecarsService: prometheus-thanos-discovery
+        # sidecarsService: prometheus-thanos-discovery
+        sidecarsService: thanos-query
         sidecarsNamespace: monitoring
 
       ingress:
