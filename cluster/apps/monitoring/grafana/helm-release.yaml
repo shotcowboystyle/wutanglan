@@ -186,11 +186,11 @@ spec:
           - name: Loki
             type: loki
             access: proxy
-            url: http://loki.monitoring.svc.cluster.local:3100
+            url: http://loki:3100
           - name: Promeheus-Direct
             type: prometheus
             access: proxy
-            url: http://prometheus-prometheus.monitoring.svc.cluster.local:9090
+            url: http://prometheus-prometheus:9090
             # - name: MariaDB Blocky
             #   type: mysql
             #   url: ${MARIADB_ADDRESS}:3306
