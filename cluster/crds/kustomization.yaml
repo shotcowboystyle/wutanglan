@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - cert-manager
   - kube-prometheus-stack
-  - node-feature-discovery
+  # - node-feature-discovery
   - system-upgrade-controller
   - metallb
   - traefik
