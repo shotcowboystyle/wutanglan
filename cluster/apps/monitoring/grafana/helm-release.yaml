@@ -33,6 +33,7 @@ spec:
 
   values:
     replicas: 1
+
     image:
       repository: ghcr.io/k8s-at-home/grafana
 
@@ -180,7 +181,7 @@ spec:
           - name: Prometheus
             type: prometheus
             access: proxy
-            url: http://thanos-query:9090
+            url: http://thanos-query.monitoring.svc.cluster.local:9090
             isDefault: true
           - name: Loki
             type: loki
@@ -204,12 +205,12 @@ spec:
             #   user: ${MARIADB_GRAFANA_USER}
             #   secureJsonData:
             #     password: ${MARIADB_GRAFANA_PASSWORD}
-          - name: AlertManager
-            type: alertmanager
-            access: proxy
-            url: http://alertmanager-operated:9093
-            jsonData:
-              implementation: "prometheus"
+            # - name: AlertManager
+            #   type: alertmanager
+            #   access: proxy
+            #   url: http://alertmanager-operated:9093
+            #   jsonData:
+            #     implementation: "prometheus"
 
     dashboards:
       default:
@@ -224,6 +225,7 @@ spec:
           gnetId: 12175
           revision: 5
           datasource: Prometheus
+
       dbms:
         # # Ref: https://grafana.com/grafana/dashboards/2842
         # ceph-cluster:
@@ -251,6 +253,7 @@ spec:
           # flux-control-plane:
           #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
           #   datasource: Prometheus
+
       networking:
         # Ref: https://grafana.com/grafana/dashboards/15513
         # cert-manager:
@@ -340,18 +343,22 @@ spec:
 
     ingress:
       enabled: true
+
       ingressClassName: "traefik"
+
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
         hajimari.io/enable: "true"
         hajimari.io/icon: "chart-bar-stacked"
         hajimari.io/appName: "Grafana"
+
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
       hosts:
         - &host "grafana.${SECRET_DOMAIN}"
+
       tls:
-        # - secretName: "${SECRET_DOMAIN//./-}-tls"
         - hosts:
             - *host
 
@@ -359,19 +366,19 @@ spec:
       create: true
       autoMount: true
 
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 60
-              preference:
-                matchExpressions:
-                  - key: kubernetes.io/arch
-                    operator: In
-                    values:
-                      - amd64
-                      - i386
-                      - i686
-                      - x86
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                    - amd64
+                    - i386
+                    - i686
+                    - x86
 
   # valuesFrom:
   #   - kind: Secret

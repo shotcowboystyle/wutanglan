@@ -34,7 +34,7 @@ spec:
 
     image:
       repository: ghcr.io/home-assistant/home-assistant
-      tag: 2022.7.6
+      tag: 2022.5.4
 
     env:
       TZ: "${TIMEZONE}"
@@ -45,7 +45,9 @@ spec:
     ingress:
       main:
         enabled: true
+
         ingressClassName: "traefik"
+
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "house"
@@ -77,13 +79,13 @@ spec:
         enabled: true
         existingClaim: home-assistant-config-pvc
 
-    resources:
-      requests:
-        cpu: 10m
-        memory: 408M
-      limits:
-        cpu: 1125m
-        memory: 3158M
+        # resources:
+        #   requests:
+        #     cpu: 10m
+        #     memory: 408M
+        #   limits:
+        #     cpu: 1125m
+        #     memory: 3158M
 
     addons:
       codeserver:
@@ -126,10 +128,10 @@ spec:
           - name: config
             mountPath: /config
 
-        resources:
-          requests:
-            cpu: 11m
-            memory: 814M
-          limits:
-            cpu: 11m
-            memory: 814M
+            # resources:
+            #   requests:
+            #     cpu: 11m
+            #     memory: 814M
+            #   limits:
+            #     cpu: 11m
+            #     memory: 814M
