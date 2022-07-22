@@ -21,7 +21,7 @@ spec:
   values:
     image:
       repository: bitnami/postgresql
-      tag: 14.2.0-debian-10-r28
+      tag: 14.2.0
 
     auth:
       username: authelia
@@ -63,20 +63,20 @@ spec:
       #     cpu: 11m
       #     memory: 32M
 
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                # - key: kubernetes.io/hostname
-                #   operator: NotIn
-                #   values:
-                #     - inky
-                # - key: kubernetes.io/hostname
-                #   operator: In
-                #   values:
-                #     - clyde
-                - key: kubernetes.io/arch
-                  operator: In
-                  values:
-                    - amd64
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             # - key: kubernetes.io/hostname
+      #             #   operator: NotIn
+      #             #   values:
+      #             #     - inky
+      #             # - key: kubernetes.io/hostname
+      #             #   operator: In
+      #             #   values:
+      #             #     - clyde
+      #             - key: kubernetes.io/arch
+      #               operator: In
+      #               values:
+      #                 - amd64
