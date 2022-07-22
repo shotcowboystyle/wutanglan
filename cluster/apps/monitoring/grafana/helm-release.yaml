@@ -359,19 +359,19 @@ spec:
       create: true
       autoMount: true
 
-      # affinity:
-      #   nodeAffinity:
-      #     preferredDuringSchedulingIgnoredDuringExecution:
-      #       - weight: 60
-      #         preference:
-      #           matchExpressions:
-      #             - key: kubernetes.io/arch
-      #               operator: In
-      #               values:
-      #                 - amd64
-      #                 - i386
-      #                 - i686
-      #                 - x86
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
   # valuesFrom:
   #   - kind: Secret

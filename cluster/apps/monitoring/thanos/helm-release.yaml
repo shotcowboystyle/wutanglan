@@ -82,6 +82,9 @@ spec:
                     operator: In
                     values:
                       - amd64
+                      - i386
+                      - i686
+                      - x86
 
     queryFrontend:
       enabled: false
@@ -121,6 +124,9 @@ spec:
                     operator: In
                     values:
                       - amd64
+                      - i386
+                      - i686
+                      - x86
 
     compactor:
       enabled: true
@@ -160,6 +166,9 @@ spec:
                     operator: In
                     values:
                       - amd64
+                      - i386
+                      - i686
+                      - x86
 
     storegateway:
       enabled: true
@@ -204,6 +213,9 @@ spec:
                     operator: In
                     values:
                       - amd64
+                      - i386
+                      - i686
+                      - x86
 
     ruler:
       enabled: true
@@ -266,6 +278,9 @@ spec:
                     operator: In
                     values:
                       - amd64
+                      - i386
+                      - i686
+                      - x86
 
     metrics:
       enabled: true

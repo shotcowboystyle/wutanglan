@@ -93,3 +93,6 @@ spec:
                   operator: In
                   values:
                     - amd64
+                    - i386
+                    - i686
+                    - x86
