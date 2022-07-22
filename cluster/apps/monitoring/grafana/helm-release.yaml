@@ -213,46 +213,46 @@ spec:
             #     implementation: "prometheus"
 
     dashboards:
-      default:
-        # blocky:
-        #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-grafana.json
-        #   datasource: Prometheus
-        # blocky-query:
-        #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-query-grafana.json
-        #   datasource: MariaDB Blocky
-        # Ref: https://grafana.com/grafana/dashboards/12175
-        calico-felix:
-          gnetId: 12175
-          revision: 5
-          datasource: Prometheus
+      # default:
+      #   # blocky:
+      #   #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-grafana.json
+      #   #   datasource: Prometheus
+      #   # blocky-query:
+      #   #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-query-grafana.json
+      #   #   datasource: MariaDB Blocky
+      #   # Ref: https://grafana.com/grafana/dashboards/12175
+      #   calico-felix:
+      #     gnetId: 12175
+      #     revision: 5
+      #     datasource: Prometheus
 
-      dbms:
-        # # Ref: https://grafana.com/grafana/dashboards/2842
-        # ceph-cluster:
-        #   gnetId: 2842
-        #   revision: 14
-        #   datasource: Prometheus
-        # # Ref: https://grafana.com/grafana/dashboards/5336
-        # ceph-osd:
-        #   gnetId: 5336
-        #   revision: 5
-        #   datasource: Prometheus
-        # # Ref: https://grafana.com/grafana/dashboards/5342
-        # ceph-pools:
-        #   gnetId: 5342
-        #   revision: 5
-        #   datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/13502
-        minio:
-          gnetId: 13502
-          revision: 10
-          datasource: Prometheus
-          # flux-cluster:
-          #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
-          #   datasource: Prometheus
-          # flux-control-plane:
-          #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
-          #   datasource: Prometheus
+      # dbms:
+      #   # # Ref: https://grafana.com/grafana/dashboards/2842
+      #   # ceph-cluster:
+      #   #   gnetId: 2842
+      #   #   revision: 14
+      #   #   datasource: Prometheus
+      #   # # Ref: https://grafana.com/grafana/dashboards/5336
+      #   # ceph-osd:
+      #   #   gnetId: 5336
+      #   #   revision: 5
+      #   #   datasource: Prometheus
+      #   # # Ref: https://grafana.com/grafana/dashboards/5342
+      #   # ceph-pools:
+      #   #   gnetId: 5342
+      #   #   revision: 5
+      #   #   datasource: Prometheus
+      #   # Ref: https://grafana.com/grafana/dashboards/13502
+      #   minio:
+      #     gnetId: 13502
+      #     revision: 10
+      #     datasource: Prometheus
+      #     # flux-cluster:
+      #     #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
+      #     #   datasource: Prometheus
+      #     # flux-control-plane:
+      #     #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
+      #     #   datasource: Prometheus
 
       networking:
         # Ref: https://grafana.com/grafana/dashboards/15513
