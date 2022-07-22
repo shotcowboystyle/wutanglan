@@ -305,7 +305,7 @@ spec:
           #     datasource: Prometheus
 
     imageRenderer:
-      enabled: true
+      enabled: false
 
     sidecar:
       dashboards:
