@@ -72,10 +72,10 @@ spec:
         existingClaim: transmission-downloads-pvc
         mountPath: /data
 
-    podSecurityContext:
-      fsGroup: 100
-      supplementalGroups:
-        - 100
+    # podSecurityContext:
+    #   fsGroup: 100
+    #   supplementalGroups:
+    #     - 100
 
     env:
       OPENVPN_PROVIDER: SURFSHARK
@@ -86,8 +86,8 @@ spec:
       TRANSMISSION_HOME: "/config/transmission-home/"
       TRANSMISSION_WEB_UI: "flood-for-transmission"
       TRANSMISSION_RPC_HOST_WHITELIST: "127.0.0.1,192.168.*.*"
-      PUID: 1024
-      PGID: 100
+      # PUID: 1024
+      # PGID: 100
 
     envFrom:
       - secretRef:
