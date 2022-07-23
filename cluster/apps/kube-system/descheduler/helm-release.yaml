@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app descheduler
   namespace: kube-system
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: *app
@@ -15,16 +17,21 @@ spec:
         name: descheduler
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   values:
     kind: Deployment
+
     replicas: 3
+
     leaderElection:
       enabled: true
       leaseDuration: 15s
@@ -33,27 +40,34 @@ spec:
       resourceLock: "leases"
       resourceName: "descheduler"
       resourceNamescape: "kube-system"
+
     deschedulerPolicy:
       strategies:
         RemoveDuplicates:
           enabled: true
+
         RemovePodsViolatingNodeTaints:
           enabled: true
+
         RemovePodsViolatingNodeAffinity:
           enabled: true
           params:
             nodeAffinityType:
               - requiredDuringSchedulingIgnoredDuringExecution
+
         RemovePodsViolatingTopologySpreadConstraint:
           enabled: true
           params:
             includeSoftConstraints: true
+
         RemovePodsViolatingInterPodAntiAffinity:
           enabled: true
           params:
             nodeFit: true
+
         LowNodeUtilization:
           enabled: false
+
         RemoveFailedPods:
           enabled: true
           params:
@@ -62,18 +76,23 @@ spec:
               excludeOwnerKinds:
                 - "Job"
               minPodLifetimeSeconds: 3600
+
         RemovePodsHavingTooManyRestarts:
           enabled: true
           params:
             podsHavingTooManyRestarts:
               podRestartThreshold: 100
               includingInitContainers: true
+
     service:
       enabled: true
-    serviceMonitor:
-      enabled: true
+
+    # serviceMonitor:
+    #   enabled: true
+
     podAnnotations:
       configmap.reloader.stakater.com/reload: *app
+
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
