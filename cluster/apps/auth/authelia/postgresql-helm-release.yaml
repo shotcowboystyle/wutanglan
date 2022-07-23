@@ -31,7 +31,7 @@ spec:
     primary:
       persistence:
         enabled: true
-        existingClaim: authelia-postgresql-data
+        existingClaim: authelia-postgres-data
 
       # resources:
       #   requests:
