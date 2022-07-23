@@ -15,13 +15,8 @@ spec:
     server: ${NAS_ADDR}
     path: "/volume2/Documents/S3"
   mountOptions:
-    - nfsvers=4
-    - tcp
-    - intr
+    - nfsvers=4.1
     - hard
-    - noatime
-    - nodiratime
-    - nolock
 
 ---
 apiVersion: v1
