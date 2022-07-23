@@ -29,9 +29,17 @@ spec:
       database: authelia
 
     primary:
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
+
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1024
+
       persistence:
         enabled: true
-        existingClaim: authelia-postgres-data
+        existingClaim: authelia-postgresql-data
 
       # resources:
       #   requests:
