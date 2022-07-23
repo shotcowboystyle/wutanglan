@@ -41,7 +41,7 @@ spec:
       tag: v4.0.2
 
     nfs:
-      server: ${NAS_ADDR}
+      server: ${SECRET_NAS_ADDR}
       path: /volume2/Downloads
       # reclaimPolicy: Retain
       volumeName: nfs-storage-downloads
