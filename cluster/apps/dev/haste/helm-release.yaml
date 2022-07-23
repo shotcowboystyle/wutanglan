@@ -84,10 +84,6 @@ spec:
     #     cpu: 15m
     #     memory: 64M
 
-    podSecurityContext:
-      runAsUser: 1031
-      fsGroup: 65537
-
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
