@@ -56,6 +56,7 @@ spec:
 
     storageClass:
       name: nfs-client-homelab-data
+      provisionerName: nfs-provisioner-homelab-data
       defaultClass: false
       # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 

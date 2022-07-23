@@ -56,6 +56,7 @@ spec:
 
     storageClass:
       name: nfs-client-downloads
+      provisionerName: nfs-provisioner-downloads
       defaultClass: false
       # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 
