@@ -41,7 +41,7 @@ spec:
       tag: v4.0.2
 
     nfs:
-      server: ${SECRET_NAS_ADDR}
+      server: 192.168.10.21
       path: /volume2/DockerVol
       # reclaimPolicy: Retain
       volumeName: nfs-storage-homelab-data
