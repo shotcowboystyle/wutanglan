@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: nfs-downloads-provisioner
-  namespace: flux-system
+  namespace: kube-system
   labels:
     kustomize.toolkit.fluxcd.io/substitute: "disabled"
 
@@ -43,7 +43,7 @@ spec:
     nfs:
       server: ${NAS_ADDR}
       path: /volume2/Downloads
-      reclaimPolicy: Retain
+      # reclaimPolicy: Retain
       volumeName: nfs-storage-downloads
       mountOptions:
         - nfsvers=4
@@ -57,14 +57,14 @@ spec:
     storageClass:
       name: nfs-client-downloads
       defaultClass: false
-      pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
+      # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 
     strategyType: Recreate
 
-    nodeSelector:
-      node-type: worker
+    # nodeSelector:
+    #   node-type: worker
 
-    serviceAccount:
-      annotations: {}
-      create: true
-      name: null
+    # serviceAccount:
+    #   annotations: {}
+    #   create: true
+    #   name: null
