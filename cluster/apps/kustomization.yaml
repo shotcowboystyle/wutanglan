@@ -14,7 +14,7 @@ resources:
   - media
   - monitoring
   - networking
-  # - observability
+  - observability
   # - privacy
   # - security
   # - tools

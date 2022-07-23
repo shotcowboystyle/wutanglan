@@ -1,36 +1,38 @@
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: jellyfin-config-pv
-  namespace: media
-spec:
-  storageClassName: jellyfin-nfs
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    server: ${NAS_ADDR}
-    path: "/volume2/DockerVol/jellyfin_data"
-  mountOptions:
-    - nfsvers=4
-    - tcp
-    - intr
-    - hard
-    - noatime
-    - nodiratime
-    - nolock
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: jellyfin-config-pv
+#   namespace: media
+# spec:
+#   storageClassName: jellyfin-nfs
+#   capacity:
+#     storage: 5Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   nfs:
+#     server: ${NAS_ADDR}
+#     path: "/volume2/DockerVol/jellyfin_data"
+#   mountOptions:
+#     - nfsvers=4
+#     - tcp
+#     - intr
+#     - hard
+#     - noatime
+#     - nodiratime
+#     - nolock
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jellyfin-config-pvc
+  # name: jellyfin-config-pvc
+  name: jellyfin-data
   namespace: media
 spec:
-  storageClassName: jellyfin-nfs
+  # storageClassName: jellyfin-nfs
+  storageClassName: nfs-client-homelab-data
   accessModes:
     - ReadWriteOnce
   resources:

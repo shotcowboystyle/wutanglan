@@ -41,9 +41,8 @@ spec:
           - biz-ops
           - collab
           - comms
-          - default
-          - dev
           - dbms
+          - default
           - dev
           - home
           - media
@@ -52,8 +51,9 @@ spec:
           - observability
           - privacy
           - tools
+          - vpn
 
-      name: "you"
+      name: "WuTangLan"
 
       customApps:
         - name: Some External Cluster Service
@@ -178,7 +178,7 @@ spec:
         existingClaim: hajimari-config
 
     podAnnotations:
-      configmap.reloader.stakater.com/reload: "hajimari-settings"
+      configmap.reloader.stakater.com/reload: "hajimari-config"
 
     resources:
       requests:

@@ -5,7 +5,7 @@ metadata:
   name: kube-prometheus-stack-source
   namespace: flux-system
 spec:
-  interval: 12h
+  interval: 6h
   url: https://github.com/prometheus-community/helm-charts.git
   ref:
     # renovate: registryUrl=https://prometheus-community.github.io/helm-charts chart=kube-prometheus-stack
@@ -13,13 +13,13 @@ spec:
   ignore: |
     # exclude all
     /*
-    # include crd directory
+    # include deploy crds dir
     !/charts/kube-prometheus-stack/crds
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: crds-kube-prometheus-stack
+  name: kube-prometheus-stack-crds
   namespace: flux-system
 spec:
   interval: 30m
