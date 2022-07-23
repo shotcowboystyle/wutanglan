@@ -37,8 +37,10 @@ spec:
       enabled: false
 
     master:
-      # podSecurityContext:
-      #   fsGroup: 65537
+      podSecurityContext:
+        enabled: true
+        runAsUser: 1031
+        fsGroup: 65537
 
       nodeSelector:
         beta.kubernetes.io/arch: amd64
