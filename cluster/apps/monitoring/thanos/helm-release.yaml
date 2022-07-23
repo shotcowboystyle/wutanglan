@@ -191,9 +191,9 @@ spec:
           - hosts:
               - *hostgateway
 
-      podSecurityContext:
-        enabled: true
-        fsGroup: 65537
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
 
       persistence:
         enabled: true
@@ -256,9 +256,9 @@ spec:
           - hosts:
               - *hostruler
 
-      podSecurityContext:
-        enabled: true
-        fsGroup: 65537
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
 
       persistence:
         enabled: true

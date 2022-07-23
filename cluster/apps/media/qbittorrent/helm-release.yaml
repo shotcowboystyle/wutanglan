@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app qbittorrent
   namespace: media
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: qbittorrent
@@ -15,11 +17,13 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 15m
+
   install:
     disableWait: true
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
@@ -31,25 +35,30 @@ spec:
   values:
     global:
       nameOverride: *app
+
     image:
       repository: ghcr.io/k8s-at-home/qbittorrent
       tag: v4.4.3.1
+
     env:
       TZ: "${TIMEZONE}"
       # UMASK: "022"
       # USE_PROFILE: "true"
       # QBITTORRENT__PORT: &port 8080
       # QBITTORRENT__BT_PORT: &port-bt 50413
+
     service:
       main:
         ports:
           http:
             port: 8080
+
       bittorrent:
         enabled: true
         type: LoadBalancer
         externalIPs:
           - "${METALLB_QBITTORRENT_ADDR}"
+
         ports:
           bittorrent:
             enabled: true
@@ -57,36 +66,46 @@ spec:
             protocol: TCP
             targetPort: 6881
         externalTrafficPolicy: Local
+
     ingress:
       main:
         enabled: true
+
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: cloud-download
+
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host qbittorrent.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+
     # podSecurityContext:
     #   supplementalGroups:
     #     - 100
+
     podAnnotations:
       setGateway: "true"
+
     settings:
       automaticPortSetup: false
+
     persistence:
       config:
         enabled: true
         existingClaim: qbittorrent-config-pvc-v2
+
       media:
         enabled: true
         existingClaim: qbittorrent-media-pvc-v2
@@ -95,20 +114,21 @@ spec:
       #   enabled: true
       #   type: emptyDir
       #   mountPath: /config/qBittorrent/cache
-    podSecurityContext:
-      # runAsUser: 568
-      # runAsGroup: 568
-      # fsGroup: 568
-      # fsGroupChangePolicy: OnRootMismatch
-      supplementalGroups:
-        - 100
 
-      # media:
-      #   enabled: true
-      #   type: nfs
-      #   server: "expanse.${SECRET_PRIVATE_DOMAIN}"
-      #   path: /tycho/Media
-      #   mountPath: /media
+    # podSecurityContext:
+    #   # runAsUser: 568
+    #   # runAsGroup: 568
+    #   # fsGroup: 568
+    #   # fsGroupChangePolicy: OnRootMismatch
+    #   supplementalGroups:
+    #     - 100
+
+    # media:
+    #   enabled: true
+    #   type: nfs
+    #   server: "expanse.${SECRET_PRIVATE_DOMAIN}"
+    #   path: /tycho/Media
+    #   mountPath: /media
     # resources:
     #   requests:
     #     cpu: 35m

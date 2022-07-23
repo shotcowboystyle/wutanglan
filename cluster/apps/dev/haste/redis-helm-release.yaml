@@ -37,8 +37,8 @@ spec:
       enabled: false
 
     master:
-      podSecurityContext:
-        fsGroup: 65537
+      # podSecurityContext:
+      #   fsGroup: 65537
 
       nodeSelector:
         beta.kubernetes.io/arch: amd64

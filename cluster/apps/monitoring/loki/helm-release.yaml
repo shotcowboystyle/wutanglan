@@ -29,19 +29,23 @@ spec:
 
     ingress:
       enabled: true
+
       ingressClassName: "traefik"
+
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
         hajimari.io/enable: "true"
         hajimari.io/appName: "Loki"
+
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
       hosts:
         - host: &host "loki.${SECRET_DOMAIN}"
           paths:
             - /
+
       tls:
-        # - secretName: "${SECRET_DOMAIN//./-}-tls"
         - hosts:
             - *host
 
@@ -54,6 +58,7 @@ spec:
     tolerations:
       - key: "arm"
         operator: "Exists"
+
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -70,6 +75,7 @@ spec:
         ring:
           kvstore:
             store: memberlist
+
       ingester:
         lifecycler:
           ring:
@@ -77,8 +83,10 @@ spec:
               store: memberlist
             replication_factor: 1
           final_sleep: 0s
+
         chunk_idle_period: 5m
         chunk_retain_period: 30s
+
       memberlist:
         abort_if_cluster_join_fails: false
         bind_port: 7946
@@ -87,16 +95,19 @@ spec:
         max_join_backoff: 1m
         max_join_retries: 10
         min_join_backoff: 1s
+
       compactor:
         working_directory: /data/compactor
         shared_store: s3
         compaction_interval: 5m
+
       limits_config:
         enforce_metric_name: false
         reject_old_samples: true
         reject_old_samples_max_age: 168h
         ingestion_rate_mb: 16
         ingestion_burst_size_mb: 24
+
       storage_config:
         aws:
           bucketnames: loki
@@ -104,20 +115,21 @@ spec:
           access_key_id: ${SECRET_MINIO_LOKI_ACCESS_KEY}
           secret_access_key: ${SECRET_MINIO_LOKI_SECRET_KEY}
           region: ${SECRET_MINIO_REGION}
-          # s3: s3://${SECRET_MINIO_LOKI_ACCESS_KEY}:${SECRET_MINIO_LOKI_SECRET_KEY}@${SECRET_MINIO_REGION}/loki
-          # endpoint: ${SECRET_MINIO_SERVER}
           s3forcepathstyle: true
           insecure: true
+
         boltdb_shipper:
           active_index_directory: /data/loki/index
           cache_location: /data/loki/index_cache
           resync_interval: 5s
           shared_store: s3
+
       ruler:
         storage:
           type: local
           local:
             directory: /rules
+
         rule_path: /tmp/scratch
         alertmanager_url: http://prometheus-alertmanager:9093
         ring:
@@ -141,6 +153,7 @@ spec:
             annotations:
               # TODO: Figure out how to use hostname in summary
               summary: "SMART has reported failures"
+
       #
       # frigate
       #
@@ -155,6 +168,7 @@ spec:
               category: logs
             annotations:
               summary: "Frigate is unable to reach MQTT"
+
       #
       # *arr applications
       #
@@ -170,6 +184,7 @@ spec:
             annotations:
               # TODO: Figure out how to use hostname in summary
               summary: "An arr app is experiencing locked database issues"
+
           - alert: ArrDatabaseIsMalformed
             expr: |
               sum by (app) (count_over_time({app=~".*arr"} |~ "(?i)database disk image is malformed"[2m])) > 0
@@ -180,6 +195,7 @@ spec:
             annotations:
               # TODO: Figure out how to use hostname in summary
               summary: "An arr app is experiencing malformed database disk image issues"
+
       #
       # home-assistant
       #
@@ -194,45 +210,48 @@ spec:
               category: logs
             annotations:
               summary: "Home Assistant is unable to connect to postgresql"
-      #
-      # vaultwarden
-      #
-      - name: vaultwarden
-        rules:
-          - alert: VaultwardenUnableToReachPostgresql
-            expr: |
-              sum by (app) (count_over_time({app="vaultwarden"} |~ "(?i)could not connect to server"[2m])) > 0
-            for: 10s
-            labels:
-              severity: critical
-              category: logs
-            annotations:
-              summary: "Vaultwarden is unable to connect to postgresql"
-      #
-      # valetudo
-      #
-      - name: valetudo
-        rules:
-          - alert: ValetudoUnableToReachMQTT
-            expr: |
-              sum by (hostname) (count_over_time({hostname="valetudo"} |~ "(?i).*error.*mqtt.*"[2m])) > 0
-            for: 10s
-            labels:
-              severity: critical
-              category: logs
-            annotations:
-              summary: "Valetudo is unable to connect to mqtt"
-      #
-      # node-red
-      #
-      - name: node-red
-        rules:
-          - alert: NodeRedUnableToReachHomeAssistant
-            expr: |
-              sum by (app) (count_over_time({app="node-red"} |~ "(?i)home assistant.*connecting to undefined"[2m])) > 0
-            for: 10s
-            labels:
-              severity: critical
-              category: logs
-            annotations:
-              summary: "Node-Red is unable to connect to Home Assistant"
+
+      # #
+      # # vaultwarden
+      # #
+      # - name: vaultwarden
+      #   rules:
+      #     - alert: VaultwardenUnableToReachPostgresql
+      #       expr: |
+      #         sum by (app) (count_over_time({app="vaultwarden"} |~ "(?i)could not connect to server"[2m])) > 0
+      #       for: 10s
+      #       labels:
+      #         severity: critical
+      #         category: logs
+      #       annotations:
+      #         summary: "Vaultwarden is unable to connect to postgresql"
+
+      # #
+      # # valetudo
+      # #
+      # - name: valetudo
+      #   rules:
+      #     - alert: ValetudoUnableToReachMQTT
+      #       expr: |
+      #         sum by (hostname) (count_over_time({hostname="valetudo"} |~ "(?i).*error.*mqtt.*"[2m])) > 0
+      #       for: 10s
+      #       labels:
+      #         severity: critical
+      #         category: logs
+      #       annotations:
+      #         summary: "Valetudo is unable to connect to mqtt"
+
+      # #
+      # # node-red
+      # #
+      # - name: node-red
+      #   rules:
+      #     - alert: NodeRedUnableToReachHomeAssistant
+      #       expr: |
+      #         sum by (app) (count_over_time({app="node-red"} |~ "(?i)home assistant.*connecting to undefined"[2m])) > 0
+      #       for: 10s
+      #       labels:
+      #         severity: critical
+      #         category: logs
+      #       annotations:
+      #         summary: "Node-Red is unable to connect to Home Assistant"

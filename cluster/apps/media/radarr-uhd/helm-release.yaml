@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app radarr-uhd
   namespace: media
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: kah-common-chart
@@ -15,19 +17,24 @@ spec:
         name: k8s-at-home-charts
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
+
   values:
     global:
       nameOverride: *app
+
     image:
       repository: ghcr.io/onedr0p/radarr-nightly
       tag: 4.2.0.6438@sha256:50649eebc7f622602ac84cd28eb2eff9f1e1b13de1cfd23284b932fa68b4aa84
+
     env:
       TZ: "${TIMEZONE}"
       RADARR__INSTANCE_NAME: Radarr (UHD)
@@ -37,45 +44,56 @@ spec:
       RADARR__LOG_LEVEL: info
       PUSHOVER_DEBUG: "false"
       PUSHOVER_APP_URL: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+
     envFrom:
       - secretRef:
           name: *app
+
     service:
       main:
         ports:
           http:
             port: *port
+
     ingress:
       main:
         enabled: true
+
         ingressClassName: "nginx"
+
         annotations:
           nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
           nginx.ingress.kubernetes.io/configuration-snippet: |
             proxy_set_header Accept-Encoding "";
             sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/base/radarr/hotline.css"><link rel="stylesheet" type="text/css" href="https://theme-park.${SECRET_DOMAIN}/css/addons/radarr/radarr-4k-logo/radarr-4k-logo.css"></head>';
             sub_filter_once on;
+
         hosts:
           - host: *host
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-    podSecurityContext:
-      supplementalGroups:
-        - 100
+
+    # podSecurityContext:
+    #   supplementalGroups:
+    #     - 100
+
     persistence:
       config:
         enabled: true
         existingClaim: radarr-uhd-config-v1
+
       media:
         enabled: true
         type: nfs
         server: "expanse.${SECRET_PRIVATE_DOMAIN}"
         path: /tycho/Media
         mountPath: /media
+
       backup:
         enabled: true
         type: nfs
@@ -83,6 +101,7 @@ spec:
         path: /tycho/Apps/External/Backups/radarr-uhd
         mountPath: /config/Backups
         readOnly: false
+
       scripts:
         enabled: true
         type: configMap
@@ -91,6 +110,7 @@ spec:
         mountPath: /scripts/pushover-notify.sh
         defaultMode: 0775
         readOnly: true
+
     podAnnotations:
       configmap.reloader.stakater.com/reload: radarr-pushover
       secret.reloader.stakater.com/reload: *app

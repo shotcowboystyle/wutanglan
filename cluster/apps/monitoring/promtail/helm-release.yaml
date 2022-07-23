@@ -45,6 +45,7 @@ spec:
                 target_label: 'unit'
               - source_labels: ['__journal__hostname']
                 target_label: 'hostname'
+
           - job_name: syslog
             syslog:
               listen_address: 0.0.0.0:1514
@@ -70,6 +71,7 @@ spec:
                 target_label: 'destination_port'
               - source_labels: ['__syslog_message_DST']
                 target_label: 'destination_ip'
+
     extraPorts:
       syslog:
         name: syslog
@@ -96,6 +98,7 @@ spec:
       - name: journal
         hostPath:
           path: /var/log/journal
+
     extraVolumeMounts:
       - name: journal
         mountPath: /var/log/journal

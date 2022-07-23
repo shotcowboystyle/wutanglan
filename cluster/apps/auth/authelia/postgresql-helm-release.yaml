@@ -29,13 +29,13 @@ spec:
       database: authelia
 
     primary:
-      podSecurityContext:
-        enabled: true
-        fsGroup: 65537
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
 
-      containerSecurityContext:
-        enabled: true
-        runAsUser: 1031
+      # containerSecurityContext:
+      #   enabled: true
+      #   runAsUser: 1031
 
       persistence:
         enabled: true

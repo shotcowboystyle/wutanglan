@@ -4,6 +4,7 @@ kind: PrometheusRule
 metadata:
   name: loki.rules
   namespace: monitoring
+
 spec:
   groups:
     - name: loki.rules
