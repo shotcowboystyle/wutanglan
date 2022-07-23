@@ -29,14 +29,6 @@ spec:
       database: authelia
 
     primary:
-      # podSecurityContext:
-      #   enabled: true
-      #   fsGroup: 65537
-
-      # containerSecurityContext:
-      #   enabled: true
-      #   runAsUser: 1031
-
       persistence:
         enabled: true
         existingClaim: authelia-postgresql-data
@@ -68,10 +60,10 @@ spec:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                # - key: kubernetes.io/hostname
-                #   operator: NotIn
-                #   values:
-                #     - inky
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                    - inky
                 # - key: kubernetes.io/hostname
                 #   operator: In
                 #   values:
