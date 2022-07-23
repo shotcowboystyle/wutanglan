@@ -92,6 +92,7 @@ spec:
         enabled: true
         # existingClaim: jellyfin-config-pvc
         existingClaim: jellyfin-data
+        path: jellyfin_data
 
       media:
         enabled: true

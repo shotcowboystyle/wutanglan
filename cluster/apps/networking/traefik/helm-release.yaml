@@ -93,7 +93,7 @@ spec:
       # - "--providers.kubernetesingress.ingressendpoint.ip=${LB_V6_TRAEFIK}"
       - "--providers.kubernetesingress.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
-      - "--providers.kubernetescrd.allowCrossNamespace=true"
+      - "--providers.kubernetescrd.allowcrossnamespace=true"
 
     ports:
       traefik:
