@@ -1,0 +1,60 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nfs-homelab-data-provisioner
+  namespace: kube-system
+  labels:
+    kustomize.toolkit.fluxcd.io/substitute: "disabled"
+
+spec:
+  interval: 15m
+
+  chart:
+    spec:
+      # renovate: registryUrl=https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+      chart: nfs-subdir-external-provisioner
+      version: 4.0.16
+      sourceRef:
+        kind: HelmRepository
+        name: nfs-subdir-external-provisioner
+        namespace: flux-system
+      interval: 15m
+
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+
+  upgrade:
+    remediation:
+      retries: 5
+
+  values:
+    replicaCount: 3
+
+    nfs:
+      server: "${NAS_ADDR}"
+      path: /volume2/DockerVol
+      mountOptions:
+        - nfsvers=4.2
+        - nconnect=8
+        - hard
+
+    storageClass:
+      # defaultClass: true
+      # pathPattern: "${.PVC.namespace}-${.PVC.name}"
+      defaultClass: false
+
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - nfs-homelab-data-provisioner
+              topologyKey: kubernetes.io/hostname
