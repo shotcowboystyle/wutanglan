@@ -31,11 +31,11 @@ spec:
     primary:
       podSecurityContext:
         enabled: true
-        fsGroup: 100
+        fsGroup: 1001
 
       containerSecurityContext:
         enabled: true
-        runAsUser: 1024
+        runAsUser: 1001
 
       persistence:
         enabled: true
