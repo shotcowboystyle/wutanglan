@@ -90,14 +90,11 @@ spec:
     persistence:
       config:
         enabled: true
-        # existingClaim: jellyfin-config-pvc
-        existingClaim: jellyfin-data
-        path: jellyfin_data
+        existingClaim: jellyfin-config-pvc
 
       media:
         enabled: true
-        # existingClaim: jellyfin-media-pvc
-        existingClaim: jellyfin-media
+        existingClaim: jellyfin-media-pvc
         mountPath: /media
         readOnly: true
 
