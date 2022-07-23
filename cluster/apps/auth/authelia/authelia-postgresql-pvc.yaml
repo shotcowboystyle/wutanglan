@@ -1,37 +1,36 @@
-# ---
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: authelia-postgresql-data-pv
-#   namespace: auth
-# spec:
-#   storageClassName: authelia-postgres-nfs
-#   capacity:
-#     storage: 4Gi
-#   accessModes:
-#     - ReadWriteOnce
-#   persistentVolumeReclaimPolicy: Retain
-#   nfs:
-#     server: ${NAS_ADDR}
-#     path: "/volume2/DockerVol/authelia_postgres_data"
-#   mountOptions:
-#     - nfsvers=4
-#     - tcp
-#     - intr
-#     - hard
-#     - noatime
-#     - nodiratime
-#     - nolock
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: authelia-postgresql-data-pv
+  namespace: auth
+spec:
+  storageClassName: authelia-postgres-nfs
+  capacity:
+    storage: 4Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/authelia_postgres_data"
+  mountOptions:
+    - nfsvers=4
+    - tcp
+    - intr
+    - hard
+    - noatime
+    - nodiratime
+    - nolock
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: authelia-postgres-data
+  name: authelia-postgresql-data
   namespace: auth
 spec:
-  # storageClassName: authelia-postgres-nfs
-  storageClassName: nfs-client-homelab-data
+  storageClassName: authelia-postgres-nfs
   accessModes:
     - ReadWriteOnce
   resources:
