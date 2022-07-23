@@ -85,7 +85,6 @@ spec:
     #     memory: 64M
 
     podSecurityContext:
-      enabled: true
       runAsUser: 1031
       fsGroup: 65537
 
