@@ -42,6 +42,7 @@ spec:
         - hard
 
     storageClass:
+      name: nfs-client-documents
       # defaultClass: true
       # pathPattern: "${.PVC.namespace}-${.PVC.name}"
       defaultClass: false

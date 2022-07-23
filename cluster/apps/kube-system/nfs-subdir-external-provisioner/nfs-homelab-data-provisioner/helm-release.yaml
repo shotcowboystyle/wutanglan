@@ -42,8 +42,7 @@ spec:
         - hard
 
     storageClass:
-      # defaultClass: true
-      # pathPattern: "${.PVC.namespace}-${.PVC.name}"
+      name: nfs-client-homelab-data
       defaultClass: false
 
     affinity:
