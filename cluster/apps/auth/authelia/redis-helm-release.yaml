@@ -34,10 +34,12 @@ spec:
       storageClass: "nfs-client"
 
     master:
-      # podSecurityContext:
-      #   fsGroup: 100
-      #   supplementalGroups:
-      #     - 100
+      podSecurityContext:
+        enabled: true
+        runAsUser: 1031
+        fsGroup: 65537
+        # supplementalGroups:
+        #   - 100
 
       nodeSelector:
         beta.kubernetes.io/arch: amd64
