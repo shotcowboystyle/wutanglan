@@ -41,9 +41,8 @@ spec:
       tag: v4.0.2
 
     nfs:
-      server: ${SECRET_NAS_ADDR}
+      server: 192.168.10.21
       path: /volume2/Downloads
-      # reclaimPolicy: Retain
       volumeName: nfs-storage-downloads
       mountOptions:
         - nfsvers=4
@@ -58,7 +57,6 @@ spec:
       name: nfs-client-downloads
       provisionerName: nfs-provisioner-downloads
       defaultClass: false
-      # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 
     strategyType: Recreate
 

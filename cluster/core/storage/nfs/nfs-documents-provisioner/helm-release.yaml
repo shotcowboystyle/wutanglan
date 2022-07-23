@@ -41,9 +41,8 @@ spec:
       tag: v4.0.2
 
     nfs:
-      server: ${SECRET_NAS_ADDR}
+      server: 192.168.10.21
       path: /volume2/Media
-      # reclaimPolicy: De
       volumeName: nfs-storage-documents
       mountOptions:
         - nfsvers=4
@@ -58,7 +57,6 @@ spec:
       name: nfs-client-documents
       provisionerName: nfs-provisioner-documents
       defaultClass: false
-      # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 
     strategyType: Recreate
 

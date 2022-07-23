@@ -43,7 +43,6 @@ spec:
     nfs:
       server: 192.168.10.21
       path: /volume2/Media
-      # reclaimPolicy: Retain
       volumeName: nfs-storage-media
       mountOptions:
         - nfsvers=4
@@ -58,7 +57,6 @@ spec:
       name: nfs-client-media
       provisionerName: nfs-provisioner-media
       defaultClass: false
-      # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 
     strategyType: Recreate
 

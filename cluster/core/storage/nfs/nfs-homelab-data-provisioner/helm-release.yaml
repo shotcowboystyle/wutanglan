@@ -43,7 +43,6 @@ spec:
     nfs:
       server: 192.168.10.21
       path: /volume2/DockerVol
-      # reclaimPolicy: Retain
       volumeName: nfs-storage-homelab-data
       mountOptions:
         - nfsvers=4
@@ -58,7 +57,6 @@ spec:
       name: nfs-client-homelab-data
       provisionerName: nfs-provisioner-homelab-data
       defaultClass: false
-      # pathPattern: ${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}
 
     strategyType: Recreate
 
