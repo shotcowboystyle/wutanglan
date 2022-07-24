@@ -35,9 +35,60 @@ spec:
       namespace: networking
 
   values:
+    image:
+      name: traefik
+      tag: 2.6.1
+      pullPolicy: IfNotPresent
+
     deployment:
       kind: Deployment
       replicas: 1
+
+      podAnnotations:
+        reloader.stakater.com/auto: "true"
+
+      # additionalContainers:
+      #   - name: cloudflared
+      #     image: raspbernetes/cloudflared:2022.7.1
+      #     args:
+      #       - tunnel
+      #       # Points cloudflared to the config file, which configures what
+      #       # cloudflared will actually do. This file is created by a ConfigMap
+      #       # below.
+      #       - --config
+      #       - /etc/cloudflared/config/config.yaml
+      #       - run
+
+      #     livenessProbe:
+      #       httpGet:
+      #         # Cloudflared has a /ready endpoint which returns 200 if and only if
+      #         # it has an active connection to the edge.
+      #         path: /ready
+      #         port: 2000
+      #       failureThreshold: 1
+      #       initialDelaySeconds: 10
+      #       periodSeconds: 10
+
+      #     volumeMounts:
+      #       - name: cloudflared-config
+      #         mountPath: /etc/cloudflared/config
+      #         readOnly: true
+
+      #       - name: cloudflared-credentials
+      #         mountPath: /etc/cloudflared/creds
+      #         readOnly: true
+
+      # additionalVolumes:
+      #   - name: cloudflared-credentials
+      #     secret:
+      #       secretName: cloudflared-credentials
+
+      #   - name: cloudflared-config
+      #     configMap:
+      #       name: cloudflared-config
+      #       items:
+      #         - key: config.yaml
+      #           path: config.yaml
 
     service:
       enabled: true
@@ -57,6 +108,7 @@ spec:
       #   metallb.universe.tf/allow-shared-ip: traefik
 
       annotations:
+        # metallb.universe.tf/allow-shared-ip: traefik-svc
         metallb.universe.tf/loadBalancerIPs: |-
           ${METALLB_TRAEFIK_ADDR}
 
@@ -91,6 +143,7 @@ spec:
     additionalArguments:
       - "--providers.kubernetesingress.ingressendpoint.ip=${METALLB_TRAEFIK_ADDR}"
       # - "--providers.kubernetesingress.ingressendpoint.ip=${LB_V6_TRAEFIK}"
+      # - "--providers.kubernetesingress.ingressendpoint.hostname=homelab-tunnel.${SECRET_DOMAIN}"
       - "--providers.kubernetesingress.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowcrossnamespace=true"
@@ -106,33 +159,44 @@ spec:
         tls:
           enabled: true
           options: "default"
-          domains:
-            - main: "${SECRET_DOMAIN}"
-              sans:
-                - "*.${SECRET_DOMAIN}"
+          # domains:
+          #   - main: "${SECRET_DOMAIN}"
+          #     sans:
+          #       - "*.${SECRET_DOMAIN}"
+        # Enable HTTP/3. Requires enabling experimental http3 feature and tls.
+        http3: true
+        # Allow these IPs to set the X-Forwarded-* headers.
+        # forwardedHeaders:
+        #   trustedIPs:
+        #     - "::/0"
+        #     - "0.0.0.0/0"
+        # proxyProtocol:
+        #   trustedIPs:
+        #     - "::/0"
+        #     - "0.0.0.0/0"
 
-      wss:
-        port: 8284
-        expose: true
-        exposedPort: 8084
-        tls:
-          enabled: true
-          options: default
+      # wss:
+      #   port: 8284
+      #   expose: true
+      #   exposedPort: 8084
+      #   tls:
+      #     enabled: true
+      #     options: default
 
-      mqtts:
-        port: 8183
-        expose: true
-        exposedPort: 8883
-        tls:
-          enabled: true
-          options: default
+      # mqtts:
+      #   port: 8183
+      #   expose: true
+      #   exposedPort: 8883
+      #   tls:
+      #     enabled: true
+      #     options: default
 
       metrics:
         port: 8082
         expose: true
         exposedPort: 8082
 
-    tlsOptions: {}
+    # tlsOptions: {}
     # tlsOptions:
     #   default:
     #     minVersion: VersionTLS12
@@ -148,9 +212,16 @@ spec:
       plugins:
         enabled: true
 
+    metrics:
+      prometheus:
+        addRouterLabels: true
+
     resources:
       requests:
         memory: 100Mi
         cpu: 500m
       limits:
         memory: 500Mi
+
+    # podAnnotations:
+    #   secret.reloader.stakater.com/reload: "traefik-secrets"
