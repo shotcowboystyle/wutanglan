@@ -151,34 +151,34 @@ spec:
     #     cpu: 1125m
     #     memory: 3158M
 
-    postgresql:
-      enabled: true
-      nameOverride: hassio-postgresql
+    # postgresql:
+    #   enabled: true
+    #   nameOverride: hassio-postgresql
 
-      image:
-        repository: bitnami/postgresql
-        tag: 14.4.0-debian-11-r13
+    #   image:
+    #     repository: bitnami/postgresql
+    #     tag: 14.4.0-debian-11-r13
 
-      auth:
-        username: home-assistant
-        database: home-assistant
-        existingSecret: hassio-postgresql-secret
+    #   auth:
+    #     username: home-assistant
+    #     database: home-assistant
+    #     existingSecret: hassio-postgresql-secret
 
-      primary:
-        podSecurityContext:
-          enabled: true
-          fsGroup: 65537
+    #   primary:
+    #     podSecurityContext:
+    #       enabled: true
+    #       fsGroup: 65537
 
-        containerSecurityContext:
-          enabled: true
-          runAsUser: 1031
+    #     containerSecurityContext:
+    #       enabled: true
+    #       runAsUser: 1031
 
-        persistence:
-          enabled: true
-          existingClaim: hassio-postgresql-data-pvc
+    #     persistence:
+    #       enabled: true
+    #       existingClaim: hassio-postgresql-data-pvc
 
-        nodeSelector:
-          kubernetes.io/hostname: clyde
+    #     nodeSelector:
+    #       kubernetes.io/hostname: clyde
 
     addons:
       codeserver:
