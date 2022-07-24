@@ -45,13 +45,12 @@ spec:
     service:
       main:
         type: LoadBalancer
-        loadBalancerIP: "${METALLB_HASS_ADDR}"
         externalTrafficPolicy: Local
-    # annotations:
-    #   metallb.universe.tf/loadBalancerIPs: "${SVC_HOME_ASSISTANT_ADDR}"
-    # ports:
-    #   http:
-    #     port: 8123
+        annotations:
+          metallb.universe.tf/loadBalancerIPs: "${METALLB_HASS_ADDR}"
+        ports:
+          http:
+            port: 8123
 
     ingress:
       main:
