@@ -147,14 +147,25 @@ spec:
     postgresql:
       enabled: true
       nameOverride: postgresql
+
       image:
         repository: bitnami/postgresql
-        tag: 14.2.0-debian-10-r5
+        tag: 14.4.0-debian-11-r13
+
       auth:
         username: home-assistant
         database: home-assistant
         existingSecret: hassio-postgresql-secret
+
       primary:
+        podSecurityContext:
+          enabled: true
+          fsGroup: 65537
+
+        containerSecurityContext:
+          enabled: true
+          runAsUser: 1031
+
         persistence:
           enabled: true
           existingClaim: hassio-postgresql-data
