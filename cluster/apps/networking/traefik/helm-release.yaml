@@ -159,12 +159,12 @@ spec:
         tls:
           enabled: true
           options: "default"
-          # domains:
-          #   - main: "${SECRET_DOMAIN}"
-          #     sans:
-          #       - "*.${SECRET_DOMAIN}"
+          domains:
+            - main: "${SECRET_DOMAIN}"
+              sans:
+                - "*.${SECRET_DOMAIN}"
         # Enable HTTP/3. Requires enabling experimental http3 feature and tls.
-        http3: true
+        # http3: true
         # Allow these IPs to set the X-Forwarded-* headers.
         # forwardedHeaders:
         #   trustedIPs:
@@ -196,7 +196,7 @@ spec:
         expose: true
         exposedPort: 8082
 
-    # tlsOptions: {}
+    tlsOptions: {}
     # tlsOptions:
     #   default:
     #     minVersion: VersionTLS12
