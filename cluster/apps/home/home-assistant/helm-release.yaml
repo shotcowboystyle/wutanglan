@@ -91,11 +91,11 @@ spec:
     securityContext:
       privileged: true
 
-    podSecurityContext:
-      # enabled: true
-      runAsUser: 1031
-      runAsGroup: 65537
-      fsGroup: 65537
+    # podSecurityContext:
+    #   # enabled: true
+    #   runAsUser: 1031
+    #   runAsGroup: 65537
+    #   fsGroup: 65537
 
     probes:
       liveness:
