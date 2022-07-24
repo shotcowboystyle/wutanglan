@@ -3,7 +3,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - config-pvc.yaml
+  - hassio-postgresql-pvc.yaml
   - secret.sops.yaml
+  - hassio-postgresql-secret.sops.yaml
   - helm-release.yaml
   # - podmonitor.yaml
   # - prometheus-rule.yaml

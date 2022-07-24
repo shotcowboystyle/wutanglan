@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hassio-postgresql-data-pv
+  namespace: home
+spec:
+  storageClassName: hassio-postgres-nfs
+  capacity:
+    storage: 60Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/homeassistant_postgres_data"
+  mountOptions:
+    - nfsvers=4.1
+    - hard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hassio-postgresql-data
+  namespace: home
+spec:
+  storageClassName: hassio-postgres-nfs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 60Gi
