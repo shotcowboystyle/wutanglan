@@ -42,15 +42,15 @@ spec:
       - secretRef:
           name: *app
 
-    service:
-      main:
-        type: LoadBalancer
-        externalTrafficPolicy: Local
-        annotations:
-          metallb.universe.tf/loadBalancerIPs: "${METALLB_HASS_ADDR}"
-        ports:
-          http:
-            port: 8123
+    # service:
+    #   main:
+    #     type: LoadBalancer
+    #     externalTrafficPolicy: Local
+    #     annotations:
+    #       metallb.universe.tf/loadBalancerIPs: "${METALLB_HASS_ADDR}"
+    #     ports:
+    #       http:
+    #         port: 8123
 
     ingress:
       main:
