@@ -61,7 +61,8 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
 
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 
@@ -73,6 +74,7 @@ spec:
         tls:
           - hosts:
               - *host
+            secretName: "stash-tls"
 
     nodeSelector:
       kubernetes.io/hostname: "clyde"
