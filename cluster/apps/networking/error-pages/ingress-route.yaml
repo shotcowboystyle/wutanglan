@@ -4,9 +4,11 @@ kind: IngressRoute
 metadata:
   name: error-pages
   namespace: networking
+
 spec:
   entryPoints:
     - websecure
+
   routes:
     - kind: Rule
       match: HostRegexp(`{host:.+}`)
@@ -15,5 +17,6 @@ spec:
         - kind: Service
           name: error-pages
           port: 8080
+
   tls:
     secretName: error-pages-tls

@@ -37,7 +37,8 @@ spec:
         hajimari.io/enable: "true"
         hajimari.io/icon: "chart-box"
 
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        # cert-manager.io/cluster-issuer: "letsencrypt-production"
+        cert-manager.io/cluster-issuer: "letsencrypt-staging"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 
@@ -47,3 +48,4 @@ spec:
       tls:
         - hosts:
             - *host
+          secretName: "k8s-dashboard-tls"

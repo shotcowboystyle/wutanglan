@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: goldilocks
   namespace: monitoring
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: goldilocks
@@ -15,10 +17,12 @@ spec:
         name: fairwinds
         namespace: flux-system
       interval: 15m
+
   install:
     createNamespace: true
     remediation:
       retries: 5
+
   upgrade:
     remediation:
       retries: 5
@@ -37,22 +41,28 @@ spec:
 
       ingress:
         enabled: true
+
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: cloud-download
+
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-no-auth@kubernetescrd"
+
         hosts:
           - host: &host "goldilocks.${SECRET_DOMAIN}"
             paths:
               - path: /
                 type: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+            secretName: "goldilocks-tls"
 
             # resources:
             #   requests:
