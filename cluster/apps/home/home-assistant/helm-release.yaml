@@ -94,7 +94,7 @@ spec:
     podSecurityContext:
       # enabled: true
       runAsUser: 1031
-      # runAsGroup: 65537
+      runAsGroup: 65537
       fsGroup: 65537
 
     probes:
