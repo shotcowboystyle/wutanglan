@@ -29,8 +29,8 @@ spec:
       retries: 5
 
   values:
-    global:
-      nameOverride: *app
+    # global:
+    #   nameOverride: *app
 
     image:
       repository: ghcr.io/home-assistant/home-assistant
@@ -42,11 +42,11 @@ spec:
       - secretRef:
           name: *app
 
-    # service:
-    #   main:
-    #     type: LoadBalancer
-    #     loadBalancerIP: "${METALLB_HASS_ADDR}"
-    #     externalTrafficPolicy: Local
+    service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: "${METALLB_HASS_ADDR}"
+        externalTrafficPolicy: Local
     # annotations:
     #   metallb.universe.tf/loadBalancerIPs: "${SVC_HOME_ASSISTANT_ADDR}"
     # ports:
@@ -175,6 +175,7 @@ spec:
         persistence:
           enabled: true
           existingClaim: hassio-postgresql-data-pvc
+
         nodeSelector:
           kubernetes.io/hostname: clyde
 
