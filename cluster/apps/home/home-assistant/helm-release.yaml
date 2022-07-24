@@ -65,7 +65,7 @@ spec:
           hajimari.io/icon: "home-assistant"
 
           # Hostname
-          coredns.io/hostname: &host "hassio.${SECRET_DOMAIN}"
+          # coredns.io/hostname: &host "hassio.${SECRET_DOMAIN}"
 
           # traefik + certs
           cert-manager.io/cluster-issuer: "letsencrypt-production"
