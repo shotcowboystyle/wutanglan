@@ -39,15 +39,15 @@ spec:
       TZ: "${TIMEZONE}"
       JELLYFIN_CACHE_DIR: "/config/cache"
 
-    podSecurityContext:
-      # runAsUser: 1031
-      # runAsGroup: 65537
-      fsGroup: 65537
-      # fsGroupChangePolicy: "OnRootMismatch"
-      # supplementalGroups:
-      #   - 100
-      #   - 568
-      #   - 65537
+    # podSecurityContext:
+    # runAsUser: 1031
+    # runAsGroup: 65537
+    # fsGroup: 65537
+    # fsGroupChangePolicy: "OnRootMismatch"
+    # supplementalGroups:
+    #   - 100
+    #   - 568
+    #   - 65537
 
     service:
       main:
@@ -71,7 +71,8 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "movie-open-play"
 
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 
@@ -84,6 +85,7 @@ spec:
         tls:
           - hosts:
               - *host
+            secretName: "jellyfion-tls"
 
     persistence:
       config:
@@ -117,14 +119,14 @@ spec:
 
     resources:
       requests:
-        cpu: 15m
-        memory: 545M
-        # cpu: 100m
-        # memory: 1000Mi
+        # cpu: 15m
+        # memory: 545M
+        cpu: 100m
+        memory: 1000Mi
         gpu.intel.com/i915: 1
 
       limits:
-        cpu: 54m
-        memory: 6489M
-        # memory: 6000Mi
+        # cpu: 54m
+        # memory: 6489M
+        memory: 6000Mi
         gpu.intel.com/i915: 1
