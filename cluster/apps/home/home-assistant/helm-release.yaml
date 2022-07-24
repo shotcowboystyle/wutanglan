@@ -146,7 +146,7 @@ spec:
 
     postgresql:
       enabled: true
-      nameOverride: postgresql
+      nameOverride: hassio-postgresql
 
       image:
         repository: bitnami/postgresql
@@ -168,7 +168,7 @@ spec:
 
         persistence:
           enabled: true
-          existingClaim: hassio-postgresql-data
+          existingClaim: hassio-postgresql-data-pvc
         nodeSelector:
           kubernetes.io/hostname: clyde
 

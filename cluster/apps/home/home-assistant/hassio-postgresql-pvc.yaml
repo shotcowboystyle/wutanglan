@@ -22,7 +22,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hassio-postgresql-data
+  name: hassio-postgresql-data-pvc
   namespace: home
 spec:
   storageClassName: hassio-postgres-nfs
