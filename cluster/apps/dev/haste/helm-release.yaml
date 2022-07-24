@@ -76,6 +76,10 @@ spec:
           - hosts:
               - *host
 
+    podSecurityContext:
+      runAsUser: 1031
+      fsGroup: 65537
+
     # resources:
     #   requests:
     #     cpu: 15m

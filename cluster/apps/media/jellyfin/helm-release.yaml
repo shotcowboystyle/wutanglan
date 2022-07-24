@@ -40,16 +40,14 @@ spec:
       JELLYFIN_CACHE_DIR: "/config/cache"
 
     podSecurityContext:
-      runAsUser: 1031
-      runAsGroup: 65537
+      # runAsUser: 1031
+      # runAsGroup: 65537
       fsGroup: 65537
-      fsGroupChangePolicy: "OnRootMismatch"
-      supplementalGroups:
-        - 44
-        - 100
-        - 109
-        - 568
-        - 65537
+      # fsGroupChangePolicy: "OnRootMismatch"
+      # supplementalGroups:
+      #   - 100
+      #   - 568
+      #   - 65537
 
     service:
       main:
