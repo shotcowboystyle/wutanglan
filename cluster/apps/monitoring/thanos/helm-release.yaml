@@ -105,7 +105,7 @@ spec:
                       - x86
 
     compactor:
-      enabled: true
+      enabled: false
       retentionResolutionRaw: 7d
       retentionResolution5m: 30d
       retentionResolution1h: 180d
@@ -128,7 +128,7 @@ spec:
                       - x86
 
     storegateway:
-      enabled: true
+      enabled: false
       replicaCount: 1
       podAntiAffinityPreset: hard
       persistence:
@@ -150,7 +150,7 @@ spec:
                       - x86
 
     ruler:
-      enabled: true
+      enabled: false
       replicaCount: 1
       podAntiAffinityPreset: hard
       dnsDiscovery:
