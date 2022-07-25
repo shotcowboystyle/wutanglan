@@ -1,15 +1,33 @@
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vector-geoipupdate-data-pv
+  namespace: monitoring
+spec:
+  storageClassName: vector-geoipupdate-data-nfs
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/vector_geoipupdate_data"
+  mountOptions:
+    - nfsvers=4.1
+    - hard
+
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: vector-geoipupdate-config-v1
+  name: vector-geoipupdate-data-pvc
   namespace: monitoring
-  labels:
-    excluded_from_alerts: "true"
 spec:
+  storageClassName: vector-geoipupdate-data-nfs
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
-  storageClassName: ceph-filesystem

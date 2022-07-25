@@ -44,4 +44,4 @@ spec:
           volumes:
             - name: *app
               persistentVolumeClaim:
-                claimName: vector-geoipupdate-config-v1
+                claimName: vector-geoipupdate-data-pvc

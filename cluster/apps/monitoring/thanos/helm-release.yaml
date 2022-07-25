@@ -47,7 +47,7 @@ spec:
 
     query:
       enabled: true
-      replicaCount: 3
+      replicaCount: 1
       podAntiAffinityPreset: hard
       replicaLabels:
         - replica
@@ -68,13 +68,41 @@ spec:
 
         tls: true
 
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
     queryFrontend:
       enabled: false
 
     bucketweb:
       enabled: true
-      replicaCount: 3
+      replicaCount: 1
       podAntiAffinityPreset: hard
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
     compactor:
       enabled: true
@@ -85,17 +113,45 @@ spec:
         enabled: true
         existingClaim: thanos-compactor-data-pvc
 
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
     storegateway:
       enabled: true
-      replicaCount: 3
+      replicaCount: 1
       podAntiAffinityPreset: hard
       persistence:
         enabled: true
         existingClaim: thanos-storegateway-data-pvc
 
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
     ruler:
       enabled: true
-      replicaCount: 3
+      replicaCount: 1
       podAntiAffinityPreset: hard
       dnsDiscovery:
         enabled: true
@@ -118,6 +174,20 @@ spec:
       persistence:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
 
     metrics:
       enabled: true
