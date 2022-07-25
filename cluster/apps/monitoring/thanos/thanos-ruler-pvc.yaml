@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: thanos-ruler-data-pv
+  namespace: monitoring
+spec:
+  storageClassName: thanos-ruler-data-nfs
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: ${NAS_ADDR}
+    path: "/volume2/DockerVol/thanos_ruler_data"
+  mountOptions:
+    - nfsvers=4.1
+    - hard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thanos-ruler-data-pvc
+  namespace: monitoring
+spec:
+  storageClassName: thanos-ruler-data-nfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

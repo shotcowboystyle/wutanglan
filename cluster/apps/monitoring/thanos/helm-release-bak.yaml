@@ -1,0 +1,310 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app thanos
+  namespace: monitoring
+
+spec:
+  interval: 5m
+
+  chart:
+    spec:
+      chart: thanos
+      version: 11.1.2
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+      interval: 5m
+
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+
+  upgrade:
+    remediation:
+      retries: 5
+
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: monitoring
+
+  values:
+    query:
+      enabled: true
+
+      replicaCount: 1
+      replicaLabels:
+        - replica
+
+      dnsDiscovery:
+        # sidecarsService: prometheus-thanos-discovery
+        sidecarsService: thanos-query
+        sidecarsNamespace: monitoring
+
+      ingress:
+        enabled: true
+
+        hostname: "thanos.${SECRET_DOMAIN}"
+        ingressClassName: "traefik"
+
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Thanos"
+
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+        hosts:
+          - host: &host "thanos.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+
+        tls:
+          - hosts:
+              - *host
+            secretName: "thanos-tls"
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
+
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
+    queryFrontend:
+      enabled: false
+
+    bucketweb:
+      enabled: true
+
+      ingress:
+        enabled: true
+
+        hostname: &hostbweb "thanos-bucketweb.${SECRET_DOMAIN}"
+        ingressClassName: traefik
+
+        annotations:
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          traefik.ingress.kubernetes.io/service.serversscheme: h2c
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+        tls: true
+
+        extraTls:
+          - hosts:
+              - *hostbweb
+            secretName: "thanos-bucketweb-tls"
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
+
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
+    compactor:
+      enabled: true
+
+      ingress:
+        enabled: true
+
+        hostname: &hostcompact "thanos-compactor.${SECRET_DOMAIN}"
+        ingressClassName: traefik
+
+        annotations:
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          traefik.ingress.kubernetes.io/service.serversscheme: h2c
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+        tls: true
+
+        extraTls:
+          - hosts:
+              - *hostcompact
+            secretName: "thanos-compactor-tls"
+
+      persistence:
+        enabled: false
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
+
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
+    storegateway:
+      enabled: true
+
+      ingress:
+        enabled: true
+
+        hostname: &hostgateway "thanos-storegateway.${SECRET_DOMAIN}"
+        ingressClassName: traefik
+
+        annotations:
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          traefik.ingress.kubernetes.io/service.serversscheme: h2c
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+        tls: true
+
+        extraTls:
+          - hosts:
+              - *hostgateway
+            secretName: "thanos-gateway-tls"
+
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
+
+      persistence:
+        enabled: true
+        existingClaim: thanos-storegateway-data-pvc
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
+
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
+    ruler:
+      enabled: true
+
+      dnsDiscovery:
+        enabled: true
+
+      alertmanagers:
+        - http://kube-prometheus-stack-alertmanager.monitoring:9093
+
+      clusterName: ${CLUSTER_NAME}
+
+      extraFlags:
+        - "--web.prefix-header=X-Forwarded-Prefix"
+
+      config: |-
+        groups:
+          - name: "PrometheusWatcher"
+            rules:
+              - alert: "PrometheusDown"
+                expr: absent(up{job="kube-prometheus-stack-prometheus"})
+
+      ingress:
+        enabled: true
+
+        hostname: &hostruler "thanos-ruler.${SECRET_DOMAIN}"
+        ingressClassName: traefik
+
+        annotations:
+          # cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          traefik.ingress.kubernetes.io/service.serversscheme: h2c
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+        tls: true
+
+        extraTls:
+          - hosts:
+              - *hostruler
+            secretName: "thanos-ruler-tls"
+
+      # podSecurityContext:
+      #   enabled: true
+      #   fsGroup: 65537
+
+      persistence:
+        enabled: true
+        existingClaim: thanos-ruler-data-pvc
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values:
+                      - inky
+
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - i386
+                      - i686
+                      - x86
+
+    metrics:
+      enabled: true
+
+      serviceMonitor:
+        enabled: true
+
+    objstoreConfig:
+      type: s3
+      config:
+        bucket: thanos
+        endpoint: "minio.dbms.svc.cluster.local:9000"
+        access_key: ${SECRET_MINIO_THANOS_ACCESS_KEY}
+        secret_key: ${SECRET_MINIO_THANOS_SECRET_KEY}
+        region: ${SECRET_MINIO_REGION}
+        insecure: true

@@ -11,15 +11,15 @@ resources:
   # - flux-system
   # - gatus
   - goldilocks
-  # - grafana
+  - grafana
   # - intel-gpu-exporter
-  # - kube-prometheus-stack
+  - kube-prometheus-stack
   - loki
   # - node-problem-detector
   - promtail
   # - snmp-exporter
-  # - speedtest-exporter
-  # - thanos
+  - speedtest-exporter
+  - thanos
   - unifi-poller
   # - vector
   # - vpa

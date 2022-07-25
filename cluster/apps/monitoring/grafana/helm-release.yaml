@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: grafana
   namespace: monitoring
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://grafana.github.io/helm-charts
@@ -23,32 +25,15 @@ spec:
     - name: kube-prometheus-stack
       namespace: monitoring
 
-  install:
-    createNamespace: true
-    remediation:
-      retries: 5
-  upgrade:
-    remediation:
-      retries: 5
-
   values:
-    replicas: 1
-
     image:
       repository: ghcr.io/k8s-at-home/grafana
 
-    persistence:
-      enabled: false
-      # dbmsClassName: "nfs-client"
-      # size: 10Gi
-      # accessModes:
-      #   - ReadWriteOnce
+    replicas: 1
 
     env:
       GF_EXPLORE_ENABLED: true
       GF_PANELS_DISABLE_SANITIZE_HTML: true
-      GF_DISABLE_SANITIZE_HTML: true
-      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: "panodata-map-panel"
       GF_LOG_FILTERS: rendering:debug
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_DATE_FORMATS_FULL_DATE: "MMM Do, YYYY hh:mm:ss a"
@@ -58,31 +43,31 @@ spec:
       GF_DATE_FORMATS_INTERVAL_DAY: "DD/MM"
       GF_DATE_FORMATS_INTERVAL_MONTH: "MM-YYYY"
       GF_DATE_FORMATS_INTERVAL_YEAR: "YYYY"
-      # VAR_BLOCKY_URL: "http://blocky.networking.svc.cluster.local:4000"
-      DS_PROMETHEUS: "prometheus"
+
+    admin:
+      existingSecret: grafana-admin-creds
 
     grafana.ini:
       server:
         root_url: "https://grafana.${SECRET_DOMAIN}"
+
       paths:
         data: /var/lib/grafana/data
         logs: /var/log/grafana
         plugins: /var/lib/grafana/plugins
         provisioning: /etc/grafana/provisioning
+
       analytics:
         check_for_updates: false
+
       log:
         mode: console
+
       grafana_net:
         url: https://grafana.net
-      panels:
-        disable_sanitize_html: true
-      security:
-        allow_embedding: true
 
-    # adminUser: admin
-    admin:
-      existingSecret: grafana-admin-creds
+      auth.basic:
+        disable_login_form: false
 
     dashboardProviders:
       dashboardproviders.yaml:
@@ -94,179 +79,74 @@ spec:
             type: file
             disableDeletion: false
             editable: true
-            allowUiUpdates: true
             options:
               path: /var/lib/grafana/dashboards/default
-          - name: "flux"
-            orgId: 1
-            folder: "flux"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/flux
-          - name: "loki"
-            orgId: 1
-            folder: "loki"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/loki
-          # - name: "media"
-          #   orgId: 1
-          #   folder: "media"
-          #   type: file
-          #   updateIntervalSeconds: 10
-          #   disableDeletion: false
-          #   allowUiUpdates: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/media
-          - name: "networking"
-            orgId: 1
-            folder: "networking"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/networking
-          # - name: "power"
-          #   orgId: 1
-          #   folder: "power"
-          #   type: file
-          #   updateIntervalSeconds: 10
-          #   disableDeletion: false
-          #   allowUiUpdates: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/power
-          - name: "dbms"
-            orgId: 1
-            folder: "dbms"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/dbms
-          - name: "thanos"
-            orgId: 1
-            folder: "thanos"
-            type: file
-            updateIntervalSeconds: 10
-            disableDeletion: false
-            allowUiUpdates: true
-            options:
-              path: /var/lib/grafana/dashboards/thanos
-              # - name: users
-              #   orgId: 1
-              #   folder: users
-              #   type: file
-              #   updateIntervalSeconds: 10
-              #   disableDeletion: false
-              #   allowUiUpdates: true
-              #   options:
-              #     path: /var/lib/grafana/dashboards/users
 
     datasources:
       datasources.yaml:
         apiVersion: 1
-        # list of datasources that should be deleted from the database
-        deleteDatasources:
-          - name: Loki
-            orgId: 1
         datasources:
           - name: Prometheus
             type: prometheus
             access: proxy
-            url: http://thanos-query:9090
+            url: http://thanos-query:9090/
             isDefault: true
+
           - name: Loki
             type: loki
             access: proxy
             url: http://loki:3100
-          - name: Promeheus-Direct
-            type: prometheus
-            access: proxy
-            url: http://prometheus-prometheus:9090
-            # - name: MariaDB Blocky
-            #   type: mysql
-            #   url: ${MARIADB_ADDRESS}:3306
-            #   database: blocky
-            #   user: ${MARIADB_GRAFANA_USER}
-            #   secureJsonData:
-            #     password: ${MARIADB_GRAFANA_PASSWORD}
-            # - name: MariaDB Hass
-            #   type: mysql
-            #   url: ${MARIADB_ADDRESS}:3306
-            #   database: hadb
-            #   user: ${MARIADB_GRAFANA_USER}
-            #   secureJsonData:
-            #     password: ${MARIADB_GRAFANA_PASSWORD}
-            # - name: AlertManager
-            #   type: alertmanager
-            #   access: proxy
-            #   url: http://alertmanager-operated:9093
-            #   jsonData:
-            #     implementation: "prometheus"
 
     dashboards:
-      # default:
-      #   # blocky:
-      #   #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-grafana.json
-      #   #   datasource: Prometheus
-      #   # blocky-query:
-      #   #   url: https://raw.githubusercontent.com/0xERR0R/blocky/development/docs/blocky-query-grafana.json
-      #   #   datasource: MariaDB Blocky
-      #   # Ref: https://grafana.com/grafana/dashboards/12175
-      #   calico-felix:
-      #     gnetId: 12175
-      #     revision: 5
-      #     datasource: Prometheus
+      default:
+        # Ref: https://grafana.com/grafana/dashboards/12175
+        calico-felix:
+          gnetId: 12175
+          revision: 5
+          datasource: Prometheus
 
-      # dbms:
-      #   # # Ref: https://grafana.com/grafana/dashboards/2842
-      #   # ceph-cluster:
-      #   #   gnetId: 2842
-      #   #   revision: 14
-      #   #   datasource: Prometheus
-      #   # # Ref: https://grafana.com/grafana/dashboards/5336
-      #   # ceph-osd:
-      #   #   gnetId: 5336
-      #   #   revision: 5
-      #   #   datasource: Prometheus
-      #   # # Ref: https://grafana.com/grafana/dashboards/5342
-      #   # ceph-pools:
-      #   #   gnetId: 5342
-      #   #   revision: 5
-      #   #   datasource: Prometheus
-      #   # Ref: https://grafana.com/grafana/dashboards/13502
-      #   minio:
-      #     gnetId: 13502
-      #     revision: 10
-      #     datasource: Prometheus
-      #     # flux-cluster:
-      #     #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
-      #     #   datasource: Prometheus
-      #     # flux-control-plane:
-      #     #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
-      #     #   datasource: Prometheus
+        # Ref: https://grafana.com/grafana/dashboards/13502
+        minio:
+          gnetId: 13502
+          revision: 13
+          datasource: Prometheus
 
-      networking:
-        # Ref: https://grafana.com/grafana/dashboards/15513
-        # cert-manager:
-        #   url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+        # vernemq:
+        #   url: https://raw.githubusercontent.com/vernemq/vernemq/master/metrics_scripts/grafana/VerneMQ%20Node%20Metrics.json
         #   datasource: Prometheus
-        # metallb:
-        #   url: https://raw.githubusercontent.com/jr0dd/grafana-dashboards/main/metallb.json
-        #   datasource: Prometheus
+        # # Ref: https://grafana.com/grafana/dashboards/13665
+
         # Ref: https://grafana.com/grafana/dashboards/13665
         speedtest:
           gnetId: 13665
-          revision: 1
+          revision: 4
           datasource: Prometheus
+
+        flux-cluster:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
+          datasource: Prometheus
+
+        flux-control-plane:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
+          datasource: Prometheus
+
+        # radarr:
+        #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/radarr.json
+        #   datasource: Prometheus
+
+        # sonarr:
+        #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/sonarr.json
+        #   datasource: Prometheus
+
+        # qbittorrent:
+        #   url: https://raw.githubusercontent.com/esanchezm/prometheus-qbittorrent-exporter/master/grafana/dashboard.json
+        #   datasource: Prometheus
+
+        # mikrotik:
+        #   gnetId: 10950
+        #   revision: 1
+        #   datasource: Prometheus
+
         # Ref: https://grafana.com/grafana/dashboards/11315
         unifi-client-insights:
           gnetId: 11315
@@ -287,44 +167,15 @@ spec:
           gnetId: 11312
           revision: 8
           datasource: Prometheus
-          # media:
-          # lidarr:
-          #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/lidarr.json
-          #   datasource: Prometheus
-          # radarr:
-          #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/radarr.json
-          #   datasource: Prometheus
-          # sonarr:
-          #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/sonarr.json
-          #   datasource: Prometheus
-          # qbittorrent:
-          #   url: https://raw.githubusercontent.com/esanchezm/prometheus-qbittorrent-exporter/master/grafana/dashboard.json
-          #   datasource: Prometheus
-          # users:
-          #   # Ref: https://grafana.com/grafana/dashboards/14837
-          #   authentik:
-          #     gnetId: 14837
-          #     revision: 2
-          #     datasource: Prometheus
-
-    imageRenderer:
-      enabled: false
 
     sidecar:
       dashboards:
         enabled: true
         searchNamespace: ALL
-        folderAnnotation: grafana_folder
-        multicluster: true
-        provider:
-          foldersFromFilesStructure: true
-          allowUiUpdates: true
-          disableDelete: false
 
       datasources:
         enabled: true
         searchNamespace: ALL
-        label: grafana_datasource
 
     plugins:
       - natel-discrete-panel
@@ -333,13 +184,9 @@ spec:
       - vonage-status-panel
       - grafana-worldmap-panel
       - grafana-clock-panel
-      - grafana-singlestat-panel
-      - grafana-polystat-panel
-      - mxswat-separator-panel
-      - farski-blendstat-panel
 
     serviceMonitor:
-      enabled: false
+      enabled: true
 
     ingress:
       enabled: true
@@ -348,10 +195,10 @@ spec:
 
       annotations:
         hajimari.io/enable: "true"
-        hajimari.io/icon: "chart-bar-stacked"
-        hajimari.io/appName: "Grafana"
+        hajimari.io/icon: "gauge"
 
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        # cert-manager.io/cluster-issuer: "letsencrypt-production"
+        cert-manager.io/cluster-issuer: "letsencrypt-staging"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 
@@ -361,28 +208,10 @@ spec:
       tls:
         - hosts:
             - *host
+          secretName: grafana-tls
 
-    serviceAccount:
-      create: true
-      autoMount: true
+    persistence:
+      enabled: false
 
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 60
-            preference:
-              matchExpressions:
-                - key: kubernetes.io/arch
-                  operator: In
-                  values:
-                    - amd64
-                    - i386
-                    - i686
-                    - x86
-
-  # valuesFrom:
-  #   - kind: Secret
-  #     name: grafana
-  #     valuesKey: admin-pass
-  #     targetPath: adminPassword
-  #     optional: false
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: "grafana"

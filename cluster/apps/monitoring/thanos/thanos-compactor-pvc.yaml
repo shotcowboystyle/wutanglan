@@ -2,18 +2,18 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: thanos-storegateway-data-pv
+  name: thanos-compactor-data-pv
   namespace: monitoring
 spec:
-  storageClassName: thanos-storegateway-data-nfs
+  storageClassName: thanos-compactor-data-nfs
   capacity:
-    storage: 20Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: ${NAS_ADDR}
-    path: "/volume2/DockerVol/thanos_storegateway_data"
+    path: "/volume2/DockerVol/thanos_compactor_data"
   mountOptions:
     - nfsvers=4.1
     - hard
@@ -22,12 +22,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: thanos-storegateway-data-pvc
+  name: thanos-compactor-data-pvc
   namespace: monitoring
 spec:
-  storageClassName: thanos-storegateway-data-nfs
+  storageClassName: thanos-compactor-data-nfs
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 20Gi
+      storage: 5Gi
