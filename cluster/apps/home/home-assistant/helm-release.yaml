@@ -44,16 +44,19 @@ spec:
 
     service:
       main:
-        type: LoadBalancer
+        # type: ClusterIp
         externalTrafficPolicy: Local
 
         # -- Specify the ip policy. Options: SingleStack, PreferDualStack, RequireDualStack
-        ipFamilyPolicy: SingleStack
+        # ipFamilyPolicy: SingleStack
         # -- The ip families that should be used. Options: IPv4, IPv6
-        ipFamilies: [IPv4]
+        # ipFamilies: [IPv4]
 
-        annotations:
-          metallb.universe.tf/loadBalancerIPs: "${METALLB_HASSIO_ADDR}"
+        # annotations:
+        #   metallb.universe.tf/loadBalancerIPs: "${METALLB_HASSIO_ADDR}"
+        loadBalancerIP: ${METALLB_HASSIO_ADDR}
+        externalIPs:
+          - ${METALLB_HASSIO_ADDR}
 
         ports:
           http:
@@ -89,6 +92,8 @@ spec:
           - hosts:
               - *host
 
+    hostname: "homeassistant"
+
     # -- Enable devices to be discoverable
     hostNetwork: true
     # -- When hostNetwork is true set dnsPolicy to ClusterFirstWithHostNet
@@ -120,17 +125,69 @@ spec:
         mountPath: /config
         existingClaim: home-assistant-config-pvc
 
-    additionalContainers:
-      appdaemon:
-        name: appdaemon
-        image: docker.io/acockburn/appdaemon:4.2.1
-        env:
-          - name: TZ
-            value: ${TIMEZONE}
-        volumeMounts:
-          - name: config
-            subPath: appdaemon
-            mountPath: /conf
+    # additionalContainers:
+    #   appdaemon:
+    #     name: appdaemon
+    #     image: docker.io/acockburn/appdaemon:4.2.1
+    #     env:
+    #       - name: TZ
+    #         value: ${TIMEZONE}
+
+    #     volumeMounts:
+    #       - name: config
+    #         subPath: appdaemon
+    #         mountPath: /conf
+
+    #     # haToken: cthvYFGgpS482SyvbPnddw0XoJRRoVfgQzTco93A3Xw
+    #     service:
+    #       enabled: true
+    #       type: LoadBalancer
+    #       loadBalancerIP: ${METALLB_HASSIO_ADDR}
+    #       port: 5050
+
+    #     # service:
+    #     #   type: ClusterIP
+    #     #   port: 5050
+    #     #   annotations: {}
+    #     #   labels: {}
+    #     #   clusterIP: ""
+    #     #   ## List of IP addresses at which the hass-appdaemon service is available
+    #     #   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+    #     #   ##
+    #     #   externalIPs: []
+    #     #   loadBalancerIP: ""
+    #     #   loadBalancerSourceRanges: []
+    #     #   # nodePort: 30000
+
+    #     ingress:
+    #       main:
+    #         enabled: true
+
+    #         ingressClassName: "traefik"
+
+    #         annotations:
+    #           # Hajimari
+    #           hajimari.io/enable: "true"
+    #           hajimari.io/icon: "home-assistant"
+    #           hajimari.io/group: home
+
+    #           # Hostname
+    #           # coredns.io/hostname: &host "hassio.${SECRET_DOMAIN}"
+
+    #           # traefik + certs
+    #           cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    #           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    #           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-no-auth@kubernetescrd"
+
+    #         hosts:
+    #           - host: &host "hassio.${SECRET_DOMAIN}"
+    #             paths:
+    #               - path: /
+    #                 pathType: Prefix
+
+    #         tls:
+    #           - hosts:
+    #               - *host
 
     podAnnotations:
       configmap.reloader.stakater.com/reload: "home-assistant-config-pvc"
