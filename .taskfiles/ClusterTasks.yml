@@ -157,6 +157,6 @@ tasks:
       - task: pods
 
   restart_pod:
-    desc: decrypt sops file 'to use must include -- before path to file.'  ie., "NS=media task cluster:restart_pod -- jellyfin-123"
+    desc: decrypt sops file 'to use must include -- before path to file.'  ie., "NS=media task cluster:restart_pod -- jellyfin-123 -n media"
     cmds:
-      - kubectl get pod {{.CLI_ARGS}} -n {{.NS}} -o yaml | kubectl replace --force -f -
+      - kubectl get pod {{.CLI_ARGS}} -o yaml | kubectl replace --force -f -

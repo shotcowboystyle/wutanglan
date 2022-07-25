@@ -73,6 +73,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
+          hajimari.io/group: home
 
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"

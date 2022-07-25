@@ -52,6 +52,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "document"
+          hajimari.io/group: development
 
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"

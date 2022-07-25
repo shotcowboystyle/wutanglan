@@ -42,15 +42,15 @@ spec:
       - secretRef:
           name: *app
 
-    # service:
-    #   main:
-    #     type: LoadBalancer
-    #     externalTrafficPolicy: Local
-    #     annotations:
-    #       metallb.universe.tf/loadBalancerIPs: "${METALLB_HASS_ADDR}"
-    #     ports:
-    #       http:
-    #         port: 8123
+    service:
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/loadBalancerIPs: "${METALLB_HASSIO_ADDR}"
+        ports:
+          http:
+            port: 8123
 
     ingress:
       main:
@@ -61,8 +61,8 @@ spec:
         annotations:
           # Hajimari
           hajimari.io/enable: "true"
-          # hajimari.io/icon: "home-automation"
           hajimari.io/icon: "home-assistant"
+          hajimari.io/group: home
 
           # Hostname
           # coredns.io/hostname: &host "hassio.${SECRET_DOMAIN}"
@@ -205,6 +205,7 @@ spec:
             hajimari.io/enable: "true"
             hajimari.io/appName: "HASS Code"
             hajimari.io/icon: "vs-code"
+            hajimari.io/group: home
 
             cert-manager.io/cluster-issuer: "letsencrypt-staging"
             traefik.ingress.kubernetes.io/router.entrypoints: "websecure"

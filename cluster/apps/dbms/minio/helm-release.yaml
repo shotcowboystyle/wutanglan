@@ -70,6 +70,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "database"
+          hajimari.io/group: dbms
 
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"

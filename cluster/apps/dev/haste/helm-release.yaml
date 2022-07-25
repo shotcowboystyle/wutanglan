@@ -61,6 +61,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "content-paste"
+          hajimari.io/group: development
 
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
