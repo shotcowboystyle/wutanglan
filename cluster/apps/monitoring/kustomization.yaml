@@ -22,4 +22,4 @@ resources:
   - thanos
   - unifi-poller
   # - vector
-  # - vpa
+  - vpa
