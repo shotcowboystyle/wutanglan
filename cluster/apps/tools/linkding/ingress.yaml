@@ -5,19 +5,21 @@ metadata:
   name: linkding-dashboard
   namespace: tools
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     hajimari.io/appName: "linkding"
     hajimari.io/enable: "true"
     hajimari.io/icon: "web"
+    hajimari.io/group: tools
+
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    # traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-no-auth@kubernetescrd"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
 spec:
   ingressClassName: "traefik"
   tls:
     - hosts:
         - &host "linkding.${SECRET_DOMAIN}"
-      # secretName: "${SECRET_DOMAIN//./-}-tls"
+
   rules:
     - host: *host
       http:

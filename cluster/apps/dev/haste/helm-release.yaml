@@ -62,10 +62,8 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "content-paste"
 
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-wutanglan-auth@kubernetescrd"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-no-auth@kubernetescrd"
 
         hosts:
@@ -77,7 +75,6 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "haste-tls"
 
     podSecurityContext:
       runAsUser: 1031

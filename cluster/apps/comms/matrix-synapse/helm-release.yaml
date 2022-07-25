@@ -110,21 +110,27 @@ spec:
 
     ingress:
       enabled: true
+
       traefikPaths: true
-      className: traefik
+      ingressClassName: "traefik"
+
       annotations:
-        kubernetes.io/tls-acme: "true"
-        cert-manager.io/cluster-issuer: letsencrypt-production
-        external-dns/is-public: "true"
-        haproxy-ingress-proxy.pfsense.org/enabled: "true"
-        haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
-        haproxy-ingress-proxy.pfsense.org/backend: "traefik-443"
-        external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "format-list-checks"
+
+        cert-manager.io/cluster-issuer: letsencrypt-staging
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+      hosts:
+        - host: &host matrix.${SECRET_DOMAIN}
+          paths:
+            - path: /
+              pathType: Prefix
+
       tls:
-        # - secretName: "${SECRET_DOMAIN//./-}-tls"
         - hosts:
-            - matrix.${SECRET_DOMAIN}
+            - *host
 
     postgresql:
       enabled: true

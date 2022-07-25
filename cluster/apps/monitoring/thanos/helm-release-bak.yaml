@@ -53,8 +53,8 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/appName: "Thanos"
+          hajimari.io/group: monitoring
 
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -68,7 +68,6 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "thanos-tls"
 
       affinity:
         nodeAffinity:
@@ -102,7 +101,6 @@ spec:
         ingressClassName: traefik
 
         annotations:
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -112,7 +110,6 @@ spec:
         extraTls:
           - hosts:
               - *hostbweb
-            secretName: "thanos-bucketweb-tls"
 
       affinity:
         nodeAffinity:
@@ -143,7 +140,6 @@ spec:
         ingressClassName: traefik
 
         annotations:
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -153,7 +149,6 @@ spec:
         extraTls:
           - hosts:
               - *hostcompact
-            secretName: "thanos-compactor-tls"
 
       persistence:
         enabled: false
@@ -187,7 +182,6 @@ spec:
         ingressClassName: traefik
 
         annotations:
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -197,7 +191,6 @@ spec:
         extraTls:
           - hosts:
               - *hostgateway
-            secretName: "thanos-gateway-tls"
 
       # podSecurityContext:
       #   enabled: true
@@ -254,7 +247,6 @@ spec:
         ingressClassName: traefik
 
         annotations:
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/service.serversscheme: h2c
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -264,7 +256,6 @@ spec:
         extraTls:
           - hosts:
               - *hostruler
-            secretName: "thanos-ruler-tls"
 
       # podSecurityContext:
       #   enabled: true

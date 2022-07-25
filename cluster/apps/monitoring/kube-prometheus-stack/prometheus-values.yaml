@@ -1,42 +1,54 @@
 ---
 prometheus:
   enabled: true
+
   # service:
   #   ipFamilyPolicy: PreferDualStack
   #   ipFamilies:
   #     - "IPv4"
   #     - "IPv6"
+
   ingress:
     enabled: true
+
     pathType: Prefix
+
     ingressClassName: "traefik"
+
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-production
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hajimari.io/enable: "true"
       hajimari.io/appName: "Prometheus"
+      hajimari.io/group: monitoring
+
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
     hosts:
       - &promhost "prometheus.${SECRET_DOMAIN}"
+
     tls:
       - hosts:
           - *promhost
-        # secretName: "${SECRET_DOMAIN//./-}-tls"
 
   thanosIngress:
     enabled: true
     pathType: Prefix
     ingressClassName: traefik
+
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-production
+      cert-manager.io/cluster-issuer: letsencrypt-staging
       traefik.ingress.kubernetes.io/service.serversscheme: h2c
+
     hosts:
       - &host "thanos-sidecar.${SECRET_DOMAIN}"
+
     tls:
       - hosts:
           - *host
-        # secretName: "${SECRET_DOMAIN//./-}-tls"
+
   thanosService:
     enabled: true
+
   thanosServiceMonitor:
     enabled: true
 
@@ -72,6 +84,7 @@ prometheus:
           resources:
             requests:
               storage: 15Gi
+
     thanos:
       image: quay.io/thanos/thanos:v0.27.0
       # renovate: datasource=docker depName=quay.io/thanos/thanos

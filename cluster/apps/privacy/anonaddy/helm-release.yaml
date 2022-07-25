@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: &app anonaddy
   namespace: privacy
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: anonaddy
@@ -15,40 +17,49 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+
   values:
     global:
       nameOverride: *app
+
     image:
       repository: anonaddy/anonaddy
       tag: 0.12.3
+
     env:
       # -- Application key for encrypter service
       # You can generate one through `anonaddy key:generate --show` or `echo "base64:$(openssl rand -base64 32)"`
       APP_KEY: base64:GuNUvmKy8hbKZgdZ0j+sMzZIb1tPqakzTK5ISvLw7Nw=
       # -- Root domain to receive email from
       ANONADDY_DOMAIN: ${SECRET_DOMAIN}
+
     envFrom:
       - secretRef:
           name: *app
+
     ingress:
       main:
         enabled: true
+
         ingressClassName: "traefik"
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
+          hajimari.io/group: privacy
+
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "anonaddy.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     # -- Configure persistence settings for the chart under this key.
     # @default -- See values.yaml

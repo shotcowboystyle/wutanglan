@@ -4,6 +4,7 @@ kind: Certificate
 metadata:
   name: "${SECRET_DOMAIN/./-}"
   namespace: networking
+
 spec:
   secretTemplate:
     annotations:
@@ -11,13 +12,16 @@ spec:
       reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "auth,biz-ops,calico-system,collab,comms,dbms,default,dev,flux-system,home,kube-system,media,monitoring,networking,observability,privacy,tools,vpn"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "auth,biz-ops,calico-system,collab,comms,dbms,default,dev,flux-system,home,kube-system,media,monitoring,networking,observability,privacy,tools,vpn"
+
   secretName: "${SECRET_DOMAIN/./-}-tls"
+
   issuerRef:
-    # name: letsencrypt-production
     name: letsencrypt-staging
     kind: ClusterIssuer
     group: cert-manager.io
+
   commonName: "${SECRET_DOMAIN}"
+
   dnsNames:
     - "${SECRET_DOMAIN}"
     - "*.${SECRET_DOMAIN}"

@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: rxresume
   namespace: collab
+
 spec:
   interval: 5m
+
   chart:
     spec:
       chart: ./charts/kah-common/
@@ -14,28 +16,34 @@ spec:
         name: flux-system
         namespace: flux-system
       interval: 5m
+
   install:
     timeout: 10m
     remediation:
       retries: 3
+
   upgrade:
     timeout: 10m
     remediation:
       retries: 3
       remediateLastFailure: true
     cleanupOnFail: true
+
   rollback:
     timeout: 10m
     recreate: true
     cleanupOnFail: true
+
   values:
     imagePullSecrets:
       - name: "regcred"
+
     image:
       repository: amruthpillai/reactive-resume
       tag: v1
 
     nameOverride: rxresume
+
     # env:
     #   FIREBASE_APIKEY: ${SECRET_RXRESUME_FIREBASE_APIKEY}
     #   FIREBASE_APPID: ${SECRET_RXRESUME_FIREBASE_APP_ID}
@@ -44,32 +52,36 @@ spec:
     #   FIREBASE_MESSAGINGSENDERID: ${SECRET_RXRESUME_FIREBASE_MESSAGING_SENDER_ID}
     #   FIREBASE_PROJECTID: ${SECRET_RXRESUME_FIREBASE_PROJECT_ID}
     #   FIREBASE_STORAGEBUCKET: ${SECRET_RXRESUME_FIREBASE_STORAGE_BUCKET}
+
     service:
       main:
         ports:
           http:
             port: 80
+
     ingress:
       main:
         enabled: true
-        ingressClassName: "nginx"
+
+        ingressClassName: "traefik"
+
         annotations:
-          kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: letsencrypt-production
-          external-dns/is-public: "true"
-          haproxy-ingress-proxy.pfsense.org/enabled: "true"
-          haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
-          haproxy-ingress-proxy.pfsense.org/backend: "nginx-443"
-          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "file-account"
+
+          cert-manager.io/cluster-issuer: letsencrypt-staging
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
-          - host: cv.${SECRET_DOMAIN}
+          - host: &host cv.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
-              - "cv.${SECRET_DOMAIN}"
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+              - *host
 
             # resources:
             #   requests:

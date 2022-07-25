@@ -11,25 +11,29 @@ spec:
       port: 443
       targetPort: 80
   externalName: "${RPI_CAM_1_IP_ADDR}"
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rpicam1
   namespace: networking
+
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    hajimari.io/enable: "true"
+    hajimari.io/icon: "cctv"
+
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     kubernetes.io/ingress.class: traefik
     traefik.frontend.passHostHeader: "false"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
-    hajimari.io/enable: "true"
-    hajimari.io/icon: "cctv"
+
 spec:
   tls:
     - hosts:
         - "rpicam1.${SECRET_DOMAIN}"
-      # secretName: "${SECRET_DOMAIN//./-}-tls"
+
   rules:
     - host: rpicam1.${SECRET_DOMAIN}
       http:

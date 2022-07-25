@@ -45,22 +45,26 @@ spec:
     ingress:
       main:
         enabled: true
-        ingressClassName: "nginx"
+
+        ingressClassName: "traefik"
+
         annotations:
-          kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: letsencrypt-production
-          # traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          nginx.ingress.kubernetes.io/auth-url: "http://authelia.security.svc.cluster.local/api/verify"
-          nginx.ingress.kubernetes.io/auth-signin: "https://login.${SECRET_DOMAIN}"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "format-list-checks"
+
+          cert-manager.io/cluster-issuer: letsencrypt-staging
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-no-auth@kubernetescrd"
+
         hosts:
-          - host: "matrix-admin.${SECRET_DOMAIN}"
+          - host: &host matrix-admin.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
-          # - secretName: "${SECRET_DOMAIN//./-}-tls"
           - hosts:
-              - "matrix-admin.${SECRET_DOMAIN}"
+              - *host
 
     postgresql:
       enabled: false

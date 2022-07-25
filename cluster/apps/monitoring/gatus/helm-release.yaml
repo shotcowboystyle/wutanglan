@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: gatus
   namespace: monitoring
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://avakarev.github.io/gatus-chart
@@ -16,20 +18,24 @@ spec:
         name: avakarev
         namespace: flux-system
       interval: 5m
-  # install:
-  #   timeout: 10m
-  #   remediation:
-  #     retries: 3
-  # upgrade:
-  #   timeout: 10m
-  #   remediation:
-  #     retries: 3
-  #     remediateLastFailure: true
-  #   cleanupOnFail: true
-  # rollback:
-  #   timeout: 10m
-  #   recreate: true
-  #   cleanupOnFail: true
+
+  install:
+    timeout: 10m
+    remediation:
+      retries: 3
+
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+
+  rollback:
+    timeout: 10m
+    recreate: true
+    cleanupOnFail: true
+
   values:
     persistence:
       enabled: true
@@ -61,22 +67,27 @@ spec:
     ingress:
       main:
         enabled: true
+
         ingressClassName: "traefik"
+
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
           hajimari.io/enable: "true"
           hajimari.io/icon: "cctv"
+          hajimari.io/group: monitoring
+
+          cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
           - host: &host "gatus.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
               - *host
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
 
     config:
       # Config Options available: https://github.com/TwiN/gatus#configuration
@@ -84,6 +95,7 @@ spec:
       storage:
         type: sqlite
         file: /data/data.db
+
       endpoints:
         - name: Default Ingress
           url: https://default.${SECRET_DOMAIN}

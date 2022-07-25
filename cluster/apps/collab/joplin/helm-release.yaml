@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: joplin
   namespace: collab
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
@@ -16,24 +18,30 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+
   install:
     timeout: 10m
     remediation:
       retries: 3
+
   upgrade:
     timeout: 10m
     remediation:
       retries: 3
       remediateLastFailure: true
     cleanupOnFail: true
+
   rollback:
     timeout: 10m
     recreate: true
     cleanupOnFail: true
+
   values:
     imagePullSecrets:
       - name: "regcred"
+
     nameOverride: joplin
+
     image:
       repository: joplin/server
       tag: 2.5.1
@@ -73,26 +81,27 @@ spec:
     ingress:
       main:
         enabled: true
+
         ingressClassName: "traefik"
+
         annotations:
-          kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: letsencrypt-production
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "format-list-checks"
+
+          cert-manager.io/cluster-issuer: letsencrypt-staging
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: "network-internal-auth@kubernetescrd"
-          external-dns/is-public: "true"
-          haproxy-ingress-proxy.pfsense.org/enabled: "true"
-          haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
-          haproxy-ingress-proxy.pfsense.org/backend: "traefik-443"
-          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
-          - host: joplin.${SECRET_DOMAIN}
+          - host: &host todos.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
-              - "joplin.${SECRET_DOMAIN}"
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+              - *host
+
     postgresql:
       # existingSecret: joplin-postgresql-secret
       postgresqlPostgresPassword: ${SECRET_JOPLIN_POSTGRES_ADMIN_PASSWORD}

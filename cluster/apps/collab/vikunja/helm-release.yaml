@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: vikunja
   namespace: collab
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://k8s-at-home.com/charts/
@@ -16,20 +18,24 @@ spec:
         name: k8s-at-home
         namespace: flux-system
       interval: 5m
+
   install:
     timeout: 10m
     remediation:
       retries: 3
+
   upgrade:
     timeout: 10m
     remediation:
       retries: 3
       remediateLastFailure: true
     cleanupOnFail: true
+
   rollback:
     timeout: 10m
     recreate: true
     cleanupOnFail: true
+
   values:
     image:
       repository: caddy
@@ -45,6 +51,7 @@ spec:
       main:
         port:
           port: 8080
+
         annotations:
           prometheus.io/probe: "true"
           prometheus.io/protocol: http
@@ -52,6 +59,7 @@ spec:
     additionalContainers:
       - name: api
         image: vikunja/api:latest
+
         env:
           - name: VIKUNJA_DATABASE_TYPE
             value: "postgres"
@@ -75,6 +83,7 @@ spec:
             value: mailu-postfix.mailu.svc.cluster.local
           - name: VIKUNJA_MAILER_PORT
             value: "25"
+
         volumeMounts:
           - name: files
             mountPath: /app/vikunja/files
@@ -82,31 +91,33 @@ spec:
             mountPath: /app/vikunja/config.yml
             subPath: config.yml
             readOnly: true
+
       - name: frontend
         image: vikunja/frontend:latest
 
     ingress:
       main:
         enabled: true
-        ingressClassName: "nginx"
+
+        ingressClassName: "traefik"
+
         annotations:
-          kubernetes.io/tls-acme: "true"
-          cert-manager.io/cluster-issuer: letsencrypt-production
-          # traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns/is-public: "true"
-          haproxy-ingress-proxy.pfsense.org/enabled: "true"
-          haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
-          haproxy-ingress-proxy.pfsense.org/backend: "nginx-443"
-          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "format-list-checks"
+
+          cert-manager.io/cluster-issuer: letsencrypt-staging
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
         hosts:
-          - host: tasks.${SECRET_DOMAIN}
+          - host: &host tasks.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
+
         tls:
           - hosts:
-              - "tasks.${SECRET_DOMAIN}"
-            # secretName: "${SECRET_DOMAIN//./-}-tls"
+              - *host
 
     persistence:
       files:

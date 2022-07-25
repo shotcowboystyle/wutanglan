@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: loki
   namespace: monitoring
+
 spec:
   interval: 5m
+
   chart:
     spec:
       # renovate: registryUrl=https://grafana.github.io/helm-charts
@@ -20,6 +22,7 @@ spec:
   install:
     remediation:
       retries: 4
+
   upgrade:
     remediation:
       remediateLastFailure: true
@@ -35,8 +38,9 @@ spec:
       annotations:
         hajimari.io/enable: "true"
         hajimari.io/appName: "Loki"
+        hajimari.io/group: monitoring
 
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        cert-manager.io/cluster-issuer: "letsencrypt-staging"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 

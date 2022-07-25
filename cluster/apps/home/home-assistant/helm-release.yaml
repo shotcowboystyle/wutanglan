@@ -68,7 +68,6 @@ spec:
           # coredns.io/hostname: &host "hassio.${SECRET_DOMAIN}"
 
           # traefik + certs
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -82,7 +81,6 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "hassio-tls"
 
     # -- Enable devices to be discoverable
     hostNetwork: true
@@ -202,12 +200,12 @@ spec:
           enabled: true
 
           ingressClassName: "traefik"
+
           annotations:
             hajimari.io/enable: "true"
             hajimari.io/appName: "HASS Code"
             hajimari.io/icon: "vs-code"
 
-            # cert-manager.io/cluster-issuer: "letsencrypt-production"
             cert-manager.io/cluster-issuer: "letsencrypt-staging"
             traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
             traefik.ingress.kubernetes.io/router.middlewares: "networking-chain-internal-no-auth@kubernetescrd"
@@ -221,7 +219,6 @@ spec:
           tls:
             - hosts:
                 - *host-code
-              secretName: "hassio-config-tls"
 
         volumeMounts:
           - name: config

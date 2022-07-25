@@ -4,6 +4,7 @@ apiVersion: v1
 metadata:
   name: nastrodamus
   namespace: networking
+
 spec:
   type: ExternalName
   ports:
@@ -11,25 +12,29 @@ spec:
       port: 443
       targetPort: 7401
   externalName: "${NAS_ADDR}"
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nastrodamus
   namespace: networking
+
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    hajimari.io/enable: "true"
+    hajimari.io/icon: "nas"
+
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     kubernetes.io/ingress.class: traefik
     traefik.frontend.passHostHeader: "false"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
-    hajimari.io/enable: "true"
-    hajimari.io/icon: "nas"
+
 spec:
   tls:
     - hosts:
         - "nastrodamus.${SECRET_DOMAIN}"
-      # secretName: "${SECRET_DOMAIN//./-}-tls"
+
   rules:
     - host: nastrodamus.${SECRET_DOMAIN}
       http:

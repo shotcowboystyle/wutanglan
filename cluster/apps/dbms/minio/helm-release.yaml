@@ -69,9 +69,8 @@ spec:
 
         annotations:
           hajimari.io/enable: "true"
-          hajimari.io/icon: "cctv"
+          hajimari.io/icon: "database"
 
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
@@ -94,11 +93,9 @@ spec:
         tls:
           - hosts:
               - *host-minio
-            secretName: "minio-tls"
 
           - hosts:
               - *host-s3
-            secretName: "minio-s3-tls"
 
     persistence:
       data:

@@ -28,7 +28,6 @@ spec:
 
       ingressClassName: "traefik"
       annotations:
-        # cert-manager.io/cluster-issuer: "letsencrypt-production"
         cert-manager.io/cluster-issuer: "letsencrypt-staging"
 
       hosts:
@@ -39,7 +38,6 @@ spec:
       tls:
         - hosts:
             - *host
-          secretName: loki-tls
 
     serviceMonitor:
       enabled: true

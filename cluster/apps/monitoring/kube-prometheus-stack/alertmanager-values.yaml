@@ -4,6 +4,7 @@ alertmanager:
     global:
       slack_api_url: "${SECRET_ALERT_MANAGER_DISCORD_WEBHOOK}"
       resolve_timeout: 5m
+
     receivers:
       - name: "null"
       - name: "discord"
@@ -22,6 +23,7 @@ alertmanager:
                 {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
                 {{ end }}
               {{ end }}
+
     route:
       group_by: ["alertname", "job"]
       group_wait: 30s
@@ -40,27 +42,35 @@ alertmanager:
           matchers:
             - alertname = "UPSOnBaterry"
           continue: true
+
     inhibit_rules:
       - source_matchers:
           - severity = critical
       - target_matchers:
           - severity = warning
         equal: ["alertname", "namespace"]
+
   ingress:
     enabled: true
+
     pathType: Prefix
     ingressClassName: "traefik"
+
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-production
-      traefik.ingress.kubernetes.io/router.entrypoints: websecure
       hajimari.io/enable: "true"
       hajimari.io/appName: "Alert Manager"
+      hajimari.io/group: monitoring
+
+      cert-manager.io/cluster-issuer: letsencrypt-staging
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
     hosts:
       - &alerthost "alerts.${SECRET_DOMAIN}"
+
     tls:
       - hosts:
           - *alerthost
-        # secretName: "${SECRET_DOMAIN//./-}-tls"
+
   alertmanagerSpec:
     replicas: 2
     podAntiAffinity: hard

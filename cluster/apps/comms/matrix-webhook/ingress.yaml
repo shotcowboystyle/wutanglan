@@ -5,21 +5,18 @@ metadata:
   name: matrix-hook
   namespace: comms
   annotations:
-    kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-production
-    external-dns/is-public: "true"
-    haproxy-ingress-proxy.pfsense.org/enabled: "true"
-    haproxy-ingress-proxy.pfsense.org/frontend: "https-443"
-    haproxy-ingress-proxy.pfsense.org/backend: "nginx-443"
-    external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
 spec:
-  ingressClassName: "nginx"
+  ingressClassName: "traefik"
   tls:
     - hosts:
-        - "matrix-hook.${SECRET_DOMAIN}"
-      # secretName: "${SECRET_DOMAIN//./-}-tls"
+        - &host "matrix-hook.${SECRET_DOMAIN}"
+
   rules:
-    - host: "matrix-hook.${SECRET_DOMAIN}"
+    - host: *host
       http:
         paths:
           - path: /

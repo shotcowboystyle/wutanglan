@@ -4,8 +4,10 @@ kind: HelmRelease
 metadata:
   name: prometheus-blackbox-exporter
   namespace: monitoring
+
 spec:
   interval: 15m
+
   chart:
     spec:
       chart: blackbox-exporter
@@ -27,6 +29,7 @@ spec:
 
   values:
     fullnameOverride: blackbox-exporter
+
     image:
       repository: quay.io/prometheus/blackbox-exporter
 
@@ -39,6 +42,7 @@ spec:
           timeout: 30s
           icmp:
             preferred_ip_protocol: "ip4"
+
         http_2xx:
           prober: http
           timeout: 30s
@@ -46,17 +50,20 @@ spec:
             valid_http_versions: ["HTTP/1.0", "HTTP/1.1", "HTTP/2.0"]
             no_follow_redirects: false
             preferred_ip_protocol: "ip4"
+
         tcp_connect:
           prober: tcp
           timeout: 30s
 
     serviceMonitor:
       enabled: true
+
       defaults:
         labels:
           release: prometheus
         interval: 2m
         scrapeTimeout: 30s
+
       targets:
         - name: udm
           url: 192.168.1.1
@@ -82,10 +89,12 @@ spec:
 
     prometheusRule:
       enabled: true
+
       additionalLabels:
         app: prometheus-operator
         release: prometheus
         namespace: monitoring
+
       rules:
         - alert: HostDown
           expr: probe_success == 0
@@ -94,6 +103,7 @@ spec:
             severity: critical
           annotations:
             message: The host {{"{{ $labels.target }}"}} is currently unreachable
+
         - alert: SlowResponseTime
           annotations:
             message: The response time for {{"{{ $labels.target }}"}} has been greater than 30 seconds for 5 minutes.
@@ -101,6 +111,7 @@ spec:
           for: 15m
           labels:
             severity: warning
+
         - alert: BlackboxSslCertificateWillExpireSoon
           expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 3
           for: 15m
@@ -109,6 +120,7 @@ spec:
           annotations:
             description: |-
               The SSL certificate for {{"{{ $labels.target }}"}} will expire in less than 3 days
+
         - alert: BlackboxSslCertificateExpired
           expr: probe_ssl_earliest_cert_expiry - time() <= 0
           for: 15m
@@ -117,6 +129,7 @@ spec:
           annotations:
             description: |-
               The SSL certificate for {{"{{ $labels.target }}"}} has expired
+
         - alert: BlackboxProbeFailed
           expr: probe_success == 0
           for: 15m
@@ -128,17 +141,20 @@ spec:
 
     ingress:
       enabled: true
+
       className: "traefik"
+
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        cert-manager.io/cluster-issuer: "letsencrypt-staging"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
       hosts:
         - host: &host "blackbox.${SECRET_DOMAIN}"
           paths:
             - path: /
               pathType: Prefix
+
       tls:
         - hosts:
             - *host
-          # secretName: "${SECRET_DOMAIN//./-}-tls"

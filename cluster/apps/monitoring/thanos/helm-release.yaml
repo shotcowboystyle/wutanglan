@@ -63,7 +63,6 @@ spec:
         hostname: "thanos.${SECRET_DOMAIN}"
 
         annotations:
-          # cert-manager.io/cluster-issuer: "letsencrypt-production"
           cert-manager.io/cluster-issuer: "letsencrypt-staging"
 
         tls: true
