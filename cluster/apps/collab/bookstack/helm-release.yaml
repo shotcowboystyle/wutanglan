@@ -85,7 +85,7 @@ spec:
 
       auth:
         database: *db-database
-        username: *db-password
+        username: *db-username
         # password: ${SECRET_BOOKSTACK_DB_PASSWORD}
         # rootPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
         replicationUser: replication
