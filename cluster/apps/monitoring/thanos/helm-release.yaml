@@ -104,13 +104,23 @@ spec:
                       - x86
 
     compactor:
-      enabled: false
+      enabled: true
+
       retentionResolutionRaw: 7d
       retentionResolution5m: 30d
       retentionResolution1h: 180d
+
       persistence:
         enabled: true
         existingClaim: thanos-compactor-data-pvc
+
+      podSecurityContext:
+        enabled: true
+        fsGroup: 65537
+
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1031
 
       affinity:
         nodeAffinity:
@@ -127,13 +137,23 @@ spec:
                       - x86
 
     storegateway:
-      enabled: false
+      enabled: true
+
       replicaCount: 1
-      podAntiAffinityPreset: hard
+
       persistence:
         enabled: true
         existingClaim: thanos-storegateway-data-pvc
 
+      podSecurityContext:
+        enabled: true
+        fsGroup: 65537
+
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1031
+
+      podAntiAffinityPreset: hard
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -149,9 +169,10 @@ spec:
                       - x86
 
     ruler:
-      enabled: false
+      enabled: true
+
       replicaCount: 1
-      podAntiAffinityPreset: hard
+
       dnsDiscovery:
         enabled: true
 
@@ -174,6 +195,15 @@ spec:
         enabled: true
         existingClaim: thanos-ruler-data-pvc
 
+      podSecurityContext:
+        enabled: true
+        fsGroup: 65537
+
+      containerSecurityContext:
+        enabled: true
+        runAsUser: 1031
+
+      podAntiAffinityPreset: hard
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

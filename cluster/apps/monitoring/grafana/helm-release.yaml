@@ -24,6 +24,8 @@ spec:
       namespace: networking
     - name: kube-prometheus-stack
       namespace: monitoring
+    - name: thanos-query
+      namespace: monitoring
 
   values:
     image:
