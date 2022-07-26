@@ -61,7 +61,7 @@ alertmanager:
       hajimari.io/appName: "Alert Manager"
       hajimari.io/group: monitoring
 
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-production
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
 
     hosts:

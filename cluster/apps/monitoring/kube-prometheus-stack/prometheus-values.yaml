@@ -20,7 +20,7 @@ prometheus:
       hajimari.io/appName: "Prometheus"
       hajimari.io/group: monitoring
 
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-production
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
 
     hosts:
@@ -36,7 +36,7 @@ prometheus:
     ingressClassName: traefik
 
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-staging
+      cert-manager.io/cluster-issuer: letsencrypt-production
       traefik.ingress.kubernetes.io/service.serversscheme: h2c
 
     hosts:
