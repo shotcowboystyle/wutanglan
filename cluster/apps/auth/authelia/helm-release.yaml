@@ -49,6 +49,7 @@ spec:
 
       tls:
         enabled: true
+        secretName: "authelia-tls"
 
     pod:
       kind: Deployment
