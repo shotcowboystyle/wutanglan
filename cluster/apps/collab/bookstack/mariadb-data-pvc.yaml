@@ -22,6 +22,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  name: bookstack-mariadb-data-pvc
   namespace: collab
 spec:
   storageClassName: bookstack-mariadb-data-nfs
