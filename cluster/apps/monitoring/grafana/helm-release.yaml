@@ -124,13 +124,13 @@ spec:
           revision: 4
           datasource: Prometheus
 
-        flux-cluster:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
-          datasource: Prometheus
+        # flux-cluster:
+        #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
+        #   datasource: Prometheus
 
-        flux-control-plane:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
-          datasource: Prometheus
+        # flux-control-plane:
+        #   url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
+        #   datasource: Prometheus
 
         # radarr:
         #   url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/radarr.json
@@ -169,6 +169,9 @@ spec:
           gnetId: 11312
           revision: 8
           datasource: Prometheus
+
+    imageRenderer:
+      enabled: true
 
     sidecar:
       dashboards:
