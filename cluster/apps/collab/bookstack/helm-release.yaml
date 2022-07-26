@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: bookstack
+  name: &app bookstack
   namespace: collab
 
 spec:
@@ -37,8 +37,6 @@ spec:
     cleanupOnFail: true
 
   values:
-    # imagePullSecrets:
-    #   - name: "regcred"
     image:
       repository: ghcr.io/linuxserver/bookstack
       pullPolicy: IfNotPresent
@@ -46,8 +44,8 @@ spec:
 
     env:
       TZ: ${TIMEZONE}
-      APP_ENV: production
-      APP_URL: https://bookstack.${SECRET_DOMAIN}/
+      # APP_ENV: production
+      APP_URL: https://docs.${SECRET_DOMAIN}/
       APP_VIEWS_BOOKS: list
       APP_VIEWS_BOOKSHELVES: grid
       APP_VIEWS_BOOKSHELF: grid
@@ -55,31 +53,22 @@ spec:
       AVATAR_URL: https://seccdn.libravatar.org/avatar/${hash}?s=${size}&d=identicon
       DB_HOST: localhost
       DB_PORT: 3306
-      DB_DATABASE: bookstack
-      DB_USERNAME: bookstack
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: &db-database bookstack
+      DB_USERNAME: &db-username bookstack
       MAIL_FROM_NAME: "BookStack"
-      MAIL_FROM: ${SECRET_SMTP_USER}
-      MAIL_HOST: ${SECRET_SMTP}
+      MAIL_FROM: ${SECRET_SMTP_USERNAME}
+      MAIL_HOST: ${SMTP_HOST}
       MAIL_PORT: 587
-      MAIL_USERNAME: ${SECRET_SMTP_USER}
+      MAIL_USERNAME: ${SECRET_SMTP_USERNAME}
       MAIL_PASSWORD: ${SECRET_SMTP_PASSWORD}
       MAIL_ENCRYPTION: SSL
-      AUTH_METHOD: oidc
-      OIDC_NAME: Authentik
-      OIDC_DISPLAY_NAME_CLAIMS: name
-      OIDC_CLIENT_ID: bookstack
-      OIDC_CLIENT_SECRET: ${SECRET_BOOKSTACK_OIDC_CLIENT_SECRET}
-      OIDC_ISSUER: https://id.${SECRET_DOMAIN}/application/o/bookstack/
-      OIDC_ISSUER_DISCOVER: true
-      OIDC_AUTH_ENDPOINT: https://id.${SECRET_DOMAIN}/application/o/authorize/
-      OIDC_TOKEN_ENDPOINT: https://id.${SECRET_DOMAIN}/application/o/token/
       STORAGE_TYPE: s3
-      STORAGE_S3_KEY: ${STORAGE_S3_KEY}
-      STORAGE_S3_SECRET: ${STORAGE_S3_SECRET}
+      STORAGE_S3_KEY: ${SECRET_MINIO_BOOKSTACK_ACCESS_KEY}
+      STORAGE_S3_SECRET: ${SECRET_MINIO_BOOKSTACK_SECRET_KEY}
       STORAGE_S3_BUCKET: bookstack
-      STORAGE_S3_REGION: minio
-      STORAGE_S3_ENDPOINT: https://s3.peanutbutterporkchop.com
+      STORAGE_S3_REGION: ${SECRET_MINIO_REGION}
+      # STORAGE_S3_ENDPOINT: https://${SECRET_MINIO_HOST}
+      STORAGE_S3_ENDPOINT: "minio.dbms.svc.cluster.local:9000"
 
     persistence:
       config:
@@ -92,16 +81,15 @@ spec:
       image:
         repository: bitnami/mariadb
         tag: "10.8.3"
-
       architecture: standalone
 
       auth:
-        database: bookstack
-        username: bookstack
-        password: ${SECRET_BOOKSTACK_DB_PASSWORD}
-        rootPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
+        database: *db-database
+        username: *db-password
+        # password: ${SECRET_BOOKSTACK_DB_PASSWORD}
+        # rootPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
         replicationUser: replication
-        replicationPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
+        # replicationPassword: ${SECRET_BOOKSTACK_DB_ROOT_PASSWORD}
 
       primary:
         hostAliases:
@@ -111,7 +99,7 @@ spec:
 
         persistence:
           enabled: true
-          existingClaim: bookstack-db
+          existingClaim: bookstack-mariadb-data-pvc
 
     service:
       main:
@@ -128,17 +116,39 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "books"
+          hajimari.io/group: "collab"
 
-          cert-manager.io/cluster-issuer: "letsencrypt-staging"
+          cert-manager.io/cluster-issuer: letsencrypt-staging
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 
         hosts:
-          - host: &host "bookstack.${SECRET_DOMAIN}"
+          - host: &host docs.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
-
         tls:
           - hosts:
               - *host
+
+  valuesFrom:
+    - kind: Secret
+      name: *app
+      valuesKey: MARIADB_PASSWORD
+      targetPath: env.DB_PASSWORD
+      optional: false
+    - kind: Secret
+      name: *app
+      valuesKey: MARIADB_PASSWORD
+      targetPath: mariadb.auth.password
+      optional: false
+    - kind: Secret
+      name: *app
+      valuesKey: MARIADB_ROOT_PASSWORD
+      targetPath: mariadb.auth.rootPassword
+      optional: false
+    - kind: Secret
+      name: *app
+      valuesKey: MARIADB_ROOT_PASSWORD
+      targetPath: mariadb.auth.replicationPassword
+      optional: false

@@ -130,7 +130,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_PATIO}@192.168.32.141:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   garage_side:
     ffmpeg:
@@ -141,7 +141,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_GARAGE_SIDE}@192.168.33.142:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   apartment:
     ffmpeg:
@@ -152,7 +152,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_APARTMENT}@192.168.34.143:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   driveway:
     ffmpeg:
@@ -163,7 +163,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_DRIVEWAY}@192.168.35.144:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   driveway_entrance:
     ffmpeg:
@@ -174,7 +174,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_DRIVEWAY_ENTRANCE}@192.168.36.145:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   firepit:
     ffmpeg:
@@ -185,7 +185,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_FIREPIT}@192.168.37.146:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   house_side:
     ffmpeg:
@@ -196,7 +196,7 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_HOUSE_SIDE}@192.168.38.147:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
 
   front_yard:
     #    zones:
@@ -210,6 +210,6 @@ cameras:
         - path: rtsp://{FRIGATE_RTSP_USERNAME}:{FRIGATE_RTSP_PASSWORD_FRONT_YARD}@192.168.39.148:554/cam/realmonitor?channel=1&subtype=1
           roles:
             - detect
-            - rtmp
+            # - rtmp
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c copy -an

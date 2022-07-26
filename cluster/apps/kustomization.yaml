@@ -5,6 +5,7 @@ resources:
   - auth
   # - biz-ops
   - calico-system
+  - collab
   - dbms
   - dev
   - default
