@@ -220,16 +220,16 @@ spec:
     podAnnotations:
       configmap.reloader.stakater.com/reload: "grafana"
 
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 60
-            preference:
-              matchExpressions:
-                - key: kubernetes.io/arch
-                  operator: In
-                  values:
-                    - amd64
-                    - i386
-                    - i686
-                    - x86
+    # affinity:
+    #   nodeAffinity:
+    #     preferredDuringSchedulingIgnoredDuringExecution:
+    #       - weight: 60
+    #         preference:
+    #           matchExpressions:
+    #             - key: kubernetes.io/arch
+    #               operator: In
+    #               values:
+    #                 - amd64
+    #                 - i386
+    #                 - i686
+    #                 - x86
