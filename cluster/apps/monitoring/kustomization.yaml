@@ -10,9 +10,9 @@ resources:
   - botkube
   - flux-system
   - goldilocks
-  # - grafana
+  - grafana
   - intel-gpu-exporter
-  # - kube-prometheus-stack
+  - kube-prometheus-stack
   - loki
   - node-problem-detector
   - promtail
