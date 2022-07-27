@@ -8,14 +8,14 @@ resources:
   # - blackbox-exporter
   # - generic-rules
   - botkube
-  # - flux-system
-  # - gatus
+  - flux-system
+  - gatus
   - goldilocks
-  # - grafana
-  # - intel-gpu-exporter
+  - grafana
+  - intel-gpu-exporter
   - kube-prometheus-stack
   - loki
-  # - node-problem-detector
+  - node-problem-detector
   - promtail
   # - snmp-exporter
   - speedtest-exporter

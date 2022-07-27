@@ -89,6 +89,13 @@ spec:
           - hosts:
               - *host
 
+    podSecurityContext:
+      fsGroup: 65537
+
+    # securityContext:
+    #   runAsUser: 1031
+    #   runAsUser: 1031
+
     config:
       # Config Options available: https://github.com/TwiN/gatus#configuration
       metrics: true
