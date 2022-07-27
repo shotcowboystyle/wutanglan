@@ -1,47 +1,44 @@
 ---
-kind: Service
-apiVersion: v1
-metadata:
-  name: nastrodamus
-  namespace: networking
-
-spec:
-  type: ExternalName
-  ports:
-    - name: https
-      port: 443
-      targetPort: 7401
-  externalName: "${NAS_ADDR}"
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nastrodamus
   namespace: networking
-
   annotations:
     hajimari.io/enable: "true"
-    hajimari.io/icon: "nas"
+    hajimari.io/icon: "database"
+    hajimari.io/group: storage
 
     cert-manager.io/cluster-issuer: "letsencrypt-production"
-    kubernetes.io/ingress.class: traefik
-    traefik.frontend.passHostHeader: "false"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
 
 spec:
-  tls:
-    - hosts:
-        - "nastrodamus.${SECRET_DOMAIN}"
-
+  ingressClassName: traefik
   rules:
-    - host: nastrodamus.${SECRET_DOMAIN}
+    - host: &host "nastrodamus.${SECRET_DOMAIN}"
       http:
         paths:
-          - path: /
-            backend:
+          - backend:
               service:
                 name: nastrodamus
                 port:
                   number: 7401
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - *host
+      # secretName: ${MAIN_DOMAIN}-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nastrodamus
+  namespace: networking
+spec:
+  ports:
+    - name: http
+      port: 7401
+  type: ExternalName
+  externalName: 192.168.10.21
