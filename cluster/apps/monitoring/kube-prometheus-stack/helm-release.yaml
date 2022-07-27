@@ -109,6 +109,7 @@ spec:
       fullnameOverride: kube-state-metrics
 
     prometheus-node-exporter:
+      enabled: false
       fullnameOverride: node-exporter
 
     grafana:
