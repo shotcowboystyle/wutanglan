@@ -70,12 +70,12 @@ spec:
     hostNetwork: true
     dnsPolicy: ClusterFirstWithHostNet
 
-    # podSecurityContext:
-    #   # enabled: true
-    #   # runAsUser: 1031
-    #   # fsGroup: 65537
-    #   supplementalGroups:
-    #     - 65537
+    podSecurityContext:
+      # enabled: true
+      # runAsUser: 1031
+      fsGroup: 65537
+      # supplementalGroups:
+      #   - 65537
 
     nodeSelector:
       kubernetes.io/hostname: "inky"
