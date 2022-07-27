@@ -9,5 +9,5 @@ resources:
   - k8s-gateway
   - metallb
   - traefik
-  # - unifi
+  - unifi
   - wildcard-certificate
