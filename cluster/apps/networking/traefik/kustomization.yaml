@@ -9,5 +9,5 @@ resources:
   - tls-store
   # - default-tls-options
   # - routers
-  # - external-services
+  - external-services
   # - service-monitor.yaml
