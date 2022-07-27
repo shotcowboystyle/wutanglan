@@ -29,7 +29,7 @@ spec:
   tls:
     - hosts:
         - *host
-      # secretName: ${MAIN_DOMAIN}-tls
+
 ---
 apiVersion: v1
 kind: Service
