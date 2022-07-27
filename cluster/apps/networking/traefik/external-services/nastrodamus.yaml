@@ -38,7 +38,7 @@ metadata:
   namespace: networking
 spec:
   ports:
-    - name: http
+    - name: https
       port: 7401
   type: ExternalName
   externalName: 192.168.10.21
