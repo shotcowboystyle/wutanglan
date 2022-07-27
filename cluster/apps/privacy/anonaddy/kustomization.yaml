@@ -6,7 +6,7 @@ resources:
   - anonaddy-mariadb-pvc.yaml
   - anonaddy-redis-pvc.yaml
   - config-pvc.yaml
-  - secret.sops.yaml
-  - mariadb-helm-release.yaml
-  - redis-helm-release.yaml
+  # - mariadb-helm-release.yaml
+  # - redis-helm-release.yaml
   - helm-release.yaml
+  - secret.sops.yaml

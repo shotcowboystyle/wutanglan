@@ -22,7 +22,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: anonaddy-redis-data
+  name: anonaddy-redis-data-pvc
   namespace: privacy
 spec:
   storageClassName: anonaddy-redis-nfs

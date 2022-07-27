@@ -22,10 +22,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: anonaddy-mariadb-data
+  name: anonaddy-mariadb-data-pvc
   namespace: privacy
 spec:
-  storageClassName: authelia-mariadb-nfs
+  storageClassName: anonaddy-mariadb-nfs
   accessModes:
     - ReadWriteOnce
   resources:

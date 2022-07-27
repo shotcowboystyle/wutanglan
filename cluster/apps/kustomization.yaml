@@ -16,7 +16,7 @@ resources:
   - monitoring
   - networking
   - observability
-  # - privacy
+  - privacy
   # - security
   # - tools
   - system-upgrade
