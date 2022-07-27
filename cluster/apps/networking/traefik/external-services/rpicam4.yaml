@@ -1,0 +1,44 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rpicam4
+  namespace: home
+  annotations:
+    hajimari.io/enable: "true"
+    hajimari.io/icon: "cctv"
+    hajimari.io/group: home
+
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: &host "rpicam4.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: rpicam4
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - *host
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rpicam4
+  namespace: home
+spec:
+  ports:
+    - name: http
+      port: 80
+  type: ExternalName
+  externalName: ${SECRET_RPI_CAM_4_IP_ADDR}
