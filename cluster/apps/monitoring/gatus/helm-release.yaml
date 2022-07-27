@@ -58,8 +58,8 @@ spec:
     #     cpu: 100m
     #     memory: 200M
 
-    nodeSelector:
-      worker: yes
+    # nodeSelector:
+    #   worker: yes
 
     env:
       TZ: ${TIMEZONE}
