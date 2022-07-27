@@ -16,7 +16,7 @@ spec:
   secretName: "${SECRET_DOMAIN/./-}-tls"
 
   issuerRef:
-    name: letsencrypt-production
+    name: letsencrypt-staging
     kind: ClusterIssuer
     group: cert-manager.io
 
