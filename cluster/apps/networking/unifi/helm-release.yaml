@@ -36,7 +36,7 @@ spec:
     persistence:
       data:
         enabled: true
-        existingClaim: unifi-data-pvc-v2
+        existingClaim: unifi-data-pvc-v3
 
     env:
       TZ: ${TIMEZONE}
