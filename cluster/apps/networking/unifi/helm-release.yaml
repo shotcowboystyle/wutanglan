@@ -72,7 +72,7 @@ spec:
 
     podSecurityContext:
       # enabled: true
-      # runAsUser: 1031
+      runAsUser: 1031
       fsGroup: 65537
       # supplementalGroups:
       #   - 65537
