@@ -72,10 +72,10 @@ spec:
 
     podSecurityContext:
       # enabled: true
-      runAsUser: 1031
-      fsGroup: 65537
-      # supplementalGroups:
-      #   - 100
+      # runAsUser: 1031
+      # fsGroup: 65537
+      supplementalGroups:
+        - 65537
 
     nodeSelector:
       kubernetes.io/hostname: "inky"
