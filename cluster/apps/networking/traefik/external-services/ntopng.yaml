@@ -1,0 +1,44 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ntopng
+  namespace: networking
+  annotations:
+    hajimari.io/enable: "true"
+    hajimari.io/icon: "database"
+    hajimari.io/group: storage
+
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-internal-only@kubernetescrd"
+
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: &host "ntopng.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - backend:
+              service:
+                name: ntopng
+                port:
+                  number: 3001
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - *host
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ntopng
+  namespace: networking
+spec:
+  ports:
+    - name: https
+      port: 3001
+  type: ExternalName
+  externalName: 192.168.1.1
