@@ -9,7 +9,6 @@ resources:
   # - generic-rules
   - botkube
   - flux-system
-  - gatus
   - goldilocks
   - grafana
   - intel-gpu-exporter
