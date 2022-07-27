@@ -71,7 +71,7 @@ spec:
     dnsPolicy: ClusterFirstWithHostNet
 
     podSecurityContext:
-      enabled: true
+      # enabled: true
       runAsUser: 1031
       fsGroup: 65537
       # supplementalGroups:
