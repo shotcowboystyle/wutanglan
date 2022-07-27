@@ -29,7 +29,6 @@ spec:
       ingressClassName: "traefik"
       annotations:
         cert-manager.io/cluster-issuer: "letsencrypt-production"
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
 
       hosts:
         - host: &host "loki.${SECRET_DOMAIN}"
@@ -44,14 +43,10 @@ spec:
       enabled: true
 
     config:
-      limits_config:
-        enforce_metric_name: false
-        reject_old_samples: true
-        reject_old_samples_max_age: 168h
-        ingestion_rate_mb: 8
-        ingestion_burst_size_mb: 12
-
       storage_config:
+        # aws:
+        #   s3: "s3://${LOKI_MINIO_ACCESS_KEY}:${LOKI_MINIO_SECRET_KEY}@${NAS_ADDR}:9000/loki"
+        #   s3forcepathstyle: true
         aws:
           bucketnames: loki
           endpoint: "minio.dbms.svc.cluster.local:9000"
@@ -68,12 +63,20 @@ spec:
           shared_store: s3
 
       ruler:
-        enable_api: true
+        storage:
+          type: local
+          local:
+            directory: /rules
+
         rule_path: /tmp/scratch
+
         alertmanager_url: http://prometheus-alertmanager:9093
+
         ring:
           kvstore:
             store: inmemory
+
+        enable_api: true
 
     alerting_groups:
       #
@@ -151,13 +154,3 @@ spec:
       #         category: logs
       #       annotations:
       #         summary: "Vaultwarden is unable to connect to postgresql"
-
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: kubernetes.io/arch
-                  operator: In
-                  values:
-                    - "amd64"

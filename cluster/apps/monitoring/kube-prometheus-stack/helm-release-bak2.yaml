@@ -12,7 +12,7 @@ spec:
     spec:
       # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      version: 38.0.2
+      version: 37.3.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
@@ -20,13 +20,14 @@ spec:
       interval: 5m
 
   install:
-    createNamespace: true
     remediation:
-      retries: 3
+      retries: 5
+
+  upgrade:
+    remediation:
+      retries: 5
 
   values:
-    fullnameOverride: prometheus
-
     alertmanager:
       config:
         global:
@@ -58,29 +59,30 @@ spec:
           group_wait: 30s
           group_interval: 5m
           repeat_interval: 6h
-          receiver: "discord"
+          receiver: "pushover"
           routes:
             - receiver: "null"
-              match:
-                alertname: Watchdog
+              matchers:
+                - alertname =~ "InfoInhibitor|Watchdog"
+
             - receiver: "discord"
-              match_re:
-                severity: critical
+              matchers:
+                - severity = critical
               continue: true
 
         inhibit_rules:
-          - source_match:
-              severity: "critical"
-            target_match:
-              severity: "warning"
+          - source_matchers:
+              - severity = "critical"
+            target_matchers:
+              - severity = "warning"
             equal: ["alertname", "namespace"]
 
       ingress:
         enabled: true
 
-        pathType: Prefix
-
         ingressClassName: "traefik"
+
+        pathType: Prefix
 
         annotations:
           hajimari.io/enable: "true"
@@ -93,27 +95,51 @@ spec:
 
         hosts:
           - &host-alert "alerts.${SECRET_DOMAIN}"
+
         tls:
           - hosts:
               - *host-alert
 
       alertmanagerSpec:
+        replicas: 2
+        podAntiAffinity: hard
         storage:
           volumeClaimTemplate:
             spec:
               resources:
                 requests:
-                  storage: 1Gi
+                  storage: 512Mi
+
+    nodeExporter:
+      serviceMonitor:
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels:
+              - __meta_kubernetes_pod_node_name
+            targetLabel: kubernetes_node
 
     kube-state-metrics:
-      fullnameOverride: kube-state-metrics
-
-    prometheus-node-exporter:
-      fullnameOverride: node-exporter
+      prometheus:
+        monitor:
+          enabled: true
+          relabelings:
+            - action: replace
+              regex: (.*)
+              replacement: $1
+              sourceLabels:
+                - __meta_kubernetes_pod_node_name
+              targetLabel: kubernetes_node
 
     grafana:
       enabled: false
       forceDeployDashboards: true
+      sidecar:
+        dashboards:
+          multicluster:
+            etcd:
+              enabled: true
 
     kubelet:
       enabled: true
@@ -125,34 +151,17 @@ spec:
             targetLabel: instance
 
     kubeApiServer:
-      enabled: true
+      enabled: false
 
     kubeControllerManager:
-      enabled: true
-      service:
-        enabled: true
-        port: 10257
-        targetPort: 10257
-
-      serviceMonitor:
-        enabled: true
-        https: true
-        insecureSkipVerify: true
-
-    kubeScheduler:
       enabled: true
       endpoints:
         - 192.168.10.14
 
-      service:
-        enabled: true
-        port: 10259
-        targetPort: 10259
-
-      serviceMonitor:
-        enabled: true
-        https: true
-        insecureSkipVerify: true
+    kubeScheduler:
+      enabled: false
+      endpoints:
+        - 192.168.10.14
 
     kubeProxy:
       enabled: true
@@ -160,23 +169,18 @@ spec:
         - 192.168.10.14
 
     kubeEtcd:
-      enabled: false
+      enabled: true
+      endpoints:
+        - 192.168.10.14
 
-    prometheusOperator:
-      prometheusConfigReloader:
-        resources:
-          requests:
-            cpu: 100m
-            memory: 50Mi
-          limits:
-            cpu: 200m
-            memory: 100Mi
+      service:
+        enabled: true
+        port: 2381
+        targetPort: 2381
 
     prometheus:
       ingress:
         enabled: true
-
-        pathType: Prefix
 
         ingressClassName: "traefik"
 
@@ -193,16 +197,21 @@ spec:
               - *host-prom
 
       thanosService:
-        enabled: false
+        enabled: true
+
+      thanosServiceMonitor:
+        enabled: true
 
       prometheusSpec:
         replicas: 1
-        replicaExternalLabelName: "replica"
+        replicaExternalLabelName: __replica__
+        podAntiAffinity: hard
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
-        retention: 6h
+        retention: 2d
+        retentionSize: "6GB"
         enableAdminAPI: true
         walCompression: true
         storageSpec:
@@ -211,6 +220,21 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+
+        thanos:
+          image: quay.io/thanos/thanos:v0.27.0
+          # renovate: datasource=docker depName=quay.io/thanos/thanos
+          version: "v0.26.0"
+          objectStorageConfig:
+            name: thanos-objstore-secret
+            key: objstore.yml
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2000Mi
+          limits:
+            memory: 8000Mi
 
         additionalScrapeConfigs:
           - job_name: "minio-job"

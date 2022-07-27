@@ -12,17 +12,24 @@ spec:
     spec:
       # renovate: registryUrl=https://grafana.github.io/helm-charts
       chart: grafana
-      version: 6.32.7
+      version: 6.32.5
       sourceRef:
         kind: HelmRepository
-        name: grafana-charts
+        name: grafana
         namespace: flux-system
       interval: 5m
+
+  dependsOn:
+    - name: traefik
+      namespace: networking
+    - name: kube-prometheus-stack
+      namespace: monitoring
+    - name: thanos
+      namespace: monitoring
 
   values:
     image:
       repository: ghcr.io/k8s-at-home/grafana
-      tag: v9.0.5
 
     replicas: 1
 
@@ -38,18 +45,11 @@ spec:
       GF_DATE_FORMATS_INTERVAL_DAY: "DD/MM"
       GF_DATE_FORMATS_INTERVAL_MONTH: "MM-YYYY"
       GF_DATE_FORMATS_INTERVAL_YEAR: "YYYY"
-      VAR_BLOCKY_URL: "http://blocky.networking.svc.cluster.local:4000"
 
     admin:
       existingSecret: grafana-admin-creds
 
     grafana.ini:
-      orgs:
-        - id: 1
-          name: Main Org.
-        - id: 2
-          name: k8s
-
       server:
         root_url: "https://grafana.${SECRET_DOMAIN}"
 
@@ -70,45 +70,19 @@ spec:
 
       auth.basic:
         disable_login_form: false
-        # signout_redirect_url: https://id.${SECRET_DOMAIN}/application/o/grafana/end-session/
-        # oauth_auto_login: true
-
-      # auth.anonymous:
-      #   enabled: true
-      #   org_name: Main Org.
-      #   org_role: Viewer
-      #   hide_version: true
-
-      # auth.generic_oauth:
-      #   enabled: true
-      #   client_id: d1a7ff96ee7113d80a1b2a6d935a91f050856fcc
-      #   client_secret: ${SECRET_GRAFANA_AUTHENTIK_OAUTH_CLIENT}
-      #   scopes: openid email profile
-      #   auth_url: https://id.${SECRET_DOMAIN}/application/o/authorize/
-      #   token_url: https://id.${SECRET_DOMAIN}/application/o/token/
-      #   api_url: https://id.${SECRET_DOMAIN}/application/o/userinfo/
-      #   # Optionally map user groups to Grafana roles
-      #   role_attribute_path: contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'
 
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
         providers:
           - name: "default"
-            folder: "public"
+            orgId: 1
+            folder: ""
             type: file
             disableDeletion: false
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
-
-          - name: "k8s"
-            folder: "k8s"
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/k8s
 
     datasources:
       datasources.yaml:
@@ -117,14 +91,22 @@ spec:
           - name: Prometheus
             type: prometheus
             access: proxy
-            url: http://prometheus-prometheus:9090/
+            url: http://thanos-query:9090/
+            isDefault: true
+
           - name: Loki
             type: loki
             access: proxy
-            url: http://loki:3100
+            url: http://loki.monitoring.svc.cluster.local:3100
 
     dashboards:
       default:
+        # Ref: https://grafana.com/grafana/dashboards/12175
+        calico-felix:
+          gnetId: 12175
+          revision: 5
+          datasource: Prometheus
+
         # Ref: https://grafana.com/grafana/dashboards/13502
         minio:
           gnetId: 13502
@@ -188,25 +170,14 @@ spec:
           revision: 8
           datasource: Prometheus
 
-      k8s:
-        # Ref: https://grafana.com/grafana/dashboards/12175
-        calico-felix:
-          gnetId: 12175
-          revision: 5
-          datasource: Prometheus
-
-        #Ref: https://grafana.com/grafana/dashboards/2842
-        flux-cluster:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/cluster.json
-          datasource: Prometheus
-        flux-control-plane:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
-          datasource: Prometheus
+    imageRenderer:
+      enabled: true
 
     sidecar:
       dashboards:
         enabled: true
         searchNamespace: ALL
+
       datasources:
         enabled: true
         searchNamespace: ALL
@@ -218,7 +189,6 @@ spec:
       - vonage-status-panel
       - grafana-worldmap-panel
       - grafana-clock-panel
-      - alexanderzobnin-zabbix-app
 
     serviceMonitor:
       enabled: true
@@ -244,23 +214,22 @@ spec:
         - hosts:
             - *host
 
-    serviceAccount:
-      create: true
-      autoMount: true
-
     persistence:
       enabled: false
 
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 60
-            preference:
-              matchExpressions:
-                - key: kubernetes.io/arch
-                  operator: In
-                  values:
-                    - amd64
-                    - i386
-                    - i686
-                    - x86
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: "grafana"
+
+    # affinity:
+    #   nodeAffinity:
+    #     preferredDuringSchedulingIgnoredDuringExecution:
+    #       - weight: 60
+    #         preference:
+    #           matchExpressions:
+    #             - key: kubernetes.io/arch
+    #               operator: In
+    #               values:
+    #                 - amd64
+    #                 - i386
+    #                 - i686
+    #                 - x86
