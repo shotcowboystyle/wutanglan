@@ -90,6 +90,8 @@ spec:
       auth:
         database: *app
         username: *app
+        existingSecret: *app
+        existingSecretPasswordKey: MARIADB_PASSWORD
 
       metrics:
         enabled: true
@@ -134,20 +136,3 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-
-  valuesFrom:
-    - kind: Secret
-      name: *app
-      valuesKey: ANONADDY_SECRET
-      targetPath: env.ANONADDY_SECRET
-      optional: false
-    - kind: Secret
-      name: *app
-      valuesKey: APP_KEY
-      targetPath: env.APP_KEY
-      optional: false
-    - kind: Secret
-      name: *app
-      valuesKey: MARIADB_PASSWORD
-      targetPath: mariadb.auth.password
-      optional: false
