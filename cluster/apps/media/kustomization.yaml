@@ -22,4 +22,4 @@ resources:
   # - tautulli
   # - unpackerr
   - stash
-  # - transmission
+  - transmission
