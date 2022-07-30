@@ -13,9 +13,9 @@ resources:
   - home
   - kube-system
   - media
-  - monitoring
+  # - monitoring
   - networking
-  - observability
+  # - observability
   # - privacy
   # - security
   # - tools
