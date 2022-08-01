@@ -33,7 +33,7 @@ spec:
 
     image:
       repository: ghcr.io/onedr0p/radarr-nightly
-      tag: 4.2.0.6438@sha256:50649eebc7f622602ac84cd28eb2eff9f1e1b13de1cfd23284b932fa68b4aa84
+      tag: 4.2.1.6450@sha256:4e4b0a6b25b4bd3e62d175dbf09ec5838394241ddd1289c66f7d0ea9e5e403af
 
     env:
       TZ: "${TIMEZONE}"
